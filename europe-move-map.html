@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Property Prices for Retirees (2025–2026)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #map { width: 100%; height: 100vh; }
+
+  .legend {
+    background: white; padding: 12px 16px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    line-height: 1.7; font-size: 12px; max-width: 210px;
+  }
+  .legend h4 { margin-bottom: 6px; font-size: 13px; color: #333; }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .legend-circle {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+  }
+  .legend-square {
+    width: 13px; height: 13px; border-radius: 2px;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+    background: #999;
+  }
+
+  .price-marker {
+    display: flex; flex-direction: column; align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .price-marker .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+  .price-marker .dot.inland { border-radius: 3px; }
+  .price-marker .label {
+    margin-top: 1px; background: rgba(255,255,255,0.92);
+    padding: 1px 5px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); color: #222;
+  }
+
+  .leaflet-popup-content { min-width: 310px; max-width: 370px; }
+  .popup-content h3 { margin: 0 0 4px 0; font-size: 16px; }
+  .popup-content .tags { margin-bottom: 6px; }
+  .popup-content .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: 600; margin-right: 3px; margin-bottom: 2px;
+  }
+  .popup-content .tag.country { color: white; }
+  .popup-content .tag.country.montenegro { background: #e74c3c; }
+  .popup-content .tag.country.croatia { background: #2980b9; }
+  .popup-content .tag.country.slovenia { background: #16a085; }
+  .popup-content .tag.country.greece { background: #2c3e50; }
+  .popup-content .tag.country.italy { background: #8e44ad; }
+  .popup-content .tag.country.albania { background: #d35400; }
+  .popup-content .tag.country.portugal { background: #c0392b; }
+  .popup-content .tag.country.spain { background: #e67e22; }
+  .popup-content .tag.country.czechia { background: #5c6bc0; }
+  .popup-content .tag.country.poland { background: #d81b60; }
+  .popup-content .tag.country.slovakia { background: #7cb342; }
+  .popup-content .tag.country.hungary { background: #43a047; }
+  .popup-content .tag.country.serbia { background: #8d6e63; }
+  .popup-content .tag.country.bulgaria { background: #546e7a; }
+  .popup-content .tag.country.estonia { background: #00acc1; }
+  .popup-content .tag.eu { background: #eef5ff; color: #2471a3; border: 1px solid #aed6f1; }
+  .popup-content .tag.non-eu { background: #fef5e7; color: #b9770e; border: 1px solid #f9e79f; }
+  .popup-content .tag.coastal { background: #e8f8f5; color: #148f77; border: 1px solid #a3e4d7; }
+  .popup-content .tag.inland { background: #f4ecf7; color: #7d3c98; border: 1px solid #d2b4de; }
+
+  .popup-content .pop-hosp {
+    font-size: 11px; color: #555; margin-bottom: 4px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px;
+  }
+  .popup-content .price-range {
+    font-size: 16px; font-weight: 700; color: #222; margin: 4px 0;
+  }
+  .popup-content .section-label {
+    font-size: 9px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-top: 7px; margin-bottom: 2px;
+  }
+  .popup-content .detail { font-size: 11.5px; color: #555; line-height: 1.5; }
+  .popup-content .pros { color: #1e8449; }
+  .popup-content .cons { color: #b03a2e; }
+  .popup-content .climate-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px;
+    font-size: 11px; color: #555; margin-top: 2px;
+  }
+  .popup-content .housing-cost {
+    font-size: 13px; font-weight: 600; color: #333; margin-top: 2px;
+  }
+  .popup-content .visa-info {
+    font-size: 10.5px; color: #666; margin-top: 2px;
+    padding: 4px 8px; background: #f8f8f8; border-radius: 4px; line-height: 1.4;
+  }
+
+  .popup-content .cost-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px;
+    font-size: 11px; color: #555; margin-top: 2px;
+  }
+  .popup-content .safety-bar-bg {
+    display: inline-block; width: 80px; height: 8px; background: #eee;
+    border-radius: 4px; vertical-align: middle; margin-left: 4px; position: relative;
+    overflow: hidden;
+  }
+  .popup-content .safety-bar-fill {
+    height: 100%; border-radius: 4px; position: absolute; left: 0; top: 0;
+  }
+  .popup-content .safety-label {
+    font-size: 10px; font-weight: 600; margin-left: 4px;
+  }
+  .popup-content a.drill-link {
+    color: inherit; text-decoration: none; display: block;
+    border-radius: 4px; padding: 2px 4px; margin: -2px -4px;
+    transition: background 0.15s;
+  }
+  .popup-content a.drill-link:hover {
+    background: rgba(52,152,219,0.08);
+  }
+  .popup-content a.drill-link .drill-hint {
+    font-size: 9px; color: #3498db; opacity: 0; transition: opacity 0.15s;
+    margin-left: 4px;
+  }
+  .popup-content a.drill-link:hover .drill-hint { opacity: 1; }
+  .popup-content .price-range a.drill-link {
+    display: inline; padding: 0; margin: 0;
+    border-bottom: 1.5px dashed rgba(52,152,219,0.3);
+  }
+  .popup-content .price-range a.drill-link:hover {
+    background: none; border-bottom-color: #3498db;
+  }
+
+  .filter-panel {
+    background: white; padding: 10px 14px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25); font-size: 12px;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .filter-panel h4 { margin-bottom: 6px; font-size: 13px; }
+  .filter-panel .filter-section { margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+  .filter-panel .filter-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .filter-panel label {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; padding: 2px 0;
+  }
+  .filter-panel input[type="checkbox"] { cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const locations = [
+  // ===================== MONTENEGRO =====================
+  {
+    name: "Budva", country: "Montenegro", eu: false, inland: false,
+    lat: 42.2911, lng: 18.8403,
+    pop: 19200, hospital: "Budva General Hospital", hospitalDist: 0, hospitalNote: "Clinical Center Podgorica for specialists (63 km)",
+    priceMin: 2500, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€340k" },
+    pros: "Main resort town, most apartment supply, vibrant nightlife, good beaches, well-connected by road",
+    cons: "Overtouristed in summer, construction boom, not in EU (need residence permit via property/company)",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule. EU citizens exempt from €150k property minimum.",
+    climate: { summerHigh: "30–31°C", winterLow: "2°C", snow: "Very rare", rainyDays: 120, sunHours: 2500 }
+  },
+  {
+    name: "Kotor", country: "Montenegro", eu: false, inland: false,
+    lat: 42.4247, lng: 18.7712,
+    pop: 22600, hospital: "Kotor General Hospital", hospitalDist: 0, hospitalNote: "Clinical Center Podgorica for specialists (90 km)",
+    priceMin: 3500, priceMax: 6000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€500k" },
+    pros: "UNESCO old town, dramatic fjord-like bay, strong expat community, stunning scenery",
+    cons: "Prices rising fast, cruise ship crowds in summer, wettest spot on Adriatic (150 rainy days), not in EU",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "28–31°C", winterLow: "2°C", snow: "Very rare (mountains nearby get snow)", rainyDays: 150, sunHours: 2435 }
+  },
+  {
+    name: "Tivat", country: "Montenegro", eu: false, inland: false,
+    lat: 42.4366, lng: 18.6960,
+    pop: 15000, hospital: "Kotor General Hospital", hospitalDist: 10, hospitalNote: "Clinical Center Podgorica for specialists (85 km)",
+    priceMin: 2700, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€230k–€425k" },
+    pros: "Modern marina (Porto Montenegro), international airport, growing expat scene, good restaurants",
+    cons: "Lacks old-town charm, luxury zone up to €15k/m², not in EU, small town off-season",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "28–31°C", winterLow: "2°C", snow: "Very rare", rainyDays: 150, sunHours: 2530 }
+  },
+  {
+    name: "Herceg Novi", country: "Montenegro", eu: false, inland: false,
+    lat: 42.4531, lng: 18.5375,
+    pop: 30900, hospital: "Herceg Novi General Hospital", hospitalDist: 0, hospitalNote: "Clinical Center Podgorica (110 km). Croatian hospitals accessible (Dubrovnik 45 km)",
+    priceMin: 1800, priceMax: 3000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€150k–€200k" },
+    pros: "Most affordable Bay of Kotor town, near Croatian border (Dubrovnik 45 km), lush vegetation, friendly locals",
+    cons: "Steep hills (hard for elderly mobility), not in EU, less international than Budva/Kotor",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "28–30°C", winterLow: "5°C", snow: "Very rare", rainyDays: 129, sunHours: 2500 }
+  },
+  {
+    name: "Bar", country: "Montenegro", eu: false, inland: false,
+    lat: 42.0930, lng: 19.1004,
+    pop: 42000, hospital: "Bar General Hospital", hospitalDist: 0, hospitalNote: "Clinical Center Podgorica (53 km)",
+    priceMin: 1200, priceMax: 2200,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€120k–€170k" },
+    pros: "Best value on the Adriatic, ferry to Bari (Italy), mild microclimate, olive groves, authentic feel",
+    cons: "Less touristy infrastructure, limited English, further from airports, not in EU",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "28–30°C", winterLow: "4°C", snow: "Very rare", rainyDays: 118, sunHours: 2530 }
+  },
+  {
+    name: "Ulcinj", country: "Montenegro", eu: false, inland: false,
+    lat: 41.9297, lng: 19.2064,
+    pop: 20300, hospital: "Bar General Hospital", hospitalDist: 25, hospitalNote: "Clinical Center Podgorica (78 km)",
+    priceMin: 1200, priceMax: 2200,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€100k–€150k" },
+    pros: "Cheapest on Adriatic, long sandy beaches (rare for region), Albanian-influenced culture, warmest winters in MNE",
+    cons: "Most remote Montenegrin coast town, limited healthcare (hospital 25 km), not in EU, less developed",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "30–31°C", winterLow: "3°C", snow: "Very rare", rainyDays: 113, sunHours: 2560 }
+  },
+  {
+    name: "Podgorica", country: "Montenegro", eu: false, inland: true,
+    lat: 42.4304, lng: 19.2594,
+    pop: 190000, hospital: "Clinical Center of Montenegro", hospitalDist: 0, hospitalNote: "Main national hospital with all specialties",
+    priceMin: 1500, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€190k" },
+    pros: "Capital city with best healthcare in MNE, international airport, all government services, affordable",
+    cons: "Not on coast, extremely hot summers (35°C+), not especially charming, not in EU, limited cultural scene",
+    visa: "Not EU. 90 days visa-free. Residence permit via property or company. 11-month/yr residency rule.",
+    climate: { summerHigh: "33–35°C", winterLow: "0°C", snow: "Light, ~5 days/yr", rainyDays: 100, sunHours: 2500 }
+  },
+
+  // ===================== CROATIA =====================
+  {
+    name: "Dubrovnik", country: "Croatia", eu: true, inland: false,
+    lat: 42.6507, lng: 18.0944,
+    pop: 42600, hospital: "Dubrovnik General Hospital", hospitalDist: 0, hospitalNote: "KBC Split for complex cases (230 km)",
+    priceMin: 4000, priceMax: 7000,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€320k–€560k" },
+    pros: "Iconic walled city, excellent international connections, strong rental income, great cultural scene",
+    cons: "Most expensive Croatian coast, extreme overtourism (cruise ships), old town housing tiny, hot summers",
+    visa: "EU member. Automatic right to reside — just register at police. Full EU healthcare with EHIC.",
+    climate: { summerHigh: "28–30°C", winterLow: "6°C", snow: "Extremely rare", rainyDays: 135, sunHours: 2525 }
+  },
+  {
+    name: "Split", country: "Croatia", eu: true, inland: false,
+    lat: 43.5081, lng: 16.4402,
+    pop: 178000, hospital: "KBC Split (University Hospital)", hospitalDist: 0, hospitalNote: "Major regional hospital with all specialties",
+    priceMin: 3500, priceMax: 5200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€440k" },
+    pros: "2nd largest city, full urban amenities, Diocletian's Palace, major airport/ferry hub, university hospital, lively year-round",
+    cons: "Prices rising fast (+14% YoY), crowded summers, traffic congestion, fewer quiet neighborhoods",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "30–31°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 110, sunHours: 2630 }
+  },
+  {
+    name: "Zadar", country: "Croatia", eu: true, inland: false,
+    lat: 44.1194, lng: 15.2314,
+    pop: 75000, hospital: "Zadar General Hospital", hospitalDist: 0, hospitalNote: "Full-service hospital with ER and specialists",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "Best value on Croatian coast for EU rights, beautiful old town, Ryanair hub, good hospital, less touristy",
+    cons: "Smaller city with fewer amenities, bura wind fierce in winter, less English than southern coast",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "30–31°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 115, sunHours: 2640 }
+  },
+  {
+    name: "Šibenik", country: "Croatia", eu: true, inland: false,
+    lat: 43.7350, lng: 15.8908,
+    pop: 46300, hospital: "Šibenik General Hospital", hospitalDist: 0, hospitalNote: "KBC Split for complex cases (85 km)",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "Near Krka waterfalls, underrated old town, growing food scene, quieter than Split, good EU value",
+    cons: "Smaller town, limited nightlife, no major airport (Split 1hr), bura wind",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "30–31°C", winterLow: "5°C", snow: "Rare, light", rainyDays: 105, sunHours: 2680 }
+  },
+  {
+    name: "Rovinj", country: "Croatia", eu: true, inland: false,
+    lat: 45.0812, lng: 13.6387,
+    pop: 14300, hospital: "Pula General Hospital", hospitalDist: 35, hospitalNote: "KBC Rijeka for specialists (100 km)",
+    priceMin: 3000, priceMax: 4000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€280k–€350k" },
+    pros: "Venetian charm, Italian influence, close to Italy/Slovenia/Austria, excellent food and wine, mild tourism",
+    cons: "Hospital 35 km away (Pula), cooler summers, can feel quiet off-season, higher than inland Istria",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "28–29°C", winterLow: "2°C", snow: "Extremely rare", rainyDays: 100, sunHours: 2420 }
+  },
+  {
+    name: "Opatija", country: "Croatia", eu: true, inland: false,
+    lat: 45.3364, lng: 14.3053,
+    pop: 11700, hospital: "KBC Rijeka", hospitalDist: 15, hospitalNote: "Major university hospital with all specialties",
+    priceMin: 4800, priceMax: 5800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€410k–€490k" },
+    pros: "Habsburg riviera elegance, near Rijeka (3rd city), close to Ljubljana/Trieste, year-round cultural life",
+    cons: "Expensive, wettest/cloudiest on list (157 rainy days), cooler summers, steep terrain",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "27–28°C", winterLow: "3°C", snow: "Rare (~1 day/yr)", rainyDays: 157, sunHours: 2255 }
+  },
+  {
+    name: "Hvar", country: "Croatia", eu: true, inland: false,
+    lat: 43.1729, lng: 16.4412,
+    pop: 4200, hospital: "Hvar Health Center (basic)", hospitalDist: 0, hospitalNote: "KBC Split for anything serious (ferry 1.5 hrs)",
+    priceMin: 3500, priceMax: 6000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€350k–€500k" },
+    pros: "Sunniest Adriatic spot (2,715 hrs), fewest rainy days (96), lavender fields, upscale island vibe",
+    cons: "Island = ferry dependent, very limited winter services, expensive, healthcare = ferry to Split for emergencies",
+    visa: "EU member. Automatic right to reside. EU healthcare (limited on-island facilities).",
+    climate: { summerHigh: "30–31°C", winterLow: "7°C", snow: "Extremely rare", rainyDays: 96, sunHours: 2715 }
+  },
+  {
+    name: "Zagreb", country: "Croatia", eu: true, inland: true,
+    lat: 45.8150, lng: 15.9819,
+    pop: 807000, hospital: "KBC Zagreb / Rebro", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Best healthcare in Croatia.",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "Capital city, best healthcare in Croatia, full cultural life, international airport, universities, central European feel",
+    cons: "Not on coast (sea is 2 hrs away), cold continental winters, earthquake damage still being repaired, grey winters",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "-2°C", snow: "Yes, ~30 days/yr", rainyDays: 130, sunHours: 1900 }
+  },
+  {
+    name: "Varaždin", country: "Croatia", eu: true, inland: true,
+    lat: 46.3057, lng: 16.3366,
+    pop: 47000, hospital: "Varaždin General Hospital", hospitalDist: 0, hospitalNote: "Zagreb KBC for complex cases (80 km)",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed house", size: "110 m²", cost: "€100k–€160k" },
+    pros: "Cheapest EU option with a hospital, baroque old town, safe and clean, near Austrian/Hungarian border, excellent value",
+    cons: "Cold winters with snow, no coast (3+ hrs to sea), very small town, limited English, quiet cultural scene",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "-3°C", snow: "Yes, ~35 days/yr", rainyDays: 120, sunHours: 1850 }
+  },
+  {
+    name: "Pula", country: "Croatia", eu: true, inland: false,
+    lat: 44.8666, lng: 13.8496,
+    pop: 57000, hospital: "Pula General Hospital", hospitalDist: 0, hospitalNote: "KBC Rijeka for complex cases (100 km)",
+    priceMin: 2200, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€185k–€270k" },
+    pros: "Roman amphitheater (Arena), Istria's largest city with full amenities, airport, Italian/Slovenian border access, excellent food and wine",
+    cons: "Industrial port past still visible, naval history = some run-down zones, cooler summers than Dalmatia, tourism can overwhelm old town",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "2°C", snow: "Extremely rare", rainyDays: 95, sunHours: 2400 }
+  },
+  {
+    name: "Rijeka", country: "Croatia", eu: true, inland: false,
+    lat: 45.3271, lng: 14.4422,
+    pop: 128000, hospital: "KBC Rijeka (University Hospital)", hospitalDist: 0, hospitalNote: "Major university hospital. Best healthcare in western Croatia.",
+    priceMin: 1800, priceMax: 2600,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€220k" },
+    pros: "3rd largest city, excellent university hospital, European Capital of Culture 2020, affordable, close to islands/Opatija/Slovenia/Italy",
+    cons: "Industrial port city — less charming than coastal towns, steep terrain, bura wind, some grey neighborhoods",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "2°C", snow: "Rare (~3 days/yr)", rainyDays: 140, sunHours: 2100 }
+  },
+  {
+    name: "Makarska", country: "Croatia", eu: true, inland: false,
+    lat: 43.2965, lng: 17.0190,
+    pop: 14000, hospital: "Makarska Health Center", hospitalDist: 0, hospitalNote: "KBC Split (65 km) for serious care. Basic ER only locally.",
+    priceMin: 2800, priceMax: 3800,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€225k–€300k" },
+    pros: "Stunning Biokovo mountain backdrop, beautiful riviera beaches, palm-lined promenade, between Split & Dubrovnik, lively summer",
+    cons: "Small town, very quiet off-season, no hospital (Split 65 km), heavily seasonal tourism, parking difficult in summer",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "5°C", snow: "Very rare on coast", rainyDays: 100, sunHours: 2700 }
+  },
+  {
+    name: "Trogir", country: "Croatia", eu: true, inland: false,
+    lat: 43.5167, lng: 16.2500,
+    pop: 13000, hospital: "Split KBC", hospitalDist: 27, hospitalNote: "KBC Split (27 km). Local health center for basic care.",
+    priceMin: 2500, priceMax: 3600,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€200k–€290k" },
+    pros: "UNESCO old town on an island, near Split airport (5 km), Venetian architecture, quieter alternative to Split, access to Čiovo island beaches",
+    cons: "Tiny town, hospital in Split (27 km), overtouristed in summer, limited services off-season, parking very difficult",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "30–31°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 108, sunHours: 2650 }
+  },
+  {
+    name: "Poreč", country: "Croatia", eu: true, inland: false,
+    lat: 45.2269, lng: 13.5943,
+    pop: 17000, hospital: "Pula General Hospital", hospitalDist: 55, hospitalNote: "Pula hospital (55 km). Local health center for basic care. Rovinj medical center (30 km).",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "UNESCO Euphrasian Basilica, Istrian coast charm, well-developed tourism infrastructure, family-friendly, excellent Istrian food and wine",
+    cons: "Hospital 55 km away (Pula), very seasonal — quiet winters, touristy in summer, limited year-round amenities",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "2°C", snow: "Extremely rare", rainyDays: 90, sunHours: 2420 }
+  },
+  {
+    name: "Osijek", country: "Croatia", eu: true, inland: true,
+    lat: 45.5550, lng: 18.6955,
+    pop: 108000, hospital: "KBC Osijek (University Hospital)", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Best healthcare in eastern Croatia.",
+    priceMin: 800, priceMax: 1400,
+    housing: { type: "3-bed house", size: "110 m²", cost: "€70k–€120k" },
+    pros: "Cheapest EU city on the map, full university hospital, elegant Austro-Hungarian Tvrđa fortress, Drava river, peaceful, excellent value",
+    cons: "Very far from coast (4+ hrs), hot summers/cold winters, depopulation trend, limited international connections, flat Pannonian plain",
+    visa: "EU member. Automatic right to reside. Full EU healthcare.",
+    climate: { summerHigh: "29–32°C", winterLow: "-3°C", snow: "Yes, ~25 days/yr", rainyDays: 110, sunHours: 2000 }
+  },
+
+  // ===================== SLOVENIA =====================
+  {
+    name: "Koper", country: "Slovenia", eu: true, inland: false,
+    lat: 45.5469, lng: 13.7290,
+    pop: 53000, hospital: "Izola General Hospital", hospitalDist: 8, hospitalNote: "UKC Ljubljana for specialists (110 km)",
+    priceMin: 3000, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€240k–€280k" },
+    pros: "Excellent healthcare system, 20 min to Trieste (Italy), 1 hr to Ljubljana, practical town, very safe",
+    cons: "Tiny coastline (46 km total), cooler/cloudier than Dalmatia, coldest winters on coast list (1°C low)",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "29–30°C", winterLow: "1°C", snow: "Infrequent (a few cm possible)", rainyDays: 119, sunHours: 2350 }
+  },
+  {
+    name: "Piran", country: "Slovenia", eu: true, inland: false,
+    lat: 45.5283, lng: 13.5683,
+    pop: 3800, hospital: "Izola General Hospital", hospitalDist: 12, hospitalNote: "UKC Ljubljana for specialists (120 km)",
+    priceMin: 4000, priceMax: 5500,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€320k–€440k" },
+    pros: "Venetian gem, walkable, very safe, cosmopolitan, excellent healthcare nearby, salt pans nature reserve",
+    cons: "Tiny town — very limited housing supply, premium pricing, parking nightmare, quiet in winter",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "28–29°C", winterLow: "2°C", snow: "Infrequent", rainyDays: 109, sunHours: 2350 }
+  },
+  {
+    name: "Ljubljana", country: "Slovenia", eu: true, inland: true,
+    lat: 46.0569, lng: 14.5058,
+    pop: 295000, hospital: "UKC Ljubljana", hospitalDist: 0, hospitalNote: "Top-rated university hospital. Best healthcare in the region.",
+    priceMin: 3500, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€280k–€400k" },
+    pros: "Best healthcare in SE Europe, charming capital, very safe, 1 hr to coast/Italy/Austria, green and walkable, excellent public transport",
+    cons: "Not on coast (Adriatic 1 hr away), cold winters with snow, housing supply tight, higher cost of living than neighbors",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "-3°C", snow: "Yes, ~30 days/yr", rainyDays: 130, sunHours: 1970 }
+  },
+  {
+    name: "Maribor", country: "Slovenia", eu: true, inland: true,
+    lat: 46.5547, lng: 15.6459,
+    pop: 95000, hospital: "UKC Maribor", hospitalDist: 0, hospitalNote: "University hospital with all specialties",
+    priceMin: 2000, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€170k–€240k" },
+    pros: "Affordable with excellent healthcare, wine country (Štajerska), near Austrian border, university town, underrated",
+    cons: "No coast (2+ hrs), cold winters, smaller city, less international than Ljubljana",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "-4°C", snow: "Yes, ~35 days/yr", rainyDays: 120, sunHours: 1900 }
+  },
+  {
+    name: "Izola", country: "Slovenia", eu: true, inland: false,
+    lat: 45.5363, lng: 13.6611,
+    pop: 16500, hospital: "Izola General Hospital", hospitalDist: 0, hospitalNote: "UKC Ljubljana for specialists (110 km)",
+    priceMin: 3000, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€240k–€320k" },
+    pros: "Quieter and cheaper than Piran, has the actual hospital for the coast, Venetian old town, fishing harbor charm, good restaurants",
+    cons: "Very small town, limited nightlife, cooler/cloudier than Dalmatia, tight housing supply, short coastline",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "28–29°C", winterLow: "1°C", snow: "Infrequent", rainyDays: 115, sunHours: 2350 }
+  },
+  {
+    name: "Nova Gorica", country: "Slovenia", eu: true, inland: true,
+    lat: 45.9558, lng: 13.6483,
+    pop: 32000, hospital: "Šempeter General Hospital", hospitalDist: 5, hospitalNote: "UKC Ljubljana (110 km). Italian hospitals in Gorizia also accessible.",
+    priceMin: 1800, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€210k" },
+    pros: "Unique twin city with Italian Gorizia (EU border-free), European Capital of Culture 2025, affordable, wine region (Goriška Brda), Italian restaurants across the street",
+    cons: "Not on coast (35 km), smaller town, casino tourism feel, bora wind, less charming center (built post-WWII)",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "-1°C", snow: "Light, ~10 days/yr", rainyDays: 110, sunHours: 2150 }
+  },
+  {
+    name: "Celje", country: "Slovenia", eu: true, inland: true,
+    lat: 46.2360, lng: 15.2677,
+    pop: 50000, hospital: "Celje General Hospital", hospitalDist: 0, hospitalNote: "Full-service hospital. UKC Ljubljana (75 km) for complex cases.",
+    priceMin: 1500, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€185k" },
+    pros: "3rd largest Slovenian city, affordable, medieval castle, good hospital, Slovenian healthcare system, between Ljubljana and Maribor on highway",
+    cons: "No coast (1.5 hrs), cold winters, industrial past still visible, smaller cultural scene, not very international",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "27–29°C", winterLow: "-4°C", snow: "Yes, ~30 days/yr", rainyDays: 120, sunHours: 1900 }
+  },
+  {
+    name: "Bled", country: "Slovenia", eu: true, inland: true,
+    lat: 46.3683, lng: 14.1146,
+    pop: 8000, hospital: "Jesenice General Hospital", hospitalDist: 10, hospitalNote: "UKC Ljubljana (55 km). Jesenice hospital has good ER.",
+    priceMin: 3500, priceMax: 5000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€300k–€450k" },
+    pros: "Iconic lake setting, Julian Alps, excellent air quality, 45 min to Ljubljana, 1.5 hrs to coast/Italy/Austria, year-round tourism",
+    cons: "Tiny and very touristy, expensive for Slovenia, cold alpine winters, limited housing supply, hospital 10 km away",
+    visa: "EU member. Register at local admin unit. Excellent public services. Full EU healthcare.",
+    climate: { summerHigh: "24–26°C", winterLow: "-5°C", snow: "Yes, ~50 days/yr", rainyDays: 130, sunHours: 1800 }
+  },
+
+  // ===================== GREECE =====================
+  {
+    name: "Kalamata", country: "Greece", eu: true, inland: false,
+    lat: 37.0422, lng: 22.1131,
+    pop: 70000, hospital: "Kalamata General Hospital", hospitalDist: 0, hospitalNote: "Athens hospitals for complex cases (250 km / 2.5 hrs)",
+    priceMin: 1500, priceMax: 2500,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€150k–€250k" },
+    pros: "Affordable EU, warm sunny climate (2,800 hrs), famous olives/food, international airport, beach + mountains",
+    cons: "Greek language barrier, heavy bureaucracy, healthcare variable, far from central Europe, hot summers (33°C)",
+    visa: "EU member. Register at local police. EU healthcare via EHIC + local registration.",
+    climate: { summerHigh: "31–33°C", winterLow: "6°C", snow: "Virtually none", rainyDays: 87, sunHours: 2800 }
+  },
+  {
+    name: "Chania", country: "Greece", eu: true, inland: false,
+    lat: 35.5138, lng: 24.0180,
+    pop: 55000, hospital: "Chania General Hospital", hospitalDist: 0, hospitalNote: "Heraklion University Hospital for specialists (140 km)",
+    priceMin: 2000, priceMax: 3500,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€200k–€350k" },
+    pros: "Mildest winters on list (8°C low), stunning Venetian harbor, excellent food, growing expat community, Crete has its own identity",
+    cons: "Island = flights or long ferry, limited specialists, bureaucracy, far from mainland Europe",
+    visa: "EU member. Register at local police. EU healthcare via EHIC + local registration.",
+    climate: { summerHigh: "30–31°C", winterLow: "8°C", snow: "Very rare on coast", rainyDays: 98, sunHours: 2800 }
+  },
+  {
+    name: "Corfu", country: "Greece", eu: true, inland: false,
+    lat: 39.6243, lng: 19.9217,
+    pop: 40000, hospital: "Corfu General Hospital", hospitalDist: 0, hospitalNote: "Athens/Thessaloniki for complex cases",
+    priceMin: 2000, priceMax: 3000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€200k–€300k" },
+    pros: "Most sunshine on list (2,865 hrs), lush green, Venetian/British architecture, good airport, large expat community",
+    cons: "Wettest Greek island (115 rainy days), island logistics, limited specialists, quieter off-season",
+    visa: "EU member. Register at local police. EU healthcare via EHIC + local registration.",
+    climate: { summerHigh: "31–33°C", winterLow: "5°C", snow: "Very rare", rainyDays: 115, sunHours: 2865 }
+  },
+  {
+    name: "Thessaloniki", country: "Greece", eu: true, inland: false,
+    lat: 40.6401, lng: 22.9444,
+    pop: 325000, hospital: "AHEPA University Hospital", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Best healthcare in northern Greece.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€250k" },
+    pros: "Major city with full amenities, university hospitals, vibrant food/culture scene, affordable, good airport, waterfront promenade",
+    cons: "Hot summers + cold winters, traffic, more polluted than islands, Greek bureaucracy, less \"holiday\" feel",
+    visa: "EU member. Register at local police. EU healthcare via EHIC + local registration.",
+    climate: { summerHigh: "32–34°C", winterLow: "1°C", snow: "Light, ~5 days/yr", rainyDays: 90, sunHours: 2300 }
+  },
+  {
+    name: "Nafplio", country: "Greece", eu: true, inland: false,
+    lat: 37.5673, lng: 22.8016,
+    pop: 15000, hospital: "Nafplio General Hospital", hospitalDist: 0, hospitalNote: "Argos Hospital (12 km). Athens for specialists (140 km)",
+    priceMin: 2000, priceMax: 3000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€200k–€300k" },
+    pros: "Charming first capital of modern Greece, Venetian/Ottoman architecture, near Athens (1.5 hrs), very romantic town, bay setting",
+    cons: "Small town, limited hospital, Greek bureaucracy, hot summers, quiet off-season",
+    visa: "EU member. Register at local police. EU healthcare via EHIC + local registration.",
+    climate: { summerHigh: "31–33°C", winterLow: "5°C", snow: "Virtually none", rainyDays: 80, sunHours: 2700 }
+  },
+
+  // ===================== ITALY — NORTH =====================
+  {
+    name: "Trieste", country: "Italy", eu: true, inland: false,
+    lat: 45.6495, lng: 13.7768,
+    pop: 204000, hospital: "Cattinara University Hospital", hospitalDist: 0, hospitalNote: "Major university hospital with all specialties. Excellent Friuli VG healthcare system.",
+    priceMin: 1800, priceMax: 3000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€270k" },
+    pros: "Habsburg elegance, border city (Slovenia 5 min), excellent healthcare, literary cafe culture, underrated and affordable, Miramare Castle, great coffee tradition",
+    cons: "Bora wind (very strong NE gusts), aging population, can feel isolated from rest of Italy, grey winters, limited direct flights",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "28–30°C", winterLow: "2°C", snow: "Rare on coast (~3 days/yr)", rainyDays: 100, sunHours: 2200 }
+  },
+  {
+    name: "Udine", country: "Italy", eu: true, inland: true,
+    lat: 46.0711, lng: 13.2346,
+    pop: 99000, hospital: "Udine University Hospital (Santa Maria della Misericordia)", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Excellent Friuli VG system.",
+    priceMin: 1200, priceMax: 2000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€180k" },
+    pros: "Very affordable, excellent university hospital, Friulian charm, near Venice/Austria/Slovenia, Tiepolo frescoes, peaceful, excellent wine (Collio region)",
+    cons: "Inland (no coast, Venice 120 km), cold winters, smaller city, less international, earthquakes in history (1976)",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "28–30°C", winterLow: "-1°C", snow: "Light, ~10 days/yr", rainyDays: 100, sunHours: 2100 }
+  },
+  {
+    name: "Verona", country: "Italy", eu: true, inland: true,
+    lat: 45.4384, lng: 10.9916,
+    pop: 258000, hospital: "Azienda Ospedaliera Universitaria Integrata Verona", hospitalDist: 0, hospitalNote: "Major university hospital. Excellent Veneto healthcare system.",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€200k–€315k" },
+    pros: "Roman Arena, Shakespeare's Juliet, excellent healthcare, major rail hub (Milan–Venice line), Lake Garda 30 min, elegant and walkable, Valpolicella wines",
+    cons: "Tourist crowds at Arena/Juliet's house, hot summers (Po Valley heat), some smog, not on coast (Garda 30 min), traffic",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "30–32°C", winterLow: "-1°C", snow: "Light, ~8 days/yr", rainyDays: 85, sunHours: 2100 }
+  },
+  {
+    name: "Padova", country: "Italy", eu: true, inland: true,
+    lat: 45.4064, lng: 11.8768,
+    pop: 210000, hospital: "Azienda Ospedaliera di Padova", hospitalDist: 0, hospitalNote: "Top-ranked Italian university hospital. Among the best in Europe for research.",
+    priceMin: 2000, priceMax: 3000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€180k–€270k" },
+    pros: "World-class university hospital, Scrovegni Chapel (Giotto), oldest botanical garden in world, 30 min to Venice by train, vibrant university city, affordable",
+    cons: "Po Valley humidity and fog, hot summers, not on coast (Venice 37 km), tourist overflow from Venice, traffic congestion",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "29–31°C", winterLow: "-1°C", snow: "Light, ~5 days/yr", rainyDays: 85, sunHours: 2100 }
+  },
+  {
+    name: "Genova", country: "Italy", eu: true, inland: false,
+    lat: 44.4056, lng: 8.9463,
+    pop: 566000, hospital: "San Martino Polyclinic Hospital", hospitalDist: 0, hospitalNote: "Largest hospital in Italy by surface area. Major university hospital with all specialties.",
+    priceMin: 1800, priceMax: 3000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€270k" },
+    pros: "Major city surprisingly affordable, Europe's largest aquarium, massive old town (largest medieval in Europe), excellent healthcare, Ligurian coast access, major airport",
+    cons: "Steep terrain (hard for elderly mobility), industrial port areas, complex driving/parking, some neglected neighborhoods, grey in winter",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "28–30°C", winterLow: "4°C", snow: "Very rare on coast", rainyDays: 95, sunHours: 2200 }
+  },
+  {
+    name: "La Spezia", country: "Italy", eu: true, inland: false,
+    lat: 44.1024, lng: 9.8241,
+    pop: 94000, hospital: "Sant'Andrea Hospital", hospitalDist: 0, hospitalNote: "Full-service hospital. Pisa university hospital (80 km) for complex cases.",
+    priceMin: 2000, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€180k–€290k" },
+    pros: "Gateway to Cinque Terre, real working Italian city (not touristy itself), naval history, good ferry connections, Portovenere nearby, Ligurian food",
+    cons: "Naval/industrial base nearby, less charming center, Cinque Terre overtourism overflows, limited direct flights, steep surrounding terrain",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "28–30°C", winterLow: "4°C", snow: "Very rare", rainyDays: 90, sunHours: 2300 }
+  },
+  {
+    name: "Trento", country: "Italy", eu: true, inland: true,
+    lat: 46.0748, lng: 11.1217,
+    pop: 118000, hospital: "Santa Chiara Hospital", hospitalDist: 0, hospitalNote: "Full-service hospital. Trentino has Italy's best-funded regional healthcare.",
+    priceMin: 2800, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€240k–€340k" },
+    pros: "Highest quality of life in Italy (consistently #1 in rankings), Trentino's autonomous healthcare (best in Italy), Alpine setting, MUSE science museum, safe and clean, bilingual German influence",
+    cons: "Expensive for a small city, cold alpine winters, no coast (Lake Garda 35 min), limited international flights (Verona 1 hr)",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "28–30°C", winterLow: "-3°C", snow: "Yes, ~25 days/yr", rainyDays: 90, sunHours: 2000 }
+  },
+  {
+    name: "Bologna", country: "Italy", eu: true, inland: true,
+    lat: 44.4949, lng: 11.3426,
+    pop: 390000, hospital: "Policlinico Sant'Orsola-Malpighi", hospitalDist: 0, hospitalNote: "Major university hospital, one of Italy's best. Multiple hospitals in city.",
+    priceMin: 3000, priceMax: 4500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€255k–€380k" },
+    pros: "Italy's food capital (ragù, tortellini, mortadella), excellent university hospital, central location (fast trains to everywhere), vibrant cultural life, porticoes (UNESCO)",
+    cons: "Hot humid summers (Po Valley), not on coast, increasingly expensive (students + expats), traffic, foggy winters",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "30–33°C", winterLow: "-1°C", snow: "Light, ~8 days/yr", rainyDays: 80, sunHours: 2100 }
+  },
+
+  // ===================== ITALY — SOUTH =====================
+  {
+    name: "Lecce", country: "Italy", eu: true, inland: false,
+    lat: 40.3516, lng: 18.1750,
+    pop: 95000, hospital: "Vito Fazzi Hospital", hospitalDist: 0, hospitalNote: "Full-service hospital with ER and specialists",
+    priceMin: 1500, priceMax: 3000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€135k–€270k" },
+    pros: "\"Florence of the South\" — baroque beauty, affordable EU, excellent food, near both coasts, Ryanair airport",
+    cons: "Italian bureaucracy legendary, car essential, limited English, hot summers with sirocco wind",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale for everything.",
+    climate: { summerHigh: "31–32°C", winterLow: "5°C", snow: "Rare", rainyDays: 85, sunHours: 2500 }
+  },
+  {
+    name: "Syracuse", country: "Italy", eu: true, inland: false,
+    lat: 37.0755, lng: 15.2866,
+    pop: 120000, hospital: "Umberto I Hospital", hospitalDist: 0, hospitalNote: "Catania University Hospital for complex cases (60 km)",
+    priceMin: 1200, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€225k" },
+    pros: "Fewest rainy days on list (66!), ancient Greek ruins, Ortigia island stunning, very affordable EU, mild winters (8°C)",
+    cons: "Remote Sicily, car essential, Sicilian bureaucracy, limited direct flights, infrastructure gaps",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "31–32°C", winterLow: "8°C", snow: "Extremely rare", rainyDays: 66, sunHours: 2500 }
+  },
+  {
+    name: "Ostuni", country: "Italy", eu: true, inland: true,
+    lat: 40.7296, lng: 17.5773,
+    pop: 32000, hospital: "Brindisi Hospital (Perrino)", hospitalDist: 30, hospitalNote: "Lecce Vito Fazzi Hospital also reachable (40 km)",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed house (trullo/masseria)", size: "100 m²", cost: "€150k–€250k" },
+    pros: "\"White City\" — photogenic hilltop town, between two coasts, trulli houses, growing expat scene, excellent food",
+    cons: "Hospital 30 km away, car essential, quiet off-season, Italian bureaucracy, can be hot and dry in summer",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "30–32°C", winterLow: "5°C", snow: "Rare", rainyDays: 80, sunHours: 2500 }
+  },
+  {
+    name: "Matera", country: "Italy", eu: true, inland: true,
+    lat: 40.6664, lng: 16.6044,
+    pop: 60000, hospital: "Madonna delle Grazie Hospital", hospitalDist: 0, hospitalNote: "Bari Policlinico for complex cases (65 km)",
+    priceMin: 1200, priceMax: 2000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€100k–€180k" },
+    pros: "UNESCO Sassi cave dwellings, European Capital of Culture 2019, affordable, unique and beautiful, improving infrastructure",
+    cons: "Inland and remote (coast 45 min away), car essential, limited direct flights, hot dry summers, bureaucracy",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "31–33°C", winterLow: "2°C", snow: "Occasional light", rainyDays: 85, sunHours: 2400 }
+  },
+  {
+    name: "Ragusa", country: "Italy", eu: true, inland: true,
+    lat: 36.9269, lng: 14.7255,
+    pop: 73000, hospital: "Ragusa Hospital (Giovanni Paolo II)", hospitalDist: 0, hospitalNote: "Catania for complex cases (100 km)",
+    priceMin: 1000, priceMax: 1800,
+    housing: { type: "3-bed house", size: "110 m²", cost: "€90k–€160k" },
+    pros: "Baroque UNESCO town, cheapest in EU Italy, Montalbano TV fame, coast 20 min, fewest rainy days in region",
+    cons: "Remote southeastern Sicily, car essential, limited flights (Catania/Comiso), very hot summers",
+    visa: "EU member. Register at local comune. Full EU healthcare. Need codice fiscale.",
+    climate: { summerHigh: "31–33°C", winterLow: "5°C", snow: "Very rare", rainyDays: 60, sunHours: 2500 }
+  },
+
+  // ===================== ALBANIA =====================
+  {
+    name: "Saranda", country: "Albania", eu: false, inland: false,
+    lat: 39.8661, lng: 20.0050,
+    pop: 20000, hospital: "Saranda Hospital (basic)", hospitalDist: 0, hospitalNote: "Tirana Mother Teresa Hospital for specialists (280 km). Corfu (Greece) by ferry in emergency.",
+    priceMin: 1000, priceMax: 2000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€90k–€180k" },
+    pros: "Ultra-affordable, across from Corfu (30 min ferry), Albanian Riviera beaches, warm sunny climate",
+    cons: "Not EU, weak healthcare, variable construction quality, limited English, power/water outages possible",
+    visa: "Not EU (candidate). EU citizens: 1 year without visa. Property purchase gives residency. Less regulated than MNE.",
+    climate: { summerHigh: "31–32°C", winterLow: "5°C", snow: "Very rare", rainyDays: 92, sunHours: 2670 }
+  },
+  {
+    name: "Vlorë", country: "Albania", eu: false, inland: false,
+    lat: 40.4660, lng: 19.4910,
+    pop: 80000, hospital: "Vlorë Regional Hospital", hospitalDist: 0, hospitalNote: "Tirana Mother Teresa Hospital for specialists (150 km)",
+    priceMin: 800, priceMax: 1500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€72k–€135k" },
+    pros: "Cheapest coastal Europe, new airport (2024), gateway to Albanian Riviera, Italian coast visible on clear days",
+    cons: "Not EU, weakest infrastructure on list, healthcare very limited, rapid unregulated development",
+    visa: "Not EU (candidate). EU citizens: 1 year without visa. Property purchase gives residency.",
+    climate: { summerHigh: "31–32°C", winterLow: "5°C", snow: "Very rare", rainyDays: 120, sunHours: 2670 }
+  },
+  {
+    name: "Tirana", country: "Albania", eu: false, inland: true,
+    lat: 41.3275, lng: 19.8187,
+    pop: 500000, hospital: "Mother Teresa University Hospital", hospitalDist: 0, hospitalNote: "Best hospital in Albania. Some private hospitals with international standards.",
+    priceMin: 1200, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€200k" },
+    pros: "Capital with best Albanian healthcare, rapidly modernizing, affordable, vibrant cafe culture, international airport",
+    cons: "Not EU, traffic chaos, air quality issues, infrastructure still developing, healthcare below EU standards",
+    visa: "Not EU (candidate). EU citizens: 1 year without visa. Property purchase gives residency.",
+    climate: { summerHigh: "31–33°C", winterLow: "1°C", snow: "Rare, light", rainyDays: 110, sunHours: 2500 }
+  },
+
+  // ===================== PORTUGAL =====================
+  {
+    name: "Cascais", country: "Portugal", eu: true, inland: false,
+    lat: 38.6979, lng: -9.4215,
+    pop: 210000, hospital: "Hospital de Cascais", hospitalDist: 0, hospitalNote: "Lisbon hospitals 25 km (Santa Maria, São José). World-class healthcare.",
+    priceMin: 4000, priceMax: 6000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€340k–€510k" },
+    pros: "Near Lisbon with world-class amenities, excellent healthcare, large English-speaking expat community, mild year-round climate, NHR tax regime",
+    cons: "Expensive (Lisbon prices), increasingly crowded with expats, parking difficult, gentrification pushing locals out",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF (tax number) needed.",
+    climate: { summerHigh: "27–28°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 85, sunHours: 2800 }
+  },
+  {
+    name: "Lagos", country: "Portugal", eu: true, inland: false,
+    lat: 37.1028, lng: -8.6730,
+    pop: 31000, hospital: "Lagos Hospital", hospitalDist: 0, hospitalNote: "Faro Hospital for complex cases (85 km). Lisbon 3 hrs.",
+    priceMin: 3000, priceMax: 4500,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€300k–€450k" },
+    pros: "Algarve sunshine (3,000 hrs!), stunning cliffs/beaches, established expat community, golf, mild winters, good airport (Faro)",
+    cons: "Increasingly expensive, touristy, can feel isolated from \"real\" Portugal, limited hospital, dry landscape",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 60, sunHours: 3000 }
+  },
+
+  // ===================== SPAIN =====================
+  {
+    name: "Valencia", country: "Spain", eu: true, inland: false,
+    lat: 39.4699, lng: -0.3763,
+    pop: 800000, hospital: "Hospital La Fe", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Excellent healthcare system.",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€200k–€315k" },
+    pros: "Major city with full amenities, excellent healthcare, beach + city life, affordable for its size, wonderful food, great weather (2,700 sun hrs)",
+    cons: "Spanish bureaucracy (NIE process), hot humid summers, flooding risk (2024 disaster), language barrier if no Spanish",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 50, sunHours: 2700 }
+  },
+  {
+    name: "Málaga", country: "Spain", eu: true, inland: false,
+    lat: 36.7213, lng: -4.4214,
+    pop: 580000, hospital: "Hospital Regional de Málaga", hospitalDist: 0, hospitalNote: "Multiple hospitals. Major medical hub for Costa del Sol.",
+    priceMin: 2800, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€250k–€360k" },
+    pros: "Major city + beach, excellent healthcare, huge expat community, great airport (cheap flights everywhere), Picasso museum, vibrant culture",
+    cons: "Prices rising fast (expat demand), hot summers, overtourism in center, Spanish bureaucracy, gentrification concerns",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "7°C", snow: "Virtually never", rainyDays: 55, sunHours: 2900 }
+  },
+
+  // Northern Spain
+  {
+    name: "San Sebastián", country: "Spain", eu: true, inland: false,
+    lat: 43.3183, lng: -1.9812,
+    pop: 187000, hospital: "Hospital Universitario Donostia", hospitalDist: 0, hospitalNote: "Major university hospital with all specialties. Excellent Basque public healthcare.",
+    priceMin: 5000, priceMax: 7500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€425k–€640k" },
+    pros: "Regularly rated best food city in Europe, stunning beaches (La Concha), Basque culture, very safe, walkable, world-class dining scene",
+    cons: "Very expensive (priciest in Spain outside Madrid/Barcelona), lots of rain (170 days), cool summers, Basque language adds complexity",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "24–26°C", winterLow: "3°C", snow: "Rare on coast", rainyDays: 170, sunHours: 1650 }
+  },
+  {
+    name: "Bilbao", country: "Spain", eu: true, inland: false,
+    lat: 43.2630, lng: -2.9350,
+    pop: 345000, hospital: "Hospital de Basurto / Hospital de Cruces", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Basque healthcare system is Spain's best-funded.",
+    priceMin: 3000, priceMax: 4500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€255k–€380k" },
+    pros: "Guggenheim museum, transformed industrial city, excellent Basque healthcare (Spain's best), great food, good airport, vibrant culture",
+    cons: "Rainy (160 days), cool summers (25–27°C), not on beach (coast 20 min), Basque language, grey winters",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "4°C", snow: "Very rare in city", rainyDays: 160, sunHours: 1600 }
+  },
+  {
+    name: "Santander", country: "Spain", eu: true, inland: false,
+    lat: 43.4623, lng: -3.8100,
+    pop: 172000, hospital: "Hospital U. Marqués de Valdecilla", hospitalDist: 0, hospitalNote: "Top-ranked Spanish hospital. Major referral center for northern Spain.",
+    priceMin: 2500, priceMax: 3800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€320k" },
+    pros: "Elegant bay-side city, one of Spain's best hospitals (Valdecilla), beautiful beaches, ferry to UK (Plymouth), more affordable than Basque Country",
+    cons: "Rainy (165 days), cool summers, smaller cultural scene than Bilbao, can feel quiet off-season",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "23–25°C", winterLow: "5°C", snow: "Very rare on coast", rainyDays: 165, sunHours: 1650 }
+  },
+  {
+    name: "Gijón", country: "Spain", eu: true, inland: false,
+    lat: 43.5453, lng: -5.6615,
+    pop: 270000, hospital: "Hospital U. de Cabueñes", hospitalDist: 0, hospitalNote: "Hospital U. Central de Asturias in Oviedo (30 km) for complex cases.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€250k" },
+    pros: "Very affordable for a city this size, excellent beach (San Lorenzo), cider culture, friendly locals, green coast (Costa Verde), authentic Spain",
+    cons: "Rainy and cloudy (155 days rain), coolest summers on list (22–24°C), limited international flights, less English spoken",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "22–24°C", winterLow: "5°C", snow: "Very rare on coast", rainyDays: 155, sunHours: 1700 }
+  },
+  {
+    name: "A Coruña", country: "Spain", eu: true, inland: false,
+    lat: 43.3623, lng: -8.4115,
+    pop: 245000, hospital: "CHUAC (Complejo Hospitalario)", hospitalDist: 0, hospitalNote: "Major university hospital complex. Regional referral center for Galicia.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€250k" },
+    pros: "Affordable city with major hospital, Celtic/Galician culture, excellent seafood, Tower of Hercules (UNESCO), mild winters for northern Spain",
+    cons: "Rainy (150 days), limited sunshine, far from rest of Europe, Galician language, fewer international connections",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "22–24°C", winterLow: "6°C", snow: "Extremely rare", rainyDays: 150, sunHours: 1900 }
+  },
+  {
+    name: "Vigo", country: "Spain", eu: true, inland: false,
+    lat: 42.2406, lng: -8.7207,
+    pop: 293000, hospital: "Hospital Álvaro Cunqueiro", hospitalDist: 0, hospitalNote: "New modern hospital (opened 2015). Full specialties. Near Portuguese border.",
+    priceMin: 1600, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€145k–€225k" },
+    pros: "Cheapest major city in northern Spain, brand-new hospital, Cíes Islands (\"Galician Caribbean\"), excellent seafood, near Portugal",
+    cons: "Rainy (140 days), not as charming as smaller Galician towns, hilly terrain, Galician language, fewer flights",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "24–26°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 140, sunHours: 2000 }
+  },
+  {
+    name: "Pontevedra", country: "Spain", eu: true, inland: false,
+    lat: 42.4310, lng: -8.6440,
+    pop: 83000, hospital: "Hospital Montecelo", hospitalDist: 0, hospitalNote: "Hospital Álvaro Cunqueiro in Vigo for complex cases (30 km).",
+    priceMin: 1400, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€125k–€200k" },
+    pros: "Famously pedestrian-friendly (cars banned from center), one of Spain's most liveable small cities, very affordable, excellent quality of life",
+    cons: "Rainy (145 days), small town — limited nightlife/culture, major hospital 30 km (Vigo), Galician language, quiet",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "4°C", snow: "Extremely rare", rainyDays: 145, sunHours: 2000 }
+  },
+  {
+    name: "Logroño", country: "Spain", eu: true, inland: true,
+    lat: 42.4627, lng: -2.4445,
+    pop: 150000, hospital: "Hospital San Pedro", hospitalDist: 0, hospitalNote: "Full-service hospital. Pamplona and Bilbao hospitals also within 1.5 hrs.",
+    priceMin: 1400, priceMax: 2000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€125k–€180k" },
+    pros: "Capital of La Rioja wine region, famous tapas street (Calle Laurel), very affordable, safe and clean, Camino de Santiago passes through",
+    cons: "Inland (no coast), cold winters with some snow, small city, limited international connections, hot dry summers",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 80, sunHours: 2200 }
+  },
+
+  // Catalonia & NE Spain
+  {
+    name: "Barcelona", country: "Spain", eu: true, inland: false,
+    lat: 41.3874, lng: 2.1686,
+    pop: 1620000, hospital: "Hospital Clínic / Hospital de la Santa Creu i Sant Pau", hospitalDist: 0, hospitalNote: "Multiple world-class hospitals. Arguably best healthcare in Spain. Major medical tourism destination.",
+    priceMin: 4000, priceMax: 6000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€340k–€510k" },
+    pros: "World-class city — culture, food, architecture (Gaudí), beach, major airport, best healthcare in Spain, huge international community, excellent public transport",
+    cons: "Expensive and rising fast, overtourism, petty crime (pickpockets), Catalan independence tension, noisy, hard to find parking",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2524 }
+  },
+  {
+    name: "Girona", country: "Spain", eu: true, inland: true,
+    lat: 41.9794, lng: 2.8214,
+    pop: 103000, hospital: "Hospital Universitari de Girona Dr. Josep Trueta", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Barcelona hospitals 100 km.",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "Medieval old town (Game of Thrones filming), excellent food scene, Ryanair hub airport, 35 min to Barcelona by AVE train, 30 min to Costa Brava beaches",
+    cons: "Small city (can feel quiet), Catalan identity strong (less Spanish spoken), inland (coast 30 min), colder winters than coast",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "1°C", snow: "Rare, light", rainyDays: 70, sunHours: 2400 }
+  },
+  {
+    name: "Tarragona", country: "Spain", eu: true, inland: false,
+    lat: 41.1189, lng: 1.2445,
+    pop: 132000, hospital: "Hospital Universitari Joan XXIII", hospitalDist: 0, hospitalNote: "University hospital. Barcelona hospitals 100 km for complex cases.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€250k" },
+    pros: "Roman ruins (UNESCO amphitheatre), much cheaper than Barcelona, beach + history, 1 hr to Barcelona by train, golden coast beaches",
+    cons: "Industrial port area detracts, smaller cultural scene, Catalan language, petrochemical industry nearby, less cosmopolitan",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "4°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2550 }
+  },
+  {
+    name: "Sitges", country: "Spain", eu: true, inland: false,
+    lat: 41.2371, lng: 1.8122,
+    pop: 30000, hospital: "Hospital Sant Camil (Sant Pere de Ribes)", hospitalDist: 3, hospitalNote: "Barcelona hospitals 35 km for complex/specialist care.",
+    priceMin: 3500, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€425k" },
+    pros: "Charming beach town 35 min from Barcelona, LGBTQ+-friendly, vibrant cultural scene (film festival), excellent restaurants, beautiful old town",
+    cons: "Expensive (Barcelona spillover), crowded in summer, limited hospital (Barcelona for serious care), parking nightmare, party tourism",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2500 }
+  },
+  {
+    name: "Lloret de Mar", country: "Spain", eu: true, inland: false,
+    lat: 41.7000, lng: 2.8453,
+    pop: 40000, hospital: "Hospital de Blanes", hospitalDist: 6, hospitalNote: "Girona hospital (35 km) and Barcelona hospitals (75 km) for specialists.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€240k" },
+    pros: "Affordable Costa Brava, good beaches, 30 min to Girona airport, growing year-round community, good value for the region",
+    cons: "Party tourism reputation (improving), hospital 6 km, very touristy in summer, quieter off-season, less charming than other Costa Brava towns",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "3°C", snow: "Very rare", rainyDays: 65, sunHours: 2450 }
+  },
+  {
+    name: "Figueres", country: "Spain", eu: true, inland: true,
+    lat: 42.2666, lng: 2.9617,
+    pop: 47000, hospital: "Hospital de Figueres", hospitalDist: 0, hospitalNote: "Girona university hospital (40 km). French hospitals (Perpignan, 55 km) also accessible.",
+    priceMin: 1400, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€125k–€200k" },
+    pros: "Dalí Theatre-Museum, very affordable, 20 min to Costa Brava beaches, near French border (Perpignan 55 km), AVE train station",
+    cons: "Small inland town, quiet off-season, Catalan language, tramuntana wind (strong northerly), limited cultural life beyond Dalí",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "1°C", snow: "Rare", rainyDays: 65, sunHours: 2400 }
+  },
+  {
+    name: "Roses", country: "Spain", eu: true, inland: false,
+    lat: 42.2596, lng: 3.1768,
+    pop: 20000, hospital: "Hospital de Figueres", hospitalDist: 18, hospitalNote: "Girona university hospital (55 km). French Perpignan (70 km).",
+    priceMin: 2200, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€185k–€270k" },
+    pros: "Beautiful Costa Brava bay, near Cap de Creus natural park, historically home to elBulli restaurant, established French/Northern European retiree community",
+    cons: "Hospital 18 km away, quiet in winter, tramuntana wind, Catalan language, limited public transport",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "3°C", snow: "Very rare", rainyDays: 60, sunHours: 2450 }
+  },
+  {
+    name: "Vic", country: "Spain", eu: true, inland: true,
+    lat: 41.8863, lng: 2.2549,
+    pop: 46000, hospital: "Hospital Universitari de Vic", hospitalDist: 0, hospitalNote: "Barcelona hospitals (70 km) for complex cases.",
+    priceMin: 1400, priceMax: 2000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€125k–€180k" },
+    pros: "Charming medieval town, famous plaça Major, excellent local food/markets (embotits), very affordable, 1 hr to Barcelona, 1 hr to Pyrenees",
+    cons: "Inland (no coast), cold foggy winters (famous for boira fog), small town, Catalan-dominant, limited international feel",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "-1°C", snow: "Occasional light", rainyDays: 75, sunHours: 2300 }
+  },
+
+  // ===================== CZECHIA =====================
+  {
+    name: "Prague", country: "Czechia", eu: true, inland: true,
+    lat: 50.0755, lng: 14.4378,
+    pop: 1310000, hospital: "Motol University Hospital / VFN", hospitalDist: 0, hospitalNote: "Multiple world-class hospitals. Best healthcare in Central Europe.",
+    priceMin: 3500, priceMax: 5500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€470k" },
+    pros: "One of Europe's most beautiful cities, excellent healthcare system, rich cultural life (opera, galleries), central location, very safe, beer culture, good public transport",
+    cons: "Overtourism in center, prices rising fast (approaching Western EU), cold winters, Czech bureaucracy, language barrier (Czech hard to learn)",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare. Need residence certificate for stays over 3 months.",
+    climate: { summerHigh: "24–26°C", winterLow: "-4°C", snow: "Yes, ~40 days/yr", rainyDays: 100, sunHours: 1700 }
+  },
+  {
+    name: "Brno", country: "Czechia", eu: true, inland: true,
+    lat: 49.1951, lng: 16.6068,
+    pop: 380000, hospital: "St. Anne's University Hospital / FN Brno", hospitalDist: 0, hospitalNote: "Two major university hospitals. Excellent specialties.",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€300k" },
+    pros: "2nd city, tech hub (\"Czech Silicon Valley\"), excellent healthcare, much cheaper than Prague, vibrant café culture, Moravian wines, young energy",
+    cons: "Cold winters, less tourist infrastructure than Prague, language barrier, less international, industrial outskirts",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "26–28°C", winterLow: "-4°C", snow: "Yes, ~30 days/yr", rainyDays: 100, sunHours: 1800 }
+  },
+  {
+    name: "Olomouc", country: "Czechia", eu: true, inland: true,
+    lat: 49.5938, lng: 17.2509,
+    pop: 100000, hospital: "Olomouc University Hospital (FNOL)", hospitalDist: 0, hospitalNote: "Major university hospital with all specialties.",
+    priceMin: 1800, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€210k" },
+    pros: "\"Miniature Prague\" without the tourists, UNESCO Holy Trinity Column, university hospital, very affordable, charming squares, Moravian cheese (tvarůžky)",
+    cons: "Cold winters, smaller city, limited international connections, language barrier, far from Western Europe",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "-5°C", snow: "Yes, ~35 days/yr", rainyDays: 95, sunHours: 1700 }
+  },
+  {
+    name: "Karlovy Vary", country: "Czechia", eu: true, inland: true,
+    lat: 50.2327, lng: 12.8714,
+    pop: 48000, hospital: "Karlovy Vary Hospital", hospitalDist: 0, hospitalNote: "Prague Motol for complex cases (130 km).",
+    priceMin: 1500, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€210k" },
+    pros: "Famous spa town, historic Russian-speaking community (relevant for your mother), beautiful colonnades, therapeutic thermal waters, affordable, film festival",
+    cons: "Declining population, cold winters, limited amenities beyond spa tourism, smaller hospital, remote feeling",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "23–25°C", winterLow: "-5°C", snow: "Yes, ~45 days/yr", rainyDays: 105, sunHours: 1550 }
+  },
+  {
+    name: "České Budějovice", country: "Czechia", eu: true, inland: true,
+    lat: 48.9745, lng: 14.4742,
+    pop: 94000, hospital: "České Budějovice Hospital", hospitalDist: 0, hospitalNote: "Full-service regional hospital. Prague 150 km for specialists.",
+    priceMin: 2000, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€170k–€240k" },
+    pros: "Original Budweiser beer city, charming main square (largest in Czechia), gateway to Šumava & Český Krumlov, affordable, good hospital",
+    cons: "Cold winters, limited international connections, smaller city, language barrier, feels provincial",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "-5°C", snow: "Yes, ~35 days/yr", rainyDays: 105, sunHours: 1700 }
+  },
+
+  // ===================== POLAND =====================
+  {
+    name: "Warsaw", country: "Poland", eu: true, inland: true,
+    lat: 52.2297, lng: 21.0122,
+    pop: 1790000, hospital: "Multiple hospitals (CSK MSWiA, WIM, Banacha)", hospitalDist: 0, hospitalNote: "Multiple world-class hospitals. Best healthcare in Poland.",
+    priceMin: 3000, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€255k–€425k" },
+    pros: "Dynamic capital, excellent healthcare, rapidly improving, good international connections, growing tech/startup scene, vibrant cultural life, excellent public transport",
+    cons: "Cold harsh winters, WWII destruction means less historic charm, traffic, bureaucracy, language barrier, can feel grey in winter",
+    visa: "EU member. Register at local voivodeship office. PESEL number needed. Full EU healthcare (NFZ system).",
+    climate: { summerHigh: "24–26°C", winterLow: "-5°C", snow: "Yes, ~50 days/yr", rainyDays: 100, sunHours: 1600 }
+  },
+  {
+    name: "Kraków", country: "Poland", eu: true, inland: true,
+    lat: 50.0647, lng: 19.9450,
+    pop: 800000, hospital: "University Hospital / Żeromski Hospital", hospitalDist: 0, hospitalNote: "Multiple university hospitals. Excellent specialists.",
+    priceMin: 2500, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€340k" },
+    pros: "Beautiful medieval old town (UNESCO), rich Jewish heritage, excellent food scene, major international airport, growing expat community, vibrant culture",
+    cons: "Air pollution/smog (notorious in winter), cold winters, tourist crowds in center, rising prices",
+    visa: "EU member. Register at local voivodeship office. PESEL needed. Full EU healthcare (NFZ).",
+    climate: { summerHigh: "25–27°C", winterLow: "-5°C", snow: "Yes, ~50 days/yr", rainyDays: 100, sunHours: 1600 }
+  },
+  {
+    name: "Gdańsk", country: "Poland", eu: true, inland: false,
+    lat: 54.3520, lng: 18.6466,
+    pop: 470000, hospital: "Medical University of Gdańsk Hospital", hospitalDist: 0, hospitalNote: "Major university hospital. Part of Tri-City metro (Gdańsk/Sopot/Gdynia, 750k combined).",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€185k–€300k" },
+    pros: "Beautiful Hanseatic port city, Baltic beaches, Tri-City metro offers full amenities, growing tech hub, amber coast, good airport, ferry to Scandinavia",
+    cons: "Cold Baltic winters, cool summers (21–23°C), grey and dark in winter, tourism in old town, wind from sea",
+    visa: "EU member. Register at local voivodeship office. PESEL needed. Full EU healthcare (NFZ).",
+    climate: { summerHigh: "21–23°C", winterLow: "-3°C", snow: "Yes, ~40 days/yr", rainyDays: 100, sunHours: 1600 }
+  },
+  {
+    name: "Wrocław", country: "Poland", eu: true, inland: true,
+    lat: 51.1079, lng: 17.0385,
+    pop: 640000, hospital: "Wrocław University Hospital", hospitalDist: 0, hospitalNote: "University hospital with all specialties.",
+    priceMin: 2000, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€170k–€270k" },
+    pros: "\"Venice of Poland\" (12 islands, 100+ bridges), vibrant university city, affordable, growing tech scene, charming dwarfs statues, excellent food",
+    cons: "Cold winters, flooding risk (Oder river), not on coast, limited direct international flights, language barrier",
+    visa: "EU member. Register at local voivodeship office. PESEL needed. Full EU healthcare (NFZ).",
+    climate: { summerHigh: "25–27°C", winterLow: "-4°C", snow: "Yes, ~35 days/yr", rainyDays: 100, sunHours: 1600 }
+  },
+  {
+    name: "Poznań", country: "Poland", eu: true, inland: true,
+    lat: 52.4064, lng: 16.9252,
+    pop: 535000, hospital: "Heliodor Święcicki University Hospital", hospitalDist: 0, hospitalNote: "University hospital. Full specialties.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€240k" },
+    pros: "Excellent value, colorful old town square, university city, good rail connections (Berlin 2.5 hrs), business hub, St. Martin's croissants",
+    cons: "Cold winters, less touristic (can be pro), language barrier, not on coast, smaller international community than Warsaw/Kraków",
+    visa: "EU member. Register at local voivodeship office. PESEL needed. Full EU healthcare (NFZ).",
+    climate: { summerHigh: "24–26°C", winterLow: "-4°C", snow: "Yes, ~35 days/yr", rainyDays: 90, sunHours: 1600 }
+  },
+  {
+    name: "Sopot", country: "Poland", eu: true, inland: false,
+    lat: 54.4418, lng: 18.5601,
+    pop: 37000, hospital: "Medical University of Gdańsk Hospital", hospitalDist: 15, hospitalNote: "Gdańsk university hospital (15 km). Part of Tri-City transit.",
+    priceMin: 3000, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€240k–€400k" },
+    pros: "Poland's most elegant beach resort, longest wooden pier in Europe (515 m), Tri-City transit (urban amenities), charming villas, spa culture",
+    cons: "Expensive for Poland, very seasonal, cool summers, hospital 15 km (Gdańsk), quiet in winter, parking nightmare in summer",
+    visa: "EU member. Register at local voivodeship office. PESEL needed. Full EU healthcare (NFZ).",
+    climate: { summerHigh: "21–23°C", winterLow: "-2°C", snow: "Yes, ~35 days/yr", rainyDays: 95, sunHours: 1600 }
+  },
+
+  // ===================== SLOVAKIA =====================
+  {
+    name: "Bratislava", country: "Slovakia", eu: true, inland: true,
+    lat: 48.1486, lng: 17.1077,
+    pop: 475000, hospital: "University Hospital Bratislava", hospitalDist: 0, hospitalNote: "Multiple hospitals. Also Vienna hospitals accessible (60 km).",
+    priceMin: 3000, priceMax: 4500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€255k–€380k" },
+    pros: "1 hour from Vienna by train, Danube setting, growing rapidly, good healthcare, cheapest capital near Vienna, castle views, EU/Schengen",
+    cons: "Small capital feel, less charming than Prague or Budapest, cold winters, limited cultural scene compared to larger capitals",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "27–30°C", winterLow: "-3°C", snow: "Yes, ~30 days/yr", rainyDays: 95, sunHours: 2000 }
+  },
+  {
+    name: "Košice", country: "Slovakia", eu: true, inland: true,
+    lat: 48.7164, lng: 21.2611,
+    pop: 240000, hospital: "L. Pasteur University Hospital", hospitalDist: 0, hospitalNote: "University hospital with all specialties. 2nd best in Slovakia.",
+    priceMin: 1800, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€155k–€210k" },
+    pros: "2nd city, European Capital of Culture 2013, excellent value, charming main street (Hlavná), good university hospital, near High Tatras",
+    cons: "Remote eastern Slovakia, limited international connections (small airport), cold winters, language barrier, some depopulation",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "26–28°C", winterLow: "-5°C", snow: "Yes, ~40 days/yr", rainyDays: 100, sunHours: 1900 }
+  },
+  {
+    name: "Banská Bystrica", country: "Slovakia", eu: true, inland: true,
+    lat: 48.7395, lng: 19.1532,
+    pop: 78000, hospital: "F.D. Roosevelt University Hospital", hospitalDist: 0, hospitalNote: "University hospital. Good regional coverage.",
+    priceMin: 1500, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€185k" },
+    pros: "Heart of Slovakia, surrounded by Low Tatras mountains, affordable, good hospital, SNP history, clean air, excellent hiking",
+    cons: "Remote mountain location, cold winters (-7°C possible), small city, very limited English, no coast, limited flights",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "-7°C", snow: "Yes, ~50 days/yr", rainyDays: 100, sunHours: 1800 }
+  },
+  {
+    name: "Nitra", country: "Slovakia", eu: true, inland: true,
+    lat: 48.3069, lng: 18.0864,
+    pop: 77000, hospital: "Nitra Teaching Hospital", hospitalDist: 0, hospitalNote: "Teaching hospital. Bratislava hospitals 90 km.",
+    priceMin: 1600, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€135k–€185k" },
+    pros: "Oldest city in Slovakia (828 AD), wine region (Tokaj nearby), affordable, warmest in Slovakia, near Bratislava (90 km), university town",
+    cons: "Small city, limited international connections, language barrier, less touristic infrastructure, not much English spoken",
+    visa: "EU member. Register at Foreign Police. Full EU healthcare.",
+    climate: { summerHigh: "27–29°C", winterLow: "-4°C", snow: "Yes, ~25 days/yr", rainyDays: 85, sunHours: 2000 }
+  },
+
+  // ===================== HUNGARY =====================
+  {
+    name: "Budapest", country: "Hungary", eu: true, inland: true,
+    lat: 47.4979, lng: 19.0402,
+    pop: 1750000, hospital: "Semmelweis University Hospitals", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Medical tourism destination. Dental tourism capital of Europe.",
+    priceMin: 2500, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€340k" },
+    pros: "Stunning city (Danube, Parliament, thermal baths), excellent medical/dental tourism, affordable, rich cultural life, great food, ruin bars, good international connections",
+    cons: "Rising authoritarianism concerns, hot summers, cold winters, traffic and pollution, Hungarian language extremely hard, Forint currency (not Euro)",
+    visa: "EU member. Register at immigration office. Full EU healthcare. Note: Hungary uses Forint, not Euro.",
+    climate: { summerHigh: "28–31°C", winterLow: "-3°C", snow: "Yes, ~20 days/yr", rainyDays: 80, sunHours: 2050 }
+  },
+  {
+    name: "Pécs", country: "Hungary", eu: true, inland: true,
+    lat: 46.0727, lng: 18.2323,
+    pop: 145000, hospital: "Pécs University Hospital", hospitalDist: 0, hospitalNote: "Major university hospital. Medical school teaches in English.",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€100k–€155k" },
+    pros: "Mediterranean feel (warmest Hungarian city), European Capital of Culture 2010, university hospital (English-speaking medical school!), Turkish heritage, very affordable",
+    cons: "Remote southern Hungary, limited international flights, language barrier, Forint currency, smaller city",
+    visa: "EU member. Register at immigration office. Full EU healthcare. Forint, not Euro.",
+    climate: { summerHigh: "28–30°C", winterLow: "-2°C", snow: "Light, ~15 days/yr", rainyDays: 75, sunHours: 2100 }
+  },
+  {
+    name: "Debrecen", country: "Hungary", eu: true, inland: true,
+    lat: 47.5316, lng: 21.6273,
+    pop: 203000, hospital: "Debrecen University Hospital", hospitalDist: 0, hospitalNote: "Major university hospital. International medical school (English programs).",
+    priceMin: 1400, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€120k–€185k" },
+    pros: "2nd city, excellent university hospital (international), thermal baths, Hortobágy National Park (UNESCO), airport, affordable",
+    cons: "Flat Great Plain landscape, cold winters, far from Vienna/Western Europe, language barrier, Forint currency, limited cultural variety",
+    visa: "EU member. Register at immigration office. Full EU healthcare. Forint, not Euro.",
+    climate: { summerHigh: "28–30°C", winterLow: "-5°C", snow: "Yes, ~25 days/yr", rainyDays: 80, sunHours: 2000 }
+  },
+  {
+    name: "Szeged", country: "Hungary", eu: true, inland: true,
+    lat: 46.2530, lng: 20.1414,
+    pop: 160000, hospital: "Szeged University Hospital", hospitalDist: 0, hospitalNote: "University hospital. English-speaking medical faculty.",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€100k–€155k" },
+    pros: "\"City of Sunshine\" (sunniest in Hungary, 2,100 hrs), excellent university hospital, art nouveau architecture, near Serbian border, thermal baths, very affordable",
+    cons: "Remote, flat, language barrier, near Serbian border (not always seen as plus), Forint currency, limited international flights",
+    visa: "EU member. Register at immigration office. Full EU healthcare. Forint, not Euro.",
+    climate: { summerHigh: "28–31°C", winterLow: "-3°C", snow: "Light, ~15 days/yr", rainyDays: 70, sunHours: 2100 }
+  },
+  {
+    name: "Eger", country: "Hungary", eu: true, inland: true,
+    lat: 47.9025, lng: 20.3772,
+    pop: 55000, hospital: "Markhot Ferenc Hospital", hospitalDist: 0, hospitalNote: "Regional hospital. Budapest for specialists (130 km).",
+    priceMin: 1000, priceMax: 1500,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€85k–€130k" },
+    pros: "Famous wine region (Egri Bikavér/Bull's Blood), stunning baroque old town, thermal baths, castle, ultra-affordable, very charming",
+    cons: "Small town, hospital smaller (Budapest 130 km for specialists), cold winters, limited English, far from airports, Forint currency",
+    visa: "EU member. Register at immigration office. Full EU healthcare. Forint, not Euro.",
+    climate: { summerHigh: "28–30°C", winterLow: "-4°C", snow: "Yes, ~25 days/yr", rainyDays: 75, sunHours: 1950 }
+  },
+
+  // ===================== SERBIA =====================
+  {
+    name: "Belgrade", country: "Serbia", eu: false, inland: true,
+    lat: 44.7866, lng: 20.4489,
+    pop: 1400000, hospital: "Military Medical Academy / Clinical Center Serbia", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Best healthcare in Serbia. Growing medical tourism.",
+    priceMin: 2000, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€170k–€300k" },
+    pros: "Vibrant nightlife capital of Europe, confluence of Danube/Sava, affordable, emerging tech scene, excellent food, warm people, Novi Beograd modern district",
+    cons: "Not EU (candidate), air pollution, post-conflict reputation fading but lingers, chaotic traffic, political instability risk, Serbian Dinar currency",
+    visa: "Not EU (candidate). EU citizens: 90 days visa-free. Property purchase straightforward. No minimum investment for EU citizens.",
+    climate: { summerHigh: "28–31°C", winterLow: "-2°C", snow: "Yes, ~25 days/yr", rainyDays: 95, sunHours: 2100 }
+  },
+  {
+    name: "Novi Sad", country: "Serbia", eu: false, inland: true,
+    lat: 45.2671, lng: 19.8335,
+    pop: 290000, hospital: "Clinical Center Vojvodina", hospitalDist: 0, hospitalNote: "Major regional hospital. Belgrade hospitals accessible (80 km).",
+    priceMin: 1500, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€210k" },
+    pros: "European Capital of Culture 2022, EXIT Festival, Danube setting, Petrovaradin Fortress, growing cultural scene, quieter than Belgrade, affordable",
+    cons: "Not EU, cold winters, limited international flights, language barrier, smaller city, Serbian Dinar",
+    visa: "Not EU (candidate). EU citizens: 90 days visa-free. Property purchase straightforward.",
+    climate: { summerHigh: "27–30°C", winterLow: "-3°C", snow: "Yes, ~25 days/yr", rainyDays: 85, sunHours: 2100 }
+  },
+  {
+    name: "Niš", country: "Serbia", eu: false, inland: true,
+    lat: 43.3209, lng: 21.8954,
+    pop: 185000, hospital: "Clinical Center Niš", hospitalDist: 0, hospitalNote: "Major regional hospital with most specialties.",
+    priceMin: 800, priceMax: 1400,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€70k–€120k" },
+    pros: "Ultra-affordable, warm southern Serbia, Constantine the Great birthplace, Niška Banja thermal spa, university hospital, Ryanair/Wizz Air hub",
+    cons: "Not EU, limited infrastructure, language barrier, less developed, limited international community, Serbian Dinar",
+    visa: "Not EU (candidate). EU citizens: 90 days visa-free. Property purchase straightforward.",
+    climate: { summerHigh: "29–31°C", winterLow: "-2°C", snow: "Yes, ~20 days/yr", rainyDays: 80, sunHours: 2150 }
+  },
+  {
+    name: "Subotica", country: "Serbia", eu: false, inland: true,
+    lat: 46.1003, lng: 19.6659,
+    pop: 100000, hospital: "Subotica General Hospital", hospitalDist: 0, hospitalNote: "Regional hospital. Belgrade/Novi Sad for complex cases. Hungarian Szeged (30 km) also accessible.",
+    priceMin: 800, priceMax: 1300,
+    housing: { type: "3-bed house", size: "110 m²", cost: "€70k–€110k" },
+    pros: "Art nouveau gem, multicultural (Serbian/Hungarian/Croatian), near Hungarian EU border (Szeged 30 km), Palić Lake resort, very affordable",
+    cons: "Not EU (but near border), remote, limited healthcare for serious cases, depopulation trend, language complexity, Serbian Dinar",
+    visa: "Not EU (candidate). EU citizens: 90 days visa-free. Property purchase straightforward.",
+    climate: { summerHigh: "27–29°C", winterLow: "-3°C", snow: "Yes, ~25 days/yr", rainyDays: 80, sunHours: 2050 }
+  },
+
+  // ===================== BULGARIA =====================
+  {
+    name: "Sofia", country: "Bulgaria", eu: true, inland: true,
+    lat: 42.6977, lng: 23.3219,
+    pop: 1300000, hospital: "Pirogov Emergency Hospital / Alexandrovska University Hospital", hospitalDist: 0, hospitalNote: "Multiple hospitals. Best healthcare in Bulgaria. Growing private hospital sector.",
+    priceMin: 1500, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€210k" },
+    pros: "EU member, very affordable, surrounded by Vitosha mountain, improving infrastructure, growing expat community, thermal springs, ski resort 70 km, good public transport",
+    cons: "Air pollution, bureaucracy, healthcare variable quality, Cyrillic alphabet barrier, lower infrastructure quality than Western EU, not on coast",
+    visa: "EU member. Register at migration office. Full EU healthcare. Note: Bulgaria uses Lev, not Euro (Euro adoption planned ~2026).",
+    climate: { summerHigh: "27–30°C", winterLow: "-4°C", snow: "Yes, ~30 days/yr", rainyDays: 95, sunHours: 2100 }
+  },
+  {
+    name: "Plovdiv", country: "Bulgaria", eu: true, inland: true,
+    lat: 42.1354, lng: 24.7453,
+    pop: 340000, hospital: "St. George University Hospital", hospitalDist: 0, hospitalNote: "University hospital. Sofia for complex cases (140 km).",
+    priceMin: 800, priceMax: 1400,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€70k–€125k" },
+    pros: "European Capital of Culture 2019, Roman amphitheater, colorful old town, very affordable EU, warmer than Sofia, oldest continuously inhabited European city claim, growing arts scene",
+    cons: "Hot summers (33°C), healthcare variable, limited English, Cyrillic barrier, air quality issues, lower infrastructure quality",
+    visa: "EU member. Register at migration office. Full EU healthcare. Lev currency (Euro planned ~2026).",
+    climate: { summerHigh: "30–33°C", winterLow: "-2°C", snow: "Light, ~15 days/yr", rainyDays: 75, sunHours: 2200 }
+  },
+  {
+    name: "Varna", country: "Bulgaria", eu: true, inland: false,
+    lat: 43.2141, lng: 27.9147,
+    pop: 335000, hospital: "St. Marina University Hospital", hospitalDist: 0, hospitalNote: "Major university hospital. Best healthcare on Bulgarian coast.",
+    priceMin: 1000, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€90k–€160k" },
+    pros: "\"Sea capital\" of Bulgaria, Black Sea beaches, EU, good university hospital, Sea Garden park, international airport, Russian-speaking community",
+    cons: "Cold Black Sea winters, lower infrastructure than Western EU, limited English, Bulgarian bureaucracy, Cyrillic, less Mediterranean feel",
+    visa: "EU member. Register at migration office. Full EU healthcare. Lev currency (Euro planned ~2026).",
+    climate: { summerHigh: "27–30°C", winterLow: "-1°C", snow: "Light, ~10 days/yr", rainyDays: 75, sunHours: 2300 }
+  },
+  {
+    name: "Burgas", country: "Bulgaria", eu: true, inland: false,
+    lat: 42.5048, lng: 27.4626,
+    pop: 210000, hospital: "Burgas University Hospital", hospitalDist: 0, hospitalNote: "Regional hospital. Varna university hospital (130 km) for complex cases.",
+    priceMin: 700, priceMax: 1200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€60k–€110k" },
+    pros: "Cheapest EU coastal city on the map, Black Sea beach, airport, Sea Garden, real working city (not just tourism), sunny (2,400 hrs)",
+    cons: "Lower infrastructure quality, limited English, healthcare below Western EU standards, Cyrillic, less attractive center, Lev currency",
+    visa: "EU member. Register at migration office. Full EU healthcare. Lev currency (Euro planned ~2026).",
+    climate: { summerHigh: "27–30°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 70, sunHours: 2400 }
+  },
+  {
+    name: "Veliko Tarnovo", country: "Bulgaria", eu: true, inland: true,
+    lat: 43.0757, lng: 25.6172,
+    pop: 70000, hospital: "Veliko Tarnovo Hospital", hospitalDist: 0, hospitalNote: "Regional hospital. Sofia/Plovdiv for complex cases.",
+    priceMin: 500, priceMax: 900,
+    housing: { type: "3-bed house", size: "110 m²", cost: "€45k–€80k" },
+    pros: "Former medieval capital, Tsarevets Fortress stunning, cheapest EU option on the entire map, university town, dramatic hilltop setting, growing expat scene",
+    cons: "Small town, limited healthcare for specialists, cold winters, poor infrastructure, Cyrillic barrier, remote, Lev currency",
+    visa: "EU member. Register at migration office. Full EU healthcare. Lev currency (Euro planned ~2026).",
+    climate: { summerHigh: "28–30°C", winterLow: "-3°C", snow: "Yes, ~25 days/yr", rainyDays: 90, sunHours: 2100 }
+  },
+
+  // ===================== ESTONIA =====================
+  {
+    name: "Tallinn", country: "Estonia", eu: true, inland: false,
+    lat: 59.4370, lng: 24.7536,
+    pop: 450000, hospital: "North Estonia Medical Centre (PERH) / East Tallinn Central Hospital", hospitalDist: 0, hospitalNote: "Multiple major hospitals. Best healthcare in the Baltics. Digital health records system.",
+    priceMin: 3000, priceMax: 4500,
+    housing: { type: "3-bed apartment", size: "75 m²", cost: "€225k–€340k" },
+    pros: "World's most digital society (e-governance, e-residency), UNESCO medieval old town, safe, EU/Eurozone, excellent digital infrastructure, ferry to Helsinki (2 hrs), large Russian-speaking community",
+    cons: "Very cold dark winters (-7°C, only 6 hrs daylight Dec), cool short summers, high prices for Baltics, small market, limited sunshine, Russia proximity concern",
+    visa: "EU member. Register at Police & Border Guard Board. Full EU healthcare. Digital ID system. Euro currency.",
+    climate: { summerHigh: "20–22°C", winterLow: "-7°C", snow: "Yes, ~60 days/yr", rainyDays: 110, sunHours: 1800 }
+  },
+  {
+    name: "Tartu", country: "Estonia", eu: true, inland: true,
+    lat: 58.3780, lng: 26.7290,
+    pop: 97000, hospital: "Tartu University Hospital", hospitalDist: 0, hospitalNote: "University hospital. Best for research/specialists in Estonia.",
+    priceMin: 2000, priceMax: 3000,
+    housing: { type: "3-bed apartment", size: "75 m²", cost: "€150k–€225k" },
+    pros: "European Capital of Culture 2024, university town (Estonia's oldest), excellent hospital, intellectual atmosphere, green and walkable, affordable, Estonian-speaking heartland",
+    cons: "Very cold winters (-8°C), small city, remote, limited international flights (small airport), very dark winters, Russia border 50 km",
+    visa: "EU member. Register at Police & Border Guard Board. Full EU healthcare. Digital ID. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "-8°C", snow: "Yes, ~70 days/yr", rainyDays: 100, sunHours: 1700 }
+  },
+  {
+    name: "Pärnu", country: "Estonia", eu: true, inland: false,
+    lat: 58.3859, lng: 24.4971,
+    pop: 51000, hospital: "Pärnu Hospital", hospitalDist: 0, hospitalNote: "Regional hospital. Tallinn (130 km) or Tartu (180 km) for complex cases.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "75 m²", cost: "€135k–€210k" },
+    pros: "\"Summer capital\" of Estonia, beach resort, spa tradition, quiet and charming, good quality of life, Russian and Estonian communities, affordable",
+    cons: "Very cold winters, seasonal (quiet in winter), small town, limited specialist healthcare, dark winters, remote",
+    visa: "EU member. Register at Police & Border Guard Board. Full EU healthcare. Digital ID. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "-7°C", snow: "Yes, ~60 days/yr", rainyDays: 100, sunHours: 1800 }
+  },
+  {
+    name: "Haapsalu", country: "Estonia", eu: true, inland: false,
+    lat: 58.9431, lng: 23.5411,
+    pop: 10000, hospital: "Pärnu Hospital", hospitalDist: 50, hospitalNote: "Tallinn (100 km) for most care. Local health center only.",
+    priceMin: 1200, priceMax: 2000,
+    housing: { type: "3-bed house", size: "100 m²", cost: "€100k–€170k" },
+    pros: "Charming seaside spa town, Tchaikovsky bench, castle ruins, affordable, peaceful, Swedish-influenced history, mud spa tradition",
+    cons: "Very small and remote, no local hospital (Tallinn/Pärnu), extremely cold winters, dead quiet off-season, limited amenities",
+    visa: "EU member. Register at Police & Border Guard Board. Full EU healthcare. Digital ID. Euro.",
+    climate: { summerHigh: "20–22°C", winterLow: "-7°C", snow: "Yes, ~55 days/yr", rainyDays: 100, sunHours: 1750 }
+  }
+];
+
+// safety: Numbeo-style 0-100 (higher=safer), healthcare: 0-100, groceries: €/mo 1 person, meal2: meal for 2 mid-range €
+const extraData = {
+  // Montenegro
+  "Budva":         { safety: 65, hc: 45, groceries: 220, meal2: 30 },
+  "Kotor":         { safety: 70, hc: 48, groceries: 230, meal2: 35 },
+  "Tivat":         { safety: 70, hc: 42, groceries: 240, meal2: 38 },
+  "Herceg Novi":   { safety: 68, hc: 45, groceries: 210, meal2: 28 },
+  "Bar":           { safety: 64, hc: 45, groceries: 200, meal2: 25 },
+  "Ulcinj":        { safety: 62, hc: 38, groceries: 190, meal2: 22 },
+  "Podgorica":     { safety: 57, hc: 55, groceries: 210, meal2: 25 },
+  // Croatia
+  "Dubrovnik":     { safety: 76, hc: 62, groceries: 320, meal2: 60 },
+  "Split":         { safety: 72, hc: 78, groceries: 300, meal2: 50 },
+  "Zadar":         { safety: 78, hc: 70, groceries: 280, meal2: 42 },
+  "Šibenik":       { safety: 78, hc: 65, groceries: 270, meal2: 40 },
+  "Rovinj":        { safety: 80, hc: 60, groceries: 290, meal2: 50 },
+  "Opatija":       { safety: 82, hc: 75, groceries: 310, meal2: 55 },
+  "Hvar":          { safety: 85, hc: 40, groceries: 330, meal2: 60 },
+  "Zagreb":        { safety: 68, hc: 82, groceries: 280, meal2: 40 },
+  "Varaždin":      { safety: 82, hc: 68, groceries: 240, meal2: 30 },
+  "Pula":          { safety: 78, hc: 65, groceries: 275, meal2: 42 },
+  "Rijeka":        { safety: 72, hc: 78, groceries: 270, meal2: 38 },
+  "Makarska":      { safety: 80, hc: 50, groceries: 290, meal2: 45 },
+  "Trogir":        { safety: 80, hc: 55, groceries: 285, meal2: 45 },
+  "Poreč":         { safety: 82, hc: 52, groceries: 280, meal2: 45 },
+  "Osijek":        { safety: 75, hc: 72, groceries: 220, meal2: 25 },
+  // Slovenia
+  "Koper":         { safety: 80, hc: 78, groceries: 280, meal2: 40 },
+  "Piran":         { safety: 82, hc: 76, groceries: 290, meal2: 45 },
+  "Ljubljana":     { safety: 78, hc: 90, groceries: 300, meal2: 45 },
+  "Maribor":       { safety: 76, hc: 85, groceries: 260, meal2: 35 },
+  "Izola":         { safety: 82, hc: 78, groceries: 280, meal2: 42 },
+  "Nova Gorica":   { safety: 80, hc: 75, groceries: 265, meal2: 38 },
+  "Celje":         { safety: 78, hc: 80, groceries: 250, meal2: 32 },
+  "Bled":          { safety: 85, hc: 72, groceries: 290, meal2: 45 },
+  // Greece
+  "Kalamata":      { safety: 68, hc: 55, groceries: 250, meal2: 30 },
+  "Chania":        { safety: 70, hc: 55, groceries: 260, meal2: 32 },
+  "Corfu":         { safety: 66, hc: 52, groceries: 270, meal2: 35 },
+  "Thessaloniki":  { safety: 55, hc: 68, groceries: 250, meal2: 30 },
+  "Nafplio":       { safety: 72, hc: 48, groceries: 260, meal2: 32 },
+  // Italy — North
+  "Trieste":       { safety: 72, hc: 80, groceries: 270, meal2: 40 },
+  "Udine":         { safety: 78, hc: 82, groceries: 250, meal2: 35 },
+  "Verona":        { safety: 68, hc: 80, groceries: 280, meal2: 45 },
+  "Padova":        { safety: 65, hc: 88, groceries: 270, meal2: 40 },
+  "Genova":        { safety: 55, hc: 78, groceries: 280, meal2: 42 },
+  "La Spezia":     { safety: 62, hc: 68, groceries: 270, meal2: 40 },
+  "Trento":        { safety: 82, hc: 92, groceries: 300, meal2: 48 },
+  "Bologna":       { safety: 58, hc: 85, groceries: 290, meal2: 48 },
+  // Italy — South
+  "Lecce":         { safety: 68, hc: 65, groceries: 250, meal2: 40 },
+  "Syracuse":      { safety: 58, hc: 60, groceries: 230, meal2: 35 },
+  "Ostuni":        { safety: 72, hc: 55, groceries: 250, meal2: 40 },
+  "Matera":        { safety: 70, hc: 60, groceries: 230, meal2: 35 },
+  "Ragusa":        { safety: 72, hc: 62, groceries: 220, meal2: 30 },
+  // Albania
+  "Saranda":       { safety: 58, hc: 25, groceries: 160, meal2: 18 },
+  "Vlorë":         { safety: 52, hc: 32, groceries: 150, meal2: 15 },
+  "Tirana":        { safety: 48, hc: 42, groceries: 170, meal2: 18 },
+  // Portugal
+  "Cascais":       { safety: 75, hc: 80, groceries: 300, meal2: 45 },
+  "Lagos":         { safety: 78, hc: 65, groceries: 280, meal2: 38 },
+  // Spain — South/East
+  "Valencia":      { safety: 62, hc: 82, groceries: 260, meal2: 38 },
+  "Málaga":        { safety: 60, hc: 78, groceries: 270, meal2: 40 },
+  // Spain — North
+  "San Sebastián": { safety: 75, hc: 85, groceries: 320, meal2: 65 },
+  "Bilbao":        { safety: 72, hc: 88, groceries: 300, meal2: 50 },
+  "Santander":     { safety: 76, hc: 85, groceries: 270, meal2: 40 },
+  "Gijón":         { safety: 74, hc: 75, groceries: 250, meal2: 35 },
+  "A Coruña":      { safety: 75, hc: 80, groceries: 250, meal2: 35 },
+  "Vigo":          { safety: 70, hc: 80, groceries: 240, meal2: 32 },
+  "Pontevedra":    { safety: 78, hc: 68, groceries: 230, meal2: 30 },
+  "Logroño":       { safety: 80, hc: 72, groceries: 230, meal2: 30 },
+  // Spain — Catalonia
+  "Barcelona":     { safety: 48, hc: 92, groceries: 310, meal2: 50 },
+  "Girona":        { safety: 72, hc: 75, groceries: 270, meal2: 40 },
+  "Tarragona":     { safety: 68, hc: 72, groceries: 250, meal2: 35 },
+  "Sitges":        { safety: 70, hc: 65, groceries: 290, meal2: 48 },
+  "Lloret de Mar": { safety: 55, hc: 58, groceries: 250, meal2: 30 },
+  "Figueres":      { safety: 60, hc: 62, groceries: 240, meal2: 28 },
+  "Roses":         { safety: 72, hc: 55, groceries: 260, meal2: 35 },
+  "Vic":           { safety: 74, hc: 70, groceries: 240, meal2: 30 },
+  // Czechia
+  "Prague":        { safety: 65, hc: 85, groceries: 250, meal2: 30 },
+  "Brno":          { safety: 72, hc: 82, groceries: 230, meal2: 25 },
+  "Olomouc":       { safety: 78, hc: 78, groceries: 210, meal2: 20 },
+  "Karlovy Vary":  { safety: 72, hc: 60, groceries: 220, meal2: 22 },
+  "České Budějovice": { safety: 78, hc: 72, groceries: 220, meal2: 22 },
+  // Poland
+  "Warsaw":        { safety: 70, hc: 78, groceries: 250, meal2: 30 },
+  "Kraków":        { safety: 65, hc: 80, groceries: 230, meal2: 25 },
+  "Gdańsk":        { safety: 72, hc: 78, groceries: 240, meal2: 28 },
+  "Wrocław":       { safety: 72, hc: 78, groceries: 220, meal2: 22 },
+  "Poznań":        { safety: 74, hc: 75, groceries: 220, meal2: 22 },
+  "Sopot":         { safety: 78, hc: 72, groceries: 260, meal2: 35 },
+  // Slovakia
+  "Bratislava":    { safety: 70, hc: 72, groceries: 250, meal2: 28 },
+  "Košice":        { safety: 68, hc: 68, groceries: 200, meal2: 18 },
+  "Banská Bystrica": { safety: 75, hc: 65, groceries: 190, meal2: 15 },
+  "Nitra":         { safety: 72, hc: 62, groceries: 190, meal2: 15 },
+  // Hungary
+  "Budapest":      { safety: 60, hc: 72, groceries: 230, meal2: 25 },
+  "Pécs":          { safety: 68, hc: 70, groceries: 190, meal2: 18 },
+  "Debrecen":      { safety: 70, hc: 75, groceries: 200, meal2: 18 },
+  "Szeged":        { safety: 72, hc: 75, groceries: 190, meal2: 18 },
+  "Eger":          { safety: 75, hc: 58, groceries: 180, meal2: 15 },
+  // Serbia
+  "Belgrade":      { safety: 52, hc: 55, groceries: 200, meal2: 20 },
+  "Novi Sad":      { safety: 60, hc: 55, groceries: 190, meal2: 18 },
+  "Niš":           { safety: 55, hc: 48, groceries: 170, meal2: 12 },
+  "Subotica":      { safety: 58, hc: 42, groceries: 160, meal2: 12 },
+  // Bulgaria
+  "Sofia":         { safety: 55, hc: 52, groceries: 180, meal2: 18 },
+  "Plovdiv":       { safety: 58, hc: 50, groceries: 170, meal2: 14 },
+  "Varna":         { safety: 55, hc: 58, groceries: 180, meal2: 15 },
+  "Burgas":        { safety: 52, hc: 52, groceries: 170, meal2: 12 },
+  "Veliko Tarnovo": { safety: 65, hc: 42, groceries: 160, meal2: 10 },
+  // Estonia
+  "Tallinn":       { safety: 72, hc: 75, groceries: 280, meal2: 38 },
+  "Tartu":         { safety: 78, hc: 80, groceries: 250, meal2: 30 },
+  "Pärnu":         { safety: 80, hc: 65, groceries: 250, meal2: 28 },
+  "Haapsalu":      { safety: 82, hc: 50, groceries: 240, meal2: 25 },
+};
+
+// Airport data: nearest international airport (IATA code, name, distance in km)
+const airportData = {
+  // Montenegro
+  "Budva":         "TIV – Tivat (20 km)",
+  "Kotor":         "TIV – Tivat (8 km)",
+  "Tivat":         "TIV – Tivat (3 km)",
+  "Herceg Novi":   "TIV – Tivat (23 km)",
+  "Bar":           "TGD – Podgorica (53 km)",
+  "Ulcinj":        "TGD – Podgorica (78 km)",
+  "Podgorica":     "TGD – Podgorica (10 km)",
+  // Croatia
+  "Dubrovnik":     "DBV – Dubrovnik (20 km)",
+  "Split":         "SPU – Split (25 km)",
+  "Zadar":         "ZAD – Zadar (10 km)",
+  "Šibenik":       "SPU – Split (50 km)",
+  "Rovinj":        "PUY – Pula (35 km)",
+  "Opatija":       "RJK – Rijeka (35 km)",
+  "Hvar":          "SPU – Split (ferry + 45 km)",
+  "Zagreb":        "ZAG – Zagreb (15 km)",
+  "Varaždin":      "ZAG – Zagreb (90 km)",
+  "Pula":          "PUY – Pula (8 km)",
+  "Rijeka":        "RJK – Rijeka (25 km)",
+  "Makarska":      "SPU – Split (65 km)",
+  "Trogir":        "SPU – Split (5 km)",
+  "Poreč":         "PUY – Pula (55 km)",
+  "Osijek":        "OSI – Osijek (20 km)",
+  // Slovenia
+  "Koper":         "TRS – Trieste (55 km)",
+  "Piran":         "TRS – Trieste (65 km)",
+  "Ljubljana":     "LJU – Ljubljana (25 km)",
+  "Maribor":       "GRZ – Graz (60 km)",
+  "Izola":         "TRS – Trieste (50 km)",
+  "Nova Gorica":   "TRS – Trieste (45 km)",
+  "Celje":         "LJU – Ljubljana (75 km)",
+  "Bled":          "LJU – Ljubljana (35 km)",
+  // Greece
+  "Kalamata":      "KLX – Kalamata (10 km)",
+  "Chania":        "CHQ – Chania (15 km)",
+  "Corfu":         "CFU – Corfu (3 km)",
+  "Thessaloniki":  "SKG – Thessaloniki (15 km)",
+  "Nafplio":       "ATH – Athens (140 km)",
+  // Italy — North
+  "Trieste":       "TRS – Trieste (35 km)",
+  "Udine":         "TRS – Trieste (60 km)",
+  "Verona":        "VRN – Verona (12 km)",
+  "Padova":        "VCE – Venice (45 km)",
+  "Genova":        "GOA – Genova (8 km)",
+  "La Spezia":     "PSA – Pisa (80 km)",
+  "Trento":        "VRN – Verona (100 km)",
+  "Bologna":       "BLQ – Bologna (8 km)",
+  // Italy — South
+  "Lecce":         "BDS – Brindisi (40 km)",
+  "Syracuse":      "CTA – Catania (60 km)",
+  "Ostuni":        "BDS – Brindisi (30 km)",
+  "Matera":        "BRI – Bari (65 km)",
+  "Ragusa":        "CTA – Catania (100 km)",
+  // Albania
+  "Saranda":       "TIA – Tirana (280 km)",
+  "Vlorë":         "TIA – Tirana (150 km)",
+  "Tirana":        "TIA – Tirana (17 km)",
+  // Portugal
+  "Cascais":       "LIS – Lisbon (30 km)",
+  "Lagos":         "FAO – Faro (85 km)",
+  // Spain — South/East
+  "Valencia":      "VLC – Valencia (10 km)",
+  "Málaga":        "AGP – Málaga (8 km)",
+  // Spain — North
+  "San Sebastián": "EAS – San Sebastián (22 km)",
+  "Bilbao":        "BIO – Bilbao (12 km)",
+  "Santander":     "SDR – Santander (5 km)",
+  "Gijón":         "OVD – Asturias (40 km)",
+  "A Coruña":      "LCG – A Coruña (10 km)",
+  "Vigo":          "VGO – Vigo (12 km)",
+  "Pontevedra":    "VGO – Vigo (30 km)",
+  "Logroño":       "RJL – Logroño (15 km)",
+  // Spain — Catalonia
+  "Barcelona":     "BCN – Barcelona (15 km)",
+  "Girona":        "GRO – Girona (12 km)",
+  "Tarragona":     "REU – Reus (10 km)",
+  "Sitges":        "BCN – Barcelona (35 km)",
+  "Lloret de Mar": "GRO – Girona (30 km)",
+  "Figueres":      "GRO – Girona (40 km)",
+  "Roses":         "GRO – Girona (55 km)",
+  "Vic":           "BCN – Barcelona (70 km)",
+  // Czechia
+  "Prague":        "PRG – Prague (15 km)",
+  "Brno":          "BRQ – Brno (8 km)",
+  "Olomouc":       "BRQ – Brno (80 km)",
+  "Karlovy Vary":  "KLV – Karlovy Vary (5 km)",
+  "České Budějovice": "PRG – Prague (150 km)",
+  // Poland
+  "Warsaw":        "WAW – Warsaw (10 km)",
+  "Kraków":        "KRK – Kraków (12 km)",
+  "Gdańsk":        "GDN – Gdańsk (12 km)",
+  "Wrocław":       "WRO – Wrocław (10 km)",
+  "Poznań":        "POZ – Poznań (7 km)",
+  "Sopot":         "GDN – Gdańsk (15 km)",
+  // Slovakia
+  "Bratislava":    "BTS – Bratislava (9 km)",
+  "Košice":        "KSC – Košice (6 km)",
+  "Banská Bystrica": "BTS – Bratislava (200 km)",
+  "Nitra":         "BTS – Bratislava (90 km)",
+  // Hungary
+  "Budapest":      "BUD – Budapest (16 km)",
+  "Pécs":          "BUD – Budapest (200 km)",
+  "Debrecen":      "DEB – Debrecen (5 km)",
+  "Szeged":        "BUD – Budapest (170 km)",
+  "Eger":          "BUD – Budapest (130 km)",
+  // Serbia
+  "Belgrade":      "BEG – Belgrade (18 km)",
+  "Novi Sad":      "BEG – Belgrade (80 km)",
+  "Niš":           "INI – Niš (4 km)",
+  "Subotica":      "BEG – Belgrade (180 km)",
+  // Bulgaria
+  "Sofia":         "SOF – Sofia (10 km)",
+  "Plovdiv":       "PDV – Plovdiv (12 km)",
+  "Varna":         "VAR – Varna (10 km)",
+  "Burgas":        "BOJ – Burgas (12 km)",
+  "Veliko Tarnovo": "SOF – Sofia (220 km)",
+  // Estonia
+  "Tallinn":       "TLL – Tallinn (5 km)",
+  "Tartu":         "TAY – Tartu (10 km)",
+  "Pärnu":         "TLL – Tallinn (130 km)",
+  "Haapsalu":      "TLL – Tallinn (100 km)",
+};
+
+// Merge extra data into locations
+locations.forEach(loc => {
+  const ed = extraData[loc.name];
+  if (ed) { loc.safety = ed.safety; loc.hc = ed.hc; loc.groceries = ed.groceries; loc.meal2 = ed.meal2; }
+  if (airportData[loc.name]) loc.apt = airportData[loc.name];
+});
+
+// Rating helpers
+function getSafetyColor(s) {
+  if (s >= 75) return '#27ae60';
+  if (s >= 65) return '#f1c40f';
+  if (s >= 55) return '#e67e22';
+  return '#e74c3c';
+}
+function getSafetyLabel(s) {
+  if (s >= 80) return 'Very Safe';
+  if (s >= 70) return 'Safe';
+  if (s >= 60) return 'Moderate';
+  if (s >= 50) return 'Caution';
+  return 'Higher Risk';
+}
+function getHcColor(s) {
+  if (s >= 80) return '#27ae60';
+  if (s >= 65) return '#2ecc71';
+  if (s >= 50) return '#f1c40f';
+  if (s >= 35) return '#e67e22';
+  return '#e74c3c';
+}
+function getHcLabel(s) {
+  if (s >= 85) return 'Excellent';
+  if (s >= 70) return 'Good';
+  if (s >= 55) return 'Adequate';
+  if (s >= 40) return 'Limited';
+  return 'Basic';
+}
+
+// Source URL generators
+const numbeoCountry = {
+  Montenegro:'Montenegro', Croatia:'Croatia', Slovenia:'Slovenia',
+  Greece:'Greece', Italy:'Italy', Albania:'Albania',
+  Portugal:'Portugal', Spain:'Spain',
+  Czechia:'Czech Republic', Poland:'Poland', Slovakia:'Slovakia',
+  Hungary:'Hungary', Serbia:'Serbia', Bulgaria:'Bulgaria',
+  Estonia:'Estonia'
+};
+// Cities large enough to have Numbeo pages
+const numbeoCities = new Set([
+  'Budva','Podgorica','Dubrovnik','Split','Zadar','Zagreb','Rijeka',
+  'Pula','Osijek',
+  'Koper','Ljubljana','Maribor',
+  'Kalamata','Chania','Corfu','Thessaloniki',
+  'Trieste','Udine','Verona','Padova','Genova','La Spezia','Trento','Bologna',
+  'Lecce','Syracuse','Tirana','Cascais','Lagos','Valencia','Barcelona',
+  'Bilbao','Girona','Tarragona','Vigo','Gijón','A Coruña','Santander',
+  'San Sebastián','Málaga','Logroño','Pontevedra','Matera',
+  'Prague','Brno','Olomouc','Karlovy Vary','České Budějovice',
+  'Warsaw','Kraków','Gdańsk','Wrocław','Poznań','Sopot',
+  'Bratislava','Košice',
+  'Budapest','Pécs','Debrecen','Szeged',
+  'Belgrade','Novi Sad','Niš',
+  'Sofia','Plovdiv','Varna','Burgas',
+  'Tallinn','Tartu','Pärnu'
+]);
+function numbeoUrl(cat, city, country) {
+  const c = city.replace(/\s/g, '-').replace(/š/gi,'s').replace(/ë/g,'e').replace(/ž/gi,'z').replace(/č/gi,'c').replace(/ř/gi,'r').replace(/ě/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ý/g,'y').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ń/g,'n').replace(/ł/g,'l').replace(/ő/g,'o').replace(/ű/g,'u').replace(/ä/g,'a');
+  const nc = numbeoCountry[country] || country;
+  if (numbeoCities.has(city)) return `https://www.numbeo.com/${cat}/in/${encodeURIComponent(c)}`;
+  return `https://www.numbeo.com/${cat}/country_result.jsp?country=${encodeURIComponent(nc)}`;
+}
+const propertyPortals = {
+  Spain: 'https://www.idealista.com/en/',
+  Portugal: 'https://www.idealista.pt/en/',
+  Italy: 'https://www.immobiliare.it/en/',
+  Croatia: 'https://www.njuskalo.hr/nekretnine',
+  Slovenia: 'https://www.nepremicnine.net/',
+  Greece: 'https://en.spitogatos.gr/',
+  Montenegro: 'https://www.montenegro-estate.com/',
+  Albania: 'https://www.merrjep.al/prona',
+  Czechia: 'https://www.sreality.cz/en',
+  Poland: 'https://www.otodom.pl/',
+  Slovakia: 'https://www.nehnutelnosti.sk/',
+  Hungary: 'https://ingatlan.com/',
+  Serbia: 'https://www.nekretnine.rs/',
+  Bulgaria: 'https://www.imot.bg/en/',
+  Estonia: 'https://www.kv.ee/'
+};
+
+function getPriceColor(avgPrice) {
+  if (avgPrice <= 1500) return '#27ae60';
+  if (avgPrice <= 2200) return '#6fba2c';
+  if (avgPrice <= 3200) return '#f1c40f';
+  if (avgPrice <= 4000) return '#e67e22';
+  if (avgPrice <= 5000) return '#e74c3c';
+  return '#8e44ad';
+}
+
+function formatPrice(n) { return '€' + n.toLocaleString(); }
+function formatPop(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'k';
+  return n.toString();
+}
+
+const map = L.map('map', { zoomControl: true }).setView([46.5, 16.0], 5);
+
+L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://opentopomap.org">OpenTopoMap</a>',
+  maxZoom: 17
+}).addTo(map);
+
+// Layer groups for filtering
+const countryGroups = {};
+const typeGroups = { Coastal: L.layerGroup().addTo(map), Inland: L.layerGroup().addTo(map) };
+const countryColors = {
+  Montenegro: '#e74c3c', Croatia: '#2980b9', Slovenia: '#16a085',
+  Greece: '#2c3e50', Italy: '#8e44ad', Albania: '#d35400',
+  Portugal: '#c0392b', Spain: '#e67e22',
+  Czechia: '#5c6bc0', Poland: '#d81b60', Slovakia: '#7cb342',
+  Hungary: '#43a047', Serbia: '#8d6e63', Bulgaria: '#546e7a',
+  Estonia: '#00acc1'
+};
+Object.keys(countryColors).forEach(c => { countryGroups[c] = L.layerGroup().addTo(map); });
+
+locations.forEach(loc => {
+  const avg = (loc.priceMin + loc.priceMax) / 2;
+  const color = getPriceColor(avg);
+  const cls = loc.country.toLowerCase();
+  const dotClass = loc.inland ? 'dot inland' : 'dot';
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="price-marker">
+        <div class="${dotClass}" style="background:${color};"></div>
+        <div class="label">${loc.name} ${formatPrice(loc.priceMin)}–${formatPrice(loc.priceMax)}</div>
+      </div>`,
+    iconSize: [0, 0], iconAnchor: [9, 9], popupAnchor: [0, -12]
+  });
+
+  const euTag = loc.eu ? '<span class="tag eu">EU</span>' : '<span class="tag non-eu">Non-EU</span>';
+  const locTag = loc.inland ? '<span class="tag inland">Inland</span>' : '<span class="tag coastal">Coastal</span>';
+  const hospStr = loc.hospitalDist === 0
+    ? `${loc.hospital} (in town)`
+    : `${loc.hospital} (${loc.hospitalDist} km)`;
+
+  const popup = `<div class="popup-content">
+      <h3>${loc.name}</h3>
+      <div class="tags">
+        <span class="tag country ${cls}">${loc.country}</span>${euTag}${locTag}
+      </div>
+      <div class="pop-hosp">
+        <span>👥 Pop: ${formatPop(loc.pop)}</span>
+        <span>🏥 ${hospStr}</span>
+        ${loc.apt ? `<span>✈ ${loc.apt}</span>` : ''}
+      </div>
+      ${loc.hospitalNote ? `<div style="font-size:10px;color:#888;margin-bottom:4px;">ℹ️ ${loc.hospitalNote}</div>` : ''}
+      <div class="price-range"><a class="drill-link" href="${propertyPortals[loc.country] || '#'}" target="_blank" title="Browse property listings for ${loc.country}">${formatPrice(loc.priceMin)} – ${formatPrice(loc.priceMax)} /m² ↗</a></div>
+
+      <div class="section-label">Pros</div>
+      <div class="detail pros">+ ${loc.pros}</div>
+      <div class="section-label">Cons</div>
+      <div class="detail cons">− ${loc.cons}</div>
+
+      <div class="section-label">Climate</div>
+      <div class="climate-grid">
+        <span>☀ Summer: ${loc.climate.summerHigh}</span>
+        <span>❄ Winter: ${loc.climate.winterLow}</span>
+        <span>☂ Rain: ${loc.climate.rainyDays} days/yr</span>
+        <span>☀ Sun: ${loc.climate.sunHours.toLocaleString()} hrs/yr</span>
+        <span>☃ Snow: ${loc.climate.snow}</span>
+      </div>
+
+      <div class="section-label">Safety, Healthcare & Cost of Living</div>
+      <a class="drill-link" href="${numbeoUrl('crime', loc.name, loc.country)}" target="_blank" title="View crime data on Numbeo">
+      <div class="detail" style="margin-bottom:3px;">
+        🛡 Safety:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.safety || 0}%;background:${getSafetyColor(loc.safety || 0)};"></span></span>
+        <span class="safety-label" style="color:${getSafetyColor(loc.safety || 0)}">${loc.safety || '?'}/100 — ${getSafetyLabel(loc.safety || 0)}</span>
+        <span class="drill-hint">↗ Numbeo</span>
+      </div></a>
+      <a class="drill-link" href="${numbeoUrl('health-care', loc.name, loc.country)}" target="_blank" title="View healthcare data on Numbeo">
+      <div class="detail" style="margin-bottom:3px;">
+        🏥 Healthcare:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.hc || 0}%;background:${getHcColor(loc.hc || 0)};"></span></span>
+        <span class="safety-label" style="color:${getHcColor(loc.hc || 0)}">${loc.hc || '?'}/100 — ${getHcLabel(loc.hc || 0)}</span>
+        <span class="drill-hint">↗ Numbeo</span>
+      </div></a>
+      <div class="cost-row">
+        <span>🛒 Groceries: ~€${loc.groceries || '?'}/mo</span>
+        <span>🍽 Meal for 2: ~€${loc.meal2 || '?'}</span>
+      </div>
+
+      <div class="section-label">${loc.housing.type} (${loc.housing.size})</div>
+      <div class="housing-cost">${loc.housing.cost}</div>
+
+      <div class="section-label">Visa / Residency (EU passport)</div>
+      <div class="visa-info">${loc.visa}</div>
+    </div>`;
+
+  const marker = L.marker([loc.lat, loc.lng], { icon })
+    .bindPopup(popup, { maxWidth: 370 });
+
+  // Add to both country and type groups
+  marker.addTo(countryGroups[loc.country]);
+  // Store reference for type filtering
+  marker._locData = loc;
+});
+
+// Legend
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <h4>Price per m² (avg)</h4>
+    <div class="legend-item"><div class="legend-circle" style="background:#27ae60"></div> ≤ €1,500</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#6fba2c"></div> €1,500 – €2,200</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#f1c40f"></div> €2,200 – €3,200</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#e67e22"></div> €3,200 – €4,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#e74c3c"></div> €4,000 – €5,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#8e44ad"></div> > €5,000</div>
+    <hr style="margin:6px 0;border:none;border-top:1px solid #ddd;">
+    <div class="legend-item"><div class="legend-circle" style="background:#999"></div> Coastal</div>
+    <div class="legend-item"><div class="legend-square"></div> Inland</div>
+    <hr style="margin:6px 0;border:none;border-top:1px solid #ddd;">
+    <div style="font-size:10px;color:#888;">Click marker for full details.<br>${locations.length} locations · 2025–2026 data.</div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// Filter panel
+const filter = L.control({ position: 'topright' });
+filter.onAdd = function() {
+  const div = L.DomUtil.create('div', 'filter-panel');
+  let html = '<h4>Filters</h4>';
+
+  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">COUNTRY</strong>';
+  Object.keys(countryColors).forEach(c => {
+    const count = locations.filter(l => l.country === c).length;
+    html += `<label><input type="checkbox" checked data-type="country" data-val="${c}">
+      <span style="color:${countryColors[c]};font-weight:600;">${c}</span>
+      <span style="color:#aaa;font-size:11px;">(${count})</span></label>`;
+  });
+  html += '</div>';
+
+  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">TYPE</strong>';
+  html += `<label><input type="checkbox" checked data-type="loc" data-val="coastal">
+    <span>Coastal</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="loc" data-val="inland">
+    <span>Inland</span></label>`;
+  html += '</div>';
+
+  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">EU STATUS</strong>';
+  html += `<label><input type="checkbox" checked data-type="eu" data-val="true">
+    <span style="color:#2471a3;">EU Members</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="eu" data-val="false">
+    <span style="color:#b9770e;">Non-EU</span></label>`;
+  html += '</div>';
+
+  div.innerHTML = html;
+
+  div.addEventListener('change', function() {
+    const checks = div.querySelectorAll('input[type="checkbox"]');
+    const activeCountries = new Set();
+    const activeTypes = new Set();
+    const activeEu = new Set();
+
+    checks.forEach(cb => {
+      if (cb.checked) {
+        if (cb.dataset.type === 'country') activeCountries.add(cb.dataset.val);
+        if (cb.dataset.type === 'loc') activeTypes.add(cb.dataset.val);
+        if (cb.dataset.type === 'eu') activeEu.add(cb.dataset.val);
+      }
+    });
+
+    Object.keys(countryGroups).forEach(c => {
+      if (activeCountries.has(c)) {
+        if (!map.hasLayer(countryGroups[c])) map.addLayer(countryGroups[c]);
+        // Filter individual markers within the group
+        countryGroups[c].eachLayer(marker => {
+          if (!marker._locData) return;
+          const loc = marker._locData;
+          const typeMatch = loc.inland ? activeTypes.has('inland') : activeTypes.has('coastal');
+          const euMatch = activeEu.has(String(loc.eu));
+          marker.setOpacity(typeMatch && euMatch ? 1 : 0);
+          if (marker._icon) marker._icon.style.pointerEvents = (typeMatch && euMatch) ? 'auto' : 'none';
+        });
+      } else {
+        if (map.hasLayer(countryGroups[c])) map.removeLayer(countryGroups[c]);
+      }
+    });
+  });
+
+  return div;
+};
+filter.addTo(map);
+</script>
+</body>
+</html>
