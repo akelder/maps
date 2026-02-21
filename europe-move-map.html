@@ -67,6 +67,8 @@
   .popup-content .tag.country.serbia { background: #8d6e63; }
   .popup-content .tag.country.bulgaria { background: #546e7a; }
   .popup-content .tag.country.estonia { background: #00acc1; }
+  .popup-content .tag.country.belgium { background: #ffb300; }
+  .popup-content .tag.country.netherlands { background: #0288d1; }
   .popup-content .tag.eu { background: #eef5ff; color: #2471a3; border: 1px solid #aed6f1; }
   .popup-content .tag.non-eu { background: #fef5e7; color: #b9770e; border: 1px solid #f9e79f; }
   .popup-content .tag.coastal { background: #e8f8f5; color: #148f77; border: 1px solid #a3e4d7; }
@@ -1383,6 +1385,140 @@ const locations = [
     cons: "Very small and remote, no local hospital (Tallinn/Pärnu), extremely cold winters, dead quiet off-season, limited amenities",
     visa: "EU member. Register at Police & Border Guard Board. Full EU healthcare. Digital ID. Euro.",
     climate: { summerHigh: "20–22°C", winterLow: "-7°C", snow: "Yes, ~55 days/yr", rainyDays: 100, sunHours: 1750 }
+  },
+  // ===================== BELGIUM =====================
+  {
+    name: "Brussels", country: "Belgium", eu: true, inland: true,
+    lat: 50.8503, lng: 4.3517,
+    pop: 1210000, hospital: "UZ Brussel / Cliniques Universitaires Saint-Luc", hospitalDist: 0, hospitalNote: "Multiple world-class hospitals. EU institutions ensure top-tier healthcare access.",
+    priceMin: 3200, priceMax: 4800,
+    housing: { type: "3-bed apartment", size: "100 m²", cost: "€320k–€480k" },
+    pros: "EU capital, multilingual (French/Dutch/English), excellent public transport, world-class museums, diverse food scene, central European location",
+    cons: "Higher crime in some areas, complex governance, grey/rainy weather, traffic congestion, bureaucratic",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "0°C", snow: "Light, ~15 days/yr", rainyDays: 200, sunHours: 1550 }
+  },
+  {
+    name: "Bruges", country: "Belgium", eu: true, inland: true,
+    lat: 51.2093, lng: 3.2247,
+    pop: 118000, hospital: "AZ Sint-Jan Brugge", hospitalDist: 0, hospitalNote: "Full-service hospital. UZ Gent for complex cases (50 km).",
+    priceMin: 2800, priceMax: 4200,
+    housing: { type: "3-bed house", size: "120 m²", cost: "€335k–€505k" },
+    pros: "Fairy-tale medieval city, UNESCO heritage, peaceful, excellent beer/food culture, safe, compact walkable center",
+    cons: "Very touristy (day-trippers), expensive for Belgium, limited nightlife, cold/rainy winters, small city feel",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "1°C", snow: "Light, ~12 days/yr", rainyDays: 195, sunHours: 1600 }
+  },
+  {
+    name: "Ghent", country: "Belgium", eu: true, inland: true,
+    lat: 51.0543, lng: 3.7174,
+    pop: 265000, hospital: "UZ Gent (Ghent University Hospital)", hospitalDist: 0, hospitalNote: "Major university hospital with all specialties.",
+    priceMin: 2800, priceMax: 4000,
+    housing: { type: "3-bed apartment", size: "95 m²", cost: "€265k–€380k" },
+    pros: "Vibrant university city, less touristy than Bruges, excellent food/beer scene, beautiful medieval architecture, good cycling infrastructure",
+    cons: "Rainy climate, limited sunshine, parking difficulties, cold winters, some areas gentrifying fast",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "0°C", snow: "Light, ~13 days/yr", rainyDays: 195, sunHours: 1570 }
+  },
+  {
+    name: "Antwerp", country: "Belgium", eu: true, inland: true,
+    lat: 51.2194, lng: 4.4025,
+    pop: 530000, hospital: "UZA (Antwerp University Hospital)", hospitalDist: 0, hospitalNote: "Major university hospital. Multiple hospitals in city.",
+    priceMin: 2500, priceMax: 3800,
+    housing: { type: "3-bed apartment", size: "95 m²", cost: "€240k–€360k" },
+    pros: "Fashion/diamond capital, vibrant cultural scene, excellent restaurants, beautiful architecture, good port city energy, major train hub",
+    cons: "Port area pollution, some rough neighborhoods, parking/traffic issues, rainy climate, can feel industrial in parts",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "0°C", snow: "Light, ~14 days/yr", rainyDays: 195, sunHours: 1580 }
+  },
+  {
+    name: "Leuven", country: "Belgium", eu: true, inland: true,
+    lat: 50.8798, lng: 4.7005,
+    pop: 102000, hospital: "UZ Leuven", hospitalDist: 0, hospitalNote: "Top Belgian university hospital. Among the best in Europe.",
+    priceMin: 3000, priceMax: 4200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€270k–€380k" },
+    pros: "Historic university town (oldest in Belgium), young atmosphere, excellent beer culture (AB InBev HQ), walkable, safe, top hospital",
+    cons: "Small city, student-dominated atmosphere, housing pressure from university, rainy, limited nightlife variety",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "0°C", snow: "Light, ~14 days/yr", rainyDays: 195, sunHours: 1560 }
+  },
+  {
+    name: "Liège", country: "Belgium", eu: true, inland: true,
+    lat: 50.6292, lng: 5.5797,
+    pop: 197000, hospital: "CHU de Liège", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Good Walloon healthcare system.",
+    priceMin: 1200, priceMax: 2000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€180k" },
+    pros: "Most affordable major Belgian city, French-speaking, good university hospital, cultural revival underway, excellent Sunday food market (La Batte)",
+    cons: "Post-industrial feel, higher crime rate for Belgium, some neglected neighborhoods, fewer international connections, rainy",
+    visa: "EU member. Register at commune within 3 months. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "-1°C", snow: "Light, ~18 days/yr", rainyDays: 200, sunHours: 1530 }
+  },
+  // ===================== NETHERLANDS =====================
+  {
+    name: "Amsterdam", country: "Netherlands", eu: true, inland: true,
+    lat: 52.3676, lng: 4.9041,
+    pop: 920000, hospital: "Amsterdam UMC (AMC/VUmc)", hospitalDist: 0, hospitalNote: "Multiple world-class hospitals. Best healthcare in the Netherlands.",
+    priceMin: 6000, priceMax: 9000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€510k–€765k" },
+    pros: "World-class museums, excellent cycling infrastructure, tolerant culture, beautiful canals, great international flight connections, English widely spoken",
+    cons: "Extremely expensive housing, overtourism, rainy climate, limited sunshine, crowded, bicycle theft",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 185, sunHours: 1660 }
+  },
+  {
+    name: "Rotterdam", country: "Netherlands", eu: true, inland: true,
+    lat: 51.9244, lng: 4.4777,
+    pop: 650000, hospital: "Erasmus MC", hospitalDist: 0, hospitalNote: "Top-ranked Dutch university hospital. Major research center.",
+    priceMin: 3500, priceMax: 5000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€425k" },
+    pros: "Modern architecture, diverse population, emerging food scene, Europe's largest port, more affordable than Amsterdam, innovative city",
+    cons: "Less charming than other Dutch cities, rainy/windy, some rough areas, limited historic architecture, industrial feel",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 185, sunHours: 1650 }
+  },
+  {
+    name: "The Hague", country: "Netherlands", eu: true, inland: false,
+    lat: 52.0705, lng: 4.3007,
+    pop: 550000, hospital: "HMC (Haaglanden Medical Center)", hospitalDist: 0, hospitalNote: "Full-service hospital. Leiden UMC (15 km) for complex cases.",
+    priceMin: 3500, priceMax: 5500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€300k–€470k" },
+    pros: "Government seat, international community (ICC, tribunals), beach access (Scheveningen), elegant architecture, less touristy than Amsterdam",
+    cons: "Expensive, some segregated neighborhoods, rainy/windy, limited nightlife compared to Amsterdam, government-city feel",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "20–22°C", winterLow: "1°C", snow: "Light, ~10 days/yr", rainyDays: 190, sunHours: 1700 }
+  },
+  {
+    name: "Utrecht", country: "Netherlands", eu: true, inland: true,
+    lat: 52.0907, lng: 5.1214,
+    pop: 360000, hospital: "UMC Utrecht", hospitalDist: 0, hospitalNote: "Major university hospital. Among the best in the Netherlands.",
+    priceMin: 4000, priceMax: 6000,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€340k–€510k" },
+    pros: "Beautiful canal city, university town, central location, less touristy, excellent cycling, vibrant food/bar scene",
+    cons: "Expensive housing market, crowded center, rainy, ongoing construction, smaller than Amsterdam",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 185, sunHours: 1630 }
+  },
+  {
+    name: "Maastricht", country: "Netherlands", eu: true, inland: true,
+    lat: 50.8514, lng: 5.6910,
+    pop: 120000, hospital: "Maastricht UMC+ (MUMC+)", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Near Belgian/German hospitals too.",
+    priceMin: 2500, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€215k–€300k" },
+    pros: "Most affordable Dutch city listed, charming medieval center, Burgundian lifestyle, good university, near Belgian/German borders, André Rieu's hometown",
+    cons: "Far from Randstad, limited direct flights, compact, fewer job opportunities, can feel provincial",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "22–24°C", winterLow: "-1°C", snow: "Light, ~15 days/yr", rainyDays: 185, sunHours: 1570 }
+  },
+  {
+    name: "Leiden", country: "Netherlands", eu: true, inland: true,
+    lat: 52.1601, lng: 4.4970,
+    pop: 125000, hospital: "LUMC (Leiden University Medical Center)", hospitalDist: 0, hospitalNote: "Major university hospital. Among the best in the Netherlands.",
+    priceMin: 4000, priceMax: 5500,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€320k–€440k" },
+    pros: "Historic university city (oldest in NL), Rembrandt's birthplace, museums, compact/walkable, near beach, close to Amsterdam/Schiphol",
+    cons: "Expensive housing, student-dominated, limited parking, rainy, smaller city",
+    visa: "EU member. Register at gemeente within 5 days. BSN number required. Full EU healthcare. Euro.",
+    climate: { summerHigh: "21–23°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 190, sunHours: 1680 }
   }
 ];
 
@@ -1510,6 +1646,20 @@ const extraData = {
   "Tartu":         { safety: 78, hc: 80, groceries: 250, meal2: 30 },
   "Pärnu":         { safety: 80, hc: 65, groceries: 250, meal2: 28 },
   "Haapsalu":      { safety: 82, hc: 50, groceries: 240, meal2: 25 },
+  // Belgium
+  "Brussels":      { safety: 55, hc: 82, groceries: 380, meal2: 70 },
+  "Bruges":        { safety: 72, hc: 75, groceries: 370, meal2: 75 },
+  "Ghent":         { safety: 68, hc: 80, groceries: 360, meal2: 65 },
+  "Antwerp":       { safety: 58, hc: 78, groceries: 370, meal2: 65 },
+  "Leuven":        { safety: 70, hc: 85, groceries: 360, meal2: 60 },
+  "Liège":         { safety: 48, hc: 75, groceries: 330, meal2: 55 },
+  // Netherlands
+  "Amsterdam":     { safety: 65, hc: 82, groceries: 400, meal2: 80 },
+  "Rotterdam":     { safety: 60, hc: 80, groceries: 380, meal2: 70 },
+  "The Hague":     { safety: 62, hc: 78, groceries: 390, meal2: 75 },
+  "Utrecht":       { safety: 70, hc: 82, groceries: 380, meal2: 70 },
+  "Maastricht":    { safety: 72, hc: 80, groceries: 360, meal2: 60 },
+  "Leiden":        { safety: 73, hc: 85, groceries: 380, meal2: 70 },
 };
 
 // Airport data: nearest international airport (IATA code, name, distance in km)
@@ -1636,6 +1786,20 @@ const airportData = {
   "Tartu":         "TAY – Tartu (10 km)",
   "Pärnu":         "TLL – Tallinn (130 km)",
   "Haapsalu":      "TLL – Tallinn (100 km)",
+  // Belgium
+  "Brussels":      "BRU – Brussels (12 km)",
+  "Bruges":        "BRU – Brussels (100 km)",
+  "Ghent":         "BRU – Brussels (55 km)",
+  "Antwerp":       "BRU – Brussels (45 km)",
+  "Leuven":        "BRU – Brussels (25 km)",
+  "Liège":         "LGG – Liège (8 km)",
+  // Netherlands
+  "Amsterdam":     "AMS – Amsterdam Schiphol (15 km)",
+  "Rotterdam":     "RTM – Rotterdam The Hague (8 km)",
+  "The Hague":     "RTM – Rotterdam The Hague (20 km)",
+  "Utrecht":       "AMS – Amsterdam Schiphol (45 km)",
+  "Maastricht":    "MST – Maastricht Aachen (10 km)",
+  "Leiden":        "AMS – Amsterdam Schiphol (20 km)",
 };
 
 // Merge extra data into locations
@@ -1681,7 +1845,8 @@ const numbeoCountry = {
   Portugal:'Portugal', Spain:'Spain',
   Czechia:'Czech Republic', Poland:'Poland', Slovakia:'Slovakia',
   Hungary:'Hungary', Serbia:'Serbia', Bulgaria:'Bulgaria',
-  Estonia:'Estonia'
+  Estonia:'Estonia',
+  Belgium:'Belgium', Netherlands:'Netherlands'
 };
 // Cities large enough to have Numbeo pages
 const numbeoCities = new Set([
@@ -1699,7 +1864,9 @@ const numbeoCities = new Set([
   'Budapest','Pécs','Debrecen','Szeged',
   'Belgrade','Novi Sad','Niš',
   'Sofia','Plovdiv','Varna','Burgas',
-  'Tallinn','Tartu','Pärnu'
+  'Tallinn','Tartu','Pärnu',
+  'Brussels','Bruges','Ghent','Antwerp','Leuven','Liège',
+  'Amsterdam','Rotterdam','The Hague','Utrecht','Maastricht','Leiden'
 ]);
 function numbeoUrl(cat, city, country) {
   const c = city.replace(/\s/g, '-').replace(/š/gi,'s').replace(/ë/g,'e').replace(/ž/gi,'z').replace(/č/gi,'c').replace(/ř/gi,'r').replace(/ě/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ý/g,'y').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ń/g,'n').replace(/ł/g,'l').replace(/ő/g,'o').replace(/ű/g,'u').replace(/ä/g,'a');
@@ -1722,7 +1889,9 @@ const propertyPortals = {
   Hungary: 'https://ingatlan.com/',
   Serbia: 'https://www.nekretnine.rs/',
   Bulgaria: 'https://www.imot.bg/en/',
-  Estonia: 'https://www.kv.ee/'
+  Estonia: 'https://www.kv.ee/',
+  Belgium: 'https://www.immoweb.be/en/',
+  Netherlands: 'https://www.funda.nl/en/'
 };
 
 function getPriceColor(avgPrice) {
@@ -1757,7 +1926,8 @@ const countryColors = {
   Portugal: '#c0392b', Spain: '#e67e22',
   Czechia: '#5c6bc0', Poland: '#d81b60', Slovakia: '#7cb342',
   Hungary: '#43a047', Serbia: '#8d6e63', Bulgaria: '#546e7a',
-  Estonia: '#00acc1'
+  Estonia: '#00acc1',
+  Belgium: '#ffb300', Netherlands: '#0288d1'
 };
 Object.keys(countryColors).forEach(c => { countryGroups[c] = L.layerGroup().addTo(map); });
 
