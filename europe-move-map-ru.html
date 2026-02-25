@@ -143,13 +143,28 @@
     max-height: 80vh; overflow-y: auto;
   }
   .filter-panel h4 { margin-bottom: 6px; font-size: 13px; }
-  .filter-panel .filter-section { margin-bottom: 8px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+  .filter-panel .filter-section { margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
   .filter-panel .filter-section:last-child { border-bottom: none; margin-bottom: 0; }
   .filter-panel label {
     display: flex; align-items: center; gap: 6px;
     cursor: pointer; padding: 2px 0;
   }
   .filter-panel input[type="checkbox"] { cursor: pointer; }
+
+  .filter-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none; padding: 3px 0;
+  }
+  .filter-section-header:hover { opacity: 0.7; }
+  .filter-section-header .arrow { transition: transform 0.2s; font-size: 10px; color: #999; }
+  .filter-section-header .arrow.collapsed { transform: rotate(-90deg); }
+  .filter-section-body { max-height: 500px; overflow: hidden; transition: max-height 0.25s ease; }
+  .filter-section-body.collapsed { max-height: 0; }
+  .filter-panel input[type="range"] {
+    width: 100%; cursor: pointer; margin: 4px 0;
+    accent-color: #3498db;
+  }
+  .filter-panel .slider-val { font-weight: 600; color: #3498db; }
 
   /* Collapse toggle buttons */
   .panel-toggle {
@@ -1822,168 +1837,168 @@ const locations = [
 // safety: Numbeo-style 0-100 (higher=safer), healthcare: 0-100, groceries: €/mo 1 person, meal2: meal for 2 mid-range €
 const extraData = {
   // Montenegro
-  "Budva":         { safety: 65, hc: 45, groceries: 220, meal2: 30 },
-  "Kotor":         { safety: 70, hc: 48, groceries: 230, meal2: 35 },
-  "Tivat":         { safety: 70, hc: 42, groceries: 240, meal2: 38 },
-  "Herceg Novi":   { safety: 68, hc: 45, groceries: 210, meal2: 28 },
-  "Bar":           { safety: 64, hc: 45, groceries: 200, meal2: 25 },
-  "Ulcinj":        { safety: 62, hc: 38, groceries: 190, meal2: 22 },
-  "Podgorica":     { safety: 57, hc: 55, groceries: 210, meal2: 25 },
+  "Budva":         { safety: 65, hc: 45, groceries: 220, meal2: 30, transitCity: 10, transitRail: 5, cycling: 10, carReq: true },
+  "Kotor":         { safety: 70, hc: 48, groceries: 230, meal2: 35, transitCity: 12, transitRail: 5, cycling: 8, carReq: true },
+  "Tivat":         { safety: 70, hc: 42, groceries: 240, meal2: 38, transitCity: 10, transitRail: 5, cycling: 15, carReq: true },
+  "Herceg Novi":   { safety: 68, hc: 45, groceries: 210, meal2: 28, transitCity: 12, transitRail: 5, cycling: 8, carReq: true },
+  "Bar":           { safety: 64, hc: 45, groceries: 200, meal2: 25, transitCity: 10, transitRail: 25, cycling: 15, carReq: true },
+  "Ulcinj":        { safety: 62, hc: 38, groceries: 190, meal2: 22, transitCity: 8, transitRail: 5, cycling: 12, carReq: true },
+  "Podgorica":     { safety: 57, hc: 55, groceries: 210, meal2: 25, transitCity: 25, transitRail: 30, cycling: 20, carReq: true },
   // Croatia
-  "Dubrovnik":     { safety: 76, hc: 62, groceries: 320, meal2: 60 },
-  "Split":         { safety: 72, hc: 78, groceries: 300, meal2: 50 },
-  "Zadar":         { safety: 78, hc: 70, groceries: 280, meal2: 42 },
-  "Šibenik":       { safety: 78, hc: 65, groceries: 270, meal2: 40 },
-  "Rovinj":        { safety: 80, hc: 60, groceries: 290, meal2: 50 },
-  "Opatija":       { safety: 82, hc: 75, groceries: 310, meal2: 55 },
-  "Hvar":          { safety: 85, hc: 40, groceries: 330, meal2: 60 },
-  "Zagreb":        { safety: 68, hc: 82, groceries: 280, meal2: 40 },
-  "Varaždin":      { safety: 82, hc: 68, groceries: 240, meal2: 30 },
-  "Pula":          { safety: 78, hc: 65, groceries: 275, meal2: 42 },
-  "Rijeka":        { safety: 72, hc: 78, groceries: 270, meal2: 38 },
-  "Makarska":      { safety: 80, hc: 50, groceries: 290, meal2: 45 },
-  "Trogir":        { safety: 80, hc: 55, groceries: 285, meal2: 45 },
-  "Poreč":         { safety: 82, hc: 52, groceries: 280, meal2: 45 },
-  "Osijek":        { safety: 75, hc: 72, groceries: 220, meal2: 25 },
+  "Dubrovnik":     { safety: 76, hc: 62, groceries: 320, meal2: 60, transitCity: 35, transitRail: 5, cycling: 10, carReq: false },
+  "Split":         { safety: 72, hc: 78, groceries: 300, meal2: 50, transitCity: 45, transitRail: 40, cycling: 25, carReq: false },
+  "Zadar":         { safety: 78, hc: 70, groceries: 280, meal2: 42, transitCity: 30, transitRail: 25, cycling: 35, carReq: false },
+  "Šibenik":       { safety: 78, hc: 65, groceries: 270, meal2: 40, transitCity: 20, transitRail: 20, cycling: 15, carReq: true },
+  "Rovinj":        { safety: 80, hc: 60, groceries: 290, meal2: 50, transitCity: 18, transitRail: 10, cycling: 25, carReq: true },
+  "Opatija":       { safety: 82, hc: 75, groceries: 310, meal2: 55, transitCity: 25, transitRail: 25, cycling: 12, carReq: false },
+  "Hvar":          { safety: 85, hc: 40, groceries: 330, meal2: 60, transitCity: 15, transitRail: 5, cycling: 15, carReq: true },
+  "Zagreb":        { safety: 68, hc: 82, groceries: 280, meal2: 40, transitCity: 70, transitRail: 60, cycling: 45, carReq: false },
+  "Varaždin":      { safety: 82, hc: 68, groceries: 240, meal2: 30, transitCity: 25, transitRail: 30, cycling: 40, carReq: true },
+  "Pula":          { safety: 78, hc: 65, groceries: 275, meal2: 42, transitCity: 25, transitRail: 20, cycling: 30, carReq: false },
+  "Rijeka":        { safety: 72, hc: 78, groceries: 270, meal2: 38, transitCity: 40, transitRail: 40, cycling: 15, carReq: false },
+  "Makarska":      { safety: 80, hc: 50, groceries: 290, meal2: 45, transitCity: 18, transitRail: 5, cycling: 12, carReq: true },
+  "Trogir":        { safety: 80, hc: 55, groceries: 285, meal2: 45, transitCity: 28, transitRail: 15, cycling: 30, carReq: false },
+  "Poreč":         { safety: 82, hc: 52, groceries: 280, meal2: 45, transitCity: 18, transitRail: 10, cycling: 35, carReq: true },
+  "Osijek":        { safety: 75, hc: 72, groceries: 220, meal2: 25, transitCity: 35, transitRail: 30, cycling: 50, carReq: false },
   // Slovenia
-  "Koper":         { safety: 80, hc: 78, groceries: 280, meal2: 40 },
-  "Piran":         { safety: 82, hc: 76, groceries: 290, meal2: 45 },
-  "Ljubljana":     { safety: 78, hc: 90, groceries: 300, meal2: 45 },
-  "Maribor":       { safety: 76, hc: 85, groceries: 260, meal2: 35 },
-  "Izola":         { safety: 82, hc: 78, groceries: 280, meal2: 42 },
-  "Nova Gorica":   { safety: 80, hc: 75, groceries: 265, meal2: 38 },
-  "Celje":         { safety: 78, hc: 80, groceries: 250, meal2: 32 },
-  "Bled":          { safety: 85, hc: 72, groceries: 290, meal2: 45 },
+  "Koper":         { safety: 80, hc: 78, groceries: 280, meal2: 40, transitCity: 30, transitRail: 30, cycling: 30, carReq: false },
+  "Piran":         { safety: 82, hc: 76, groceries: 290, meal2: 45, transitCity: 22, transitRail: 10, cycling: 15, carReq: false },
+  "Ljubljana":     { safety: 78, hc: 90, groceries: 300, meal2: 45, transitCity: 65, transitRail: 60, cycling: 55, carReq: false },
+  "Maribor":       { safety: 76, hc: 85, groceries: 260, meal2: 35, transitCity: 45, transitRail: 50, cycling: 40, carReq: false },
+  "Izola":         { safety: 82, hc: 78, groceries: 280, meal2: 42, transitCity: 25, transitRail: 15, cycling: 25, carReq: false },
+  "Nova Gorica":   { safety: 80, hc: 75, groceries: 265, meal2: 38, transitCity: 25, transitRail: 30, cycling: 35, carReq: true },
+  "Celje":         { safety: 78, hc: 80, groceries: 250, meal2: 32, transitCity: 30, transitRail: 40, cycling: 35, carReq: false },
+  "Bled":          { safety: 85, hc: 72, groceries: 290, meal2: 45, transitCity: 18, transitRail: 25, cycling: 30, carReq: true },
   // Greece
-  "Kalamata":      { safety: 68, hc: 55, groceries: 250, meal2: 30 },
-  "Chania":        { safety: 70, hc: 55, groceries: 260, meal2: 32 },
-  "Corfu":         { safety: 66, hc: 52, groceries: 270, meal2: 35 },
-  "Thessaloniki":  { safety: 55, hc: 68, groceries: 250, meal2: 30 },
-  "Nafplio":       { safety: 72, hc: 48, groceries: 260, meal2: 32 },
+  "Kalamata":      { safety: 68, hc: 55, groceries: 250, meal2: 30, transitCity: 22, transitRail: 15, cycling: 20, carReq: true },
+  "Chania":        { safety: 70, hc: 55, groceries: 260, meal2: 32, transitCity: 28, transitRail: 5, cycling: 20, carReq: true },
+  "Corfu":         { safety: 66, hc: 52, groceries: 270, meal2: 35, transitCity: 22, transitRail: 5, cycling: 15, carReq: true },
+  "Thessaloniki":  { safety: 55, hc: 68, groceries: 250, meal2: 30, transitCity: 55, transitRail: 45, cycling: 30, carReq: false },
+  "Nafplio":       { safety: 72, hc: 48, groceries: 260, meal2: 32, transitCity: 18, transitRail: 10, cycling: 15, carReq: true },
   // Italy — North
-  "Trieste":       { safety: 72, hc: 80, groceries: 270, meal2: 40 },
-  "Udine":         { safety: 78, hc: 82, groceries: 250, meal2: 35 },
-  "Verona":        { safety: 68, hc: 80, groceries: 280, meal2: 45 },
-  "Padova":        { safety: 65, hc: 88, groceries: 270, meal2: 40 },
-  "Genova":        { safety: 55, hc: 78, groceries: 280, meal2: 42 },
-  "La Spezia":     { safety: 62, hc: 68, groceries: 270, meal2: 40 },
-  "Trento":        { safety: 82, hc: 92, groceries: 300, meal2: 48 },
-  "Bologna":       { safety: 58, hc: 85, groceries: 290, meal2: 48 },
-  "Turin":         { safety: 60, hc: 78, groceries: 280, meal2: 42 },
-  "Milan":         { safety: 55, hc: 90, groceries: 350, meal2: 65 },
-  "Bergamo":       { safety: 72, hc: 75, groceries: 270, meal2: 40 },
-  "Brescia":       { safety: 65, hc: 75, groceries: 260, meal2: 38 },
-  "Vicenza":       { safety: 75, hc: 72, groceries: 260, meal2: 38 },
-  "Treviso":       { safety: 78, hc: 72, groceries: 260, meal2: 38 },
-  "Parma":         { safety: 75, hc: 78, groceries: 270, meal2: 40 },
-  "Modena":        { safety: 72, hc: 78, groceries: 260, meal2: 40 },
-  "Ferrara":       { safety: 78, hc: 75, groceries: 250, meal2: 35 },
-  "Ravenna":       { safety: 78, hc: 72, groceries: 250, meal2: 35 },
-  "Lucca":         { safety: 80, hc: 72, groceries: 270, meal2: 42 },
-  "Florence":      { safety: 62, hc: 82, groceries: 310, meal2: 55 },
-  "Como":          { safety: 72, hc: 75, groceries: 290, meal2: 48 },
-  "Mantova":       { safety: 80, hc: 70, groceries: 250, meal2: 35 },
-  "Bolzano":       { safety: 82, hc: 82, groceries: 320, meal2: 55 },
-  "Venice":        { safety: 55, hc: 78, groceries: 330, meal2: 60 },
-  "Monza":         { safety: 60, hc: 80, groceries: 290, meal2: 45 },
-  "Novara":        { safety: 65, hc: 72, groceries: 250, meal2: 35 },
-  "Piacenza":      { safety: 65, hc: 72, groceries: 240, meal2: 35 },
-  "Reggio Emilia": { safety: 60, hc: 75, groceries: 260, meal2: 38 },
-  "Rimini":        { safety: 58, hc: 70, groceries: 260, meal2: 40 },
-  "Forlì":         { safety: 65, hc: 72, groceries: 240, meal2: 32 },
-  "Prato":         { safety: 55, hc: 75, groceries: 270, meal2: 40 },
-  "Livorno":       { safety: 55, hc: 70, groceries: 260, meal2: 40 },
-  "Arezzo":        { safety: 68, hc: 70, groceries: 250, meal2: 38 },
-  "Perugia":       { safety: 62, hc: 75, groceries: 250, meal2: 35 },
-  "Ancona":        { safety: 60, hc: 72, groceries: 250, meal2: 38 },
+  "Trieste":       { safety: 72, hc: 80, groceries: 270, meal2: 40, transitCity: 50, transitRail: 65, cycling: 20, carReq: false },
+  "Udine":         { safety: 78, hc: 82, groceries: 250, meal2: 35, transitCity: 35, transitRail: 50, cycling: 45, carReq: false },
+  "Verona":        { safety: 68, hc: 80, groceries: 280, meal2: 45, transitCity: 50, transitRail: 70, cycling: 45, carReq: false },
+  "Padova":        { safety: 65, hc: 88, groceries: 270, meal2: 40, transitCity: 50, transitRail: 70, cycling: 55, carReq: false },
+  "Genova":        { safety: 55, hc: 78, groceries: 280, meal2: 42, transitCity: 60, transitRail: 65, cycling: 10, carReq: false },
+  "La Spezia":     { safety: 62, hc: 68, groceries: 270, meal2: 40, transitCity: 35, transitRail: 50, cycling: 20, carReq: false },
+  "Trento":        { safety: 82, hc: 92, groceries: 300, meal2: 48, transitCity: 40, transitRail: 55, cycling: 40, carReq: false },
+  "Bologna":       { safety: 58, hc: 85, groceries: 290, meal2: 48, transitCity: 55, transitRail: 80, cycling: 55, carReq: false },
+  "Turin":         { safety: 60, hc: 78, groceries: 280, meal2: 42, transitCity: 65, transitRail: 75, cycling: 45, carReq: false },
+  "Milan":         { safety: 55, hc: 90, groceries: 350, meal2: 65, transitCity: 85, transitRail: 90, cycling: 50, carReq: false },
+  "Bergamo":       { safety: 72, hc: 75, groceries: 270, meal2: 40, transitCity: 40, transitRail: 50, cycling: 25, carReq: false },
+  "Brescia":       { safety: 65, hc: 75, groceries: 260, meal2: 38, transitCity: 40, transitRail: 55, cycling: 40, carReq: false },
+  "Vicenza":       { safety: 75, hc: 72, groceries: 260, meal2: 38, transitCity: 35, transitRail: 55, cycling: 45, carReq: false },
+  "Treviso":       { safety: 78, hc: 72, groceries: 260, meal2: 38, transitCity: 35, transitRail: 40, cycling: 50, carReq: false },
+  "Parma":         { safety: 75, hc: 78, groceries: 270, meal2: 40, transitCity: 40, transitRail: 60, cycling: 55, carReq: false },
+  "Modena":        { safety: 72, hc: 78, groceries: 260, meal2: 40, transitCity: 38, transitRail: 55, cycling: 50, carReq: false },
+  "Ferrara":       { safety: 78, hc: 75, groceries: 250, meal2: 35, transitCity: 35, transitRail: 50, cycling: 70, carReq: false },
+  "Ravenna":       { safety: 78, hc: 72, groceries: 250, meal2: 35, transitCity: 32, transitRail: 40, cycling: 55, carReq: false },
+  "Lucca":         { safety: 80, hc: 72, groceries: 270, meal2: 42, transitCity: 30, transitRail: 35, cycling: 55, carReq: false },
+  "Florence":      { safety: 62, hc: 82, groceries: 310, meal2: 55, transitCity: 55, transitRail: 80, cycling: 35, carReq: false },
+  "Como":          { safety: 72, hc: 75, groceries: 290, meal2: 48, transitCity: 35, transitRail: 55, cycling: 15, carReq: false },
+  "Mantova":       { safety: 80, hc: 70, groceries: 250, meal2: 35, transitCity: 28, transitRail: 35, cycling: 55, carReq: false },
+  "Bolzano":       { safety: 82, hc: 82, groceries: 320, meal2: 55, transitCity: 45, transitRail: 55, cycling: 55, carReq: false },
+  "Venice":        { safety: 55, hc: 78, groceries: 330, meal2: 60, transitCity: 65, transitRail: 75, cycling: 5, carReq: false },
+  "Monza":         { safety: 60, hc: 80, groceries: 290, meal2: 45, transitCity: 50, transitRail: 50, cycling: 45, carReq: false },
+  "Novara":        { safety: 65, hc: 72, groceries: 250, meal2: 35, transitCity: 30, transitRail: 50, cycling: 45, carReq: false },
+  "Piacenza":      { safety: 65, hc: 72, groceries: 240, meal2: 35, transitCity: 30, transitRail: 50, cycling: 45, carReq: false },
+  "Reggio Emilia": { safety: 60, hc: 75, groceries: 260, meal2: 38, transitCity: 35, transitRail: 55, cycling: 55, carReq: false },
+  "Rimini":        { safety: 58, hc: 70, groceries: 260, meal2: 40, transitCity: 35, transitRail: 50, cycling: 45, carReq: false },
+  "Forlì":         { safety: 65, hc: 72, groceries: 240, meal2: 32, transitCity: 28, transitRail: 40, cycling: 45, carReq: false },
+  "Prato":         { safety: 55, hc: 75, groceries: 270, meal2: 40, transitCity: 42, transitRail: 50, cycling: 35, carReq: false },
+  "Livorno":       { safety: 55, hc: 70, groceries: 260, meal2: 40, transitCity: 35, transitRail: 40, cycling: 35, carReq: false },
+  "Arezzo":        { safety: 68, hc: 70, groceries: 250, meal2: 38, transitCity: 28, transitRail: 45, cycling: 20, carReq: false },
+  "Perugia":       { safety: 62, hc: 75, groceries: 250, meal2: 35, transitCity: 35, transitRail: 30, cycling: 10, carReq: false },
+  "Ancona":        { safety: 60, hc: 72, groceries: 250, meal2: 38, transitCity: 35, transitRail: 45, cycling: 15, carReq: false },
   // Italy — South
-  "Lecce":         { safety: 68, hc: 65, groceries: 250, meal2: 40 },
-  "Syracuse":      { safety: 58, hc: 60, groceries: 230, meal2: 35 },
-  "Ostuni":        { safety: 72, hc: 55, groceries: 250, meal2: 40 },
-  "Matera":        { safety: 70, hc: 60, groceries: 230, meal2: 35 },
-  "Ragusa":        { safety: 72, hc: 62, groceries: 220, meal2: 30 },
+  "Lecce":         { safety: 68, hc: 65, groceries: 250, meal2: 40, transitCity: 28, transitRail: 25, cycling: 45, carReq: true },
+  "Syracuse":      { safety: 58, hc: 60, groceries: 230, meal2: 35, transitCity: 22, transitRail: 20, cycling: 25, carReq: true },
+  "Ostuni":        { safety: 72, hc: 55, groceries: 250, meal2: 40, transitCity: 10, transitRail: 20, cycling: 15, carReq: true },
+  "Matera":        { safety: 70, hc: 60, groceries: 230, meal2: 35, transitCity: 18, transitRail: 10, cycling: 10, carReq: true },
+  "Ragusa":        { safety: 72, hc: 62, groceries: 220, meal2: 30, transitCity: 12, transitRail: 10, cycling: 10, carReq: true },
   // Albania
-  "Saranda":       { safety: 58, hc: 25, groceries: 160, meal2: 18 },
-  "Vlorë":         { safety: 52, hc: 32, groceries: 150, meal2: 15 },
-  "Tirana":        { safety: 48, hc: 42, groceries: 170, meal2: 18 },
+  "Saranda":       { safety: 58, hc: 25, groceries: 160, meal2: 18, transitCity: 10, transitRail: 5, cycling: 10, carReq: true },
+  "Vlorë":         { safety: 52, hc: 32, groceries: 150, meal2: 15, transitCity: 15, transitRail: 5, cycling: 12, carReq: true },
+  "Tirana":        { safety: 48, hc: 42, groceries: 170, meal2: 18, transitCity: 35, transitRail: 10, cycling: 20, carReq: false },
   // Portugal
-  "Cascais":       { safety: 75, hc: 80, groceries: 300, meal2: 45 },
-  "Lagos":         { safety: 78, hc: 65, groceries: 280, meal2: 38 },
+  "Cascais":       { safety: 75, hc: 80, groceries: 300, meal2: 45, transitCity: 55, transitRail: 65, cycling: 40, carReq: false },
+  "Lagos":         { safety: 78, hc: 65, groceries: 280, meal2: 38, transitCity: 22, transitRail: 30, cycling: 25, carReq: true },
   // Spain — South/East
-  "Valencia":      { safety: 62, hc: 82, groceries: 260, meal2: 38 },
-  "Málaga":        { safety: 60, hc: 78, groceries: 270, meal2: 40 },
+  "Valencia":      { safety: 62, hc: 82, groceries: 260, meal2: 38, transitCity: 75, transitRail: 70, cycling: 60, carReq: false },
+  "Málaga":        { safety: 60, hc: 78, groceries: 270, meal2: 40, transitCity: 50, transitRail: 65, cycling: 30, carReq: false },
   // Spain — North
-  "San Sebastián": { safety: 75, hc: 85, groceries: 320, meal2: 65 },
-  "Bilbao":        { safety: 72, hc: 88, groceries: 300, meal2: 50 },
-  "Santander":     { safety: 76, hc: 85, groceries: 270, meal2: 40 },
-  "Gijón":         { safety: 74, hc: 75, groceries: 250, meal2: 35 },
-  "A Coruña":      { safety: 75, hc: 80, groceries: 250, meal2: 35 },
-  "Vigo":          { safety: 70, hc: 80, groceries: 240, meal2: 32 },
-  "Pontevedra":    { safety: 78, hc: 68, groceries: 230, meal2: 30 },
-  "Logroño":       { safety: 80, hc: 72, groceries: 230, meal2: 30 },
+  "San Sebastián": { safety: 75, hc: 85, groceries: 320, meal2: 65, transitCity: 55, transitRail: 50, cycling: 45, carReq: false },
+  "Bilbao":        { safety: 72, hc: 88, groceries: 300, meal2: 50, transitCity: 70, transitRail: 55, cycling: 30, carReq: false },
+  "Santander":     { safety: 76, hc: 85, groceries: 270, meal2: 40, transitCity: 40, transitRail: 40, cycling: 25, carReq: false },
+  "Gijón":         { safety: 74, hc: 75, groceries: 250, meal2: 35, transitCity: 42, transitRail: 35, cycling: 35, carReq: false },
+  "A Coruña":      { safety: 75, hc: 80, groceries: 250, meal2: 35, transitCity: 40, transitRail: 40, cycling: 30, carReq: false },
+  "Vigo":          { safety: 70, hc: 80, groceries: 240, meal2: 32, transitCity: 38, transitRail: 40, cycling: 15, carReq: false },
+  "Pontevedra":    { safety: 78, hc: 68, groceries: 230, meal2: 30, transitCity: 25, transitRail: 30, cycling: 50, carReq: false },
+  "Logroño":       { safety: 80, hc: 72, groceries: 230, meal2: 30, transitCity: 30, transitRail: 30, cycling: 40, carReq: false },
   // Spain — Catalonia
-  "Barcelona":     { safety: 48, hc: 92, groceries: 310, meal2: 50 },
-  "Girona":        { safety: 72, hc: 75, groceries: 270, meal2: 40 },
-  "Tarragona":     { safety: 68, hc: 72, groceries: 250, meal2: 35 },
-  "Sitges":        { safety: 70, hc: 65, groceries: 290, meal2: 48 },
-  "Lloret de Mar": { safety: 55, hc: 58, groceries: 250, meal2: 30 },
-  "Figueres":      { safety: 60, hc: 62, groceries: 240, meal2: 28 },
-  "Roses":         { safety: 72, hc: 55, groceries: 260, meal2: 35 },
-  "Vic":           { safety: 74, hc: 70, groceries: 240, meal2: 30 },
+  "Barcelona":     { safety: 48, hc: 92, groceries: 310, meal2: 50, transitCity: 90, transitRail: 85, cycling: 55, carReq: false },
+  "Girona":        { safety: 72, hc: 75, groceries: 270, meal2: 40, transitCity: 30, transitRail: 55, cycling: 45, carReq: false },
+  "Tarragona":     { safety: 68, hc: 72, groceries: 250, meal2: 35, transitCity: 32, transitRail: 50, cycling: 25, carReq: false },
+  "Sitges":        { safety: 70, hc: 65, groceries: 290, meal2: 48, transitCity: 35, transitRail: 55, cycling: 30, carReq: false },
+  "Lloret de Mar": { safety: 55, hc: 58, groceries: 250, meal2: 30, transitCity: 22, transitRail: 10, cycling: 15, carReq: true },
+  "Figueres":      { safety: 60, hc: 62, groceries: 240, meal2: 28, transitCity: 22, transitRail: 40, cycling: 30, carReq: true },
+  "Roses":         { safety: 72, hc: 55, groceries: 260, meal2: 35, transitCity: 15, transitRail: 10, cycling: 25, carReq: true },
+  "Vic":           { safety: 74, hc: 70, groceries: 240, meal2: 30, transitCity: 30, transitRail: 35, cycling: 40, carReq: false },
   // Czechia
-  "Prague":        { safety: 65, hc: 85, groceries: 250, meal2: 30 },
-  "Brno":          { safety: 72, hc: 82, groceries: 230, meal2: 25 },
-  "Olomouc":       { safety: 78, hc: 78, groceries: 210, meal2: 20 },
-  "Karlovy Vary":  { safety: 72, hc: 60, groceries: 220, meal2: 22 },
-  "České Budějovice": { safety: 78, hc: 72, groceries: 220, meal2: 22 },
+  "Prague":        { safety: 65, hc: 85, groceries: 250, meal2: 30, transitCity: 85, transitRail: 80, cycling: 40, carReq: false },
+  "Brno":          { safety: 72, hc: 82, groceries: 230, meal2: 25, transitCity: 65, transitRail: 70, cycling: 40, carReq: false },
+  "Olomouc":       { safety: 78, hc: 78, groceries: 210, meal2: 20, transitCity: 45, transitRail: 55, cycling: 50, carReq: false },
+  "Karlovy Vary":  { safety: 72, hc: 60, groceries: 220, meal2: 22, transitCity: 30, transitRail: 25, cycling: 15, carReq: false },
+  "České Budějovice": { safety: 78, hc: 72, groceries: 220, meal2: 22, transitCity: 40, transitRail: 40, cycling: 50, carReq: false },
   // Poland
-  "Warsaw":        { safety: 70, hc: 78, groceries: 250, meal2: 30 },
-  "Kraków":        { safety: 65, hc: 80, groceries: 230, meal2: 25 },
-  "Gdańsk":        { safety: 72, hc: 78, groceries: 240, meal2: 28 },
-  "Wrocław":       { safety: 72, hc: 78, groceries: 220, meal2: 22 },
-  "Poznań":        { safety: 74, hc: 75, groceries: 220, meal2: 22 },
-  "Sopot":         { safety: 78, hc: 72, groceries: 260, meal2: 35 },
+  "Warsaw":        { safety: 70, hc: 78, groceries: 250, meal2: 30, transitCity: 80, transitRail: 75, cycling: 55, carReq: false },
+  "Kraków":        { safety: 65, hc: 80, groceries: 230, meal2: 25, transitCity: 70, transitRail: 65, cycling: 50, carReq: false },
+  "Gdańsk":        { safety: 72, hc: 78, groceries: 240, meal2: 28, transitCity: 60, transitRail: 60, cycling: 50, carReq: false },
+  "Wrocław":       { safety: 72, hc: 78, groceries: 220, meal2: 22, transitCity: 60, transitRail: 60, cycling: 55, carReq: false },
+  "Poznań":        { safety: 74, hc: 75, groceries: 220, meal2: 22, transitCity: 60, transitRail: 65, cycling: 50, carReq: false },
+  "Sopot":         { safety: 78, hc: 72, groceries: 260, meal2: 35, transitCity: 45, transitRail: 55, cycling: 45, carReq: false },
   // Slovakia
-  "Bratislava":    { safety: 70, hc: 72, groceries: 250, meal2: 28 },
-  "Košice":        { safety: 68, hc: 68, groceries: 200, meal2: 18 },
-  "Banská Bystrica": { safety: 75, hc: 65, groceries: 190, meal2: 15 },
-  "Nitra":         { safety: 72, hc: 62, groceries: 190, meal2: 15 },
+  "Bratislava":    { safety: 70, hc: 72, groceries: 250, meal2: 28, transitCity: 60, transitRail: 65, cycling: 45, carReq: false },
+  "Košice":        { safety: 68, hc: 68, groceries: 200, meal2: 18, transitCity: 50, transitRail: 45, cycling: 35, carReq: false },
+  "Banská Bystrica": { safety: 75, hc: 65, groceries: 190, meal2: 15, transitCity: 30, transitRail: 25, cycling: 20, carReq: true },
+  "Nitra":         { safety: 72, hc: 62, groceries: 190, meal2: 15, transitCity: 30, transitRail: 25, cycling: 30, carReq: true },
   // Hungary
-  "Budapest":      { safety: 60, hc: 72, groceries: 230, meal2: 25 },
-  "Pécs":          { safety: 68, hc: 70, groceries: 190, meal2: 18 },
-  "Debrecen":      { safety: 70, hc: 75, groceries: 200, meal2: 18 },
-  "Szeged":        { safety: 72, hc: 75, groceries: 190, meal2: 18 },
-  "Eger":          { safety: 75, hc: 58, groceries: 180, meal2: 15 },
+  "Budapest":      { safety: 60, hc: 72, groceries: 230, meal2: 25, transitCity: 80, transitRail: 75, cycling: 50, carReq: false },
+  "Pécs":          { safety: 68, hc: 70, groceries: 190, meal2: 18, transitCity: 38, transitRail: 40, cycling: 25, carReq: false },
+  "Debrecen":      { safety: 70, hc: 75, groceries: 200, meal2: 18, transitCity: 45, transitRail: 40, cycling: 50, carReq: false },
+  "Szeged":        { safety: 72, hc: 75, groceries: 190, meal2: 18, transitCity: 45, transitRail: 40, cycling: 55, carReq: false },
+  "Eger":          { safety: 75, hc: 58, groceries: 180, meal2: 15, transitCity: 25, transitRail: 25, cycling: 20, carReq: true },
   // Serbia
-  "Belgrade":      { safety: 52, hc: 55, groceries: 200, meal2: 20 },
-  "Novi Sad":      { safety: 60, hc: 55, groceries: 190, meal2: 18 },
-  "Niš":           { safety: 55, hc: 48, groceries: 170, meal2: 12 },
-  "Subotica":      { safety: 58, hc: 42, groceries: 160, meal2: 12 },
+  "Belgrade":      { safety: 52, hc: 55, groceries: 200, meal2: 20, transitCity: 60, transitRail: 50, cycling: 25, carReq: false },
+  "Novi Sad":      { safety: 60, hc: 55, groceries: 190, meal2: 18, transitCity: 40, transitRail: 45, cycling: 40, carReq: false },
+  "Niš":           { safety: 55, hc: 48, groceries: 170, meal2: 12, transitCity: 30, transitRail: 35, cycling: 25, carReq: false },
+  "Subotica":      { safety: 58, hc: 42, groceries: 160, meal2: 12, transitCity: 20, transitRail: 25, cycling: 40, carReq: true },
   // Bulgaria
-  "Sofia":         { safety: 55, hc: 52, groceries: 180, meal2: 18 },
-  "Plovdiv":       { safety: 58, hc: 50, groceries: 170, meal2: 14 },
-  "Varna":         { safety: 55, hc: 58, groceries: 180, meal2: 15 },
-  "Burgas":        { safety: 52, hc: 52, groceries: 170, meal2: 12 },
-  "Veliko Tarnovo": { safety: 65, hc: 42, groceries: 160, meal2: 10 },
+  "Sofia":         { safety: 55, hc: 52, groceries: 180, meal2: 18, transitCity: 65, transitRail: 50, cycling: 30, carReq: false },
+  "Plovdiv":       { safety: 58, hc: 50, groceries: 170, meal2: 14, transitCity: 35, transitRail: 40, cycling: 25, carReq: false },
+  "Varna":         { safety: 55, hc: 58, groceries: 180, meal2: 15, transitCity: 35, transitRail: 35, cycling: 30, carReq: false },
+  "Burgas":        { safety: 52, hc: 52, groceries: 170, meal2: 12, transitCity: 30, transitRail: 30, cycling: 30, carReq: false },
+  "Veliko Tarnovo": { safety: 65, hc: 42, groceries: 160, meal2: 10, transitCity: 15, transitRail: 20, cycling: 8, carReq: true },
   // Estonia
-  "Tallinn":       { safety: 72, hc: 75, groceries: 280, meal2: 38 },
-  "Tartu":         { safety: 78, hc: 80, groceries: 250, meal2: 30 },
-  "Pärnu":         { safety: 80, hc: 65, groceries: 250, meal2: 28 },
-  "Haapsalu":      { safety: 82, hc: 50, groceries: 240, meal2: 25 },
+  "Tallinn":       { safety: 72, hc: 75, groceries: 280, meal2: 38, transitCity: 70, transitRail: 45, cycling: 50, carReq: false },
+  "Tartu":         { safety: 78, hc: 80, groceries: 250, meal2: 30, transitCity: 45, transitRail: 35, cycling: 55, carReq: false },
+  "Pärnu":         { safety: 80, hc: 65, groceries: 250, meal2: 28, transitCity: 25, transitRail: 15, cycling: 45, carReq: true },
+  "Haapsalu":      { safety: 82, hc: 50, groceries: 240, meal2: 25, transitCity: 18, transitRail: 5, cycling: 35, carReq: true },
   // Belgium
-  "Brussels":      { safety: 55, hc: 82, groceries: 380, meal2: 70 },
-  "Bruges":        { safety: 72, hc: 75, groceries: 370, meal2: 75 },
-  "Ghent":         { safety: 68, hc: 80, groceries: 360, meal2: 65 },
-  "Antwerp":       { safety: 58, hc: 78, groceries: 370, meal2: 65 },
-  "Leuven":        { safety: 70, hc: 85, groceries: 360, meal2: 60 },
-  "Liège":         { safety: 48, hc: 75, groceries: 330, meal2: 55 },
+  "Brussels":      { safety: 55, hc: 82, groceries: 380, meal2: 70, transitCity: 85, transitRail: 90, cycling: 45, carReq: false },
+  "Bruges":        { safety: 72, hc: 75, groceries: 370, meal2: 75, transitCity: 40, transitRail: 60, cycling: 70, carReq: false },
+  "Ghent":         { safety: 68, hc: 80, groceries: 360, meal2: 65, transitCity: 60, transitRail: 70, cycling: 75, carReq: false },
+  "Antwerp":       { safety: 58, hc: 78, groceries: 370, meal2: 65, transitCity: 65, transitRail: 80, cycling: 65, carReq: false },
+  "Leuven":        { safety: 70, hc: 85, groceries: 360, meal2: 60, transitCity: 45, transitRail: 60, cycling: 65, carReq: false },
+  "Liège":         { safety: 48, hc: 75, groceries: 330, meal2: 55, transitCity: 42, transitRail: 60, cycling: 20, carReq: false },
   // Netherlands
-  "Amsterdam":     { safety: 65, hc: 82, groceries: 400, meal2: 80 },
-  "Rotterdam":     { safety: 60, hc: 80, groceries: 380, meal2: 70 },
-  "The Hague":     { safety: 62, hc: 78, groceries: 390, meal2: 75 },
-  "Utrecht":       { safety: 70, hc: 82, groceries: 380, meal2: 70 },
-  "Maastricht":    { safety: 72, hc: 80, groceries: 360, meal2: 60 },
-  "Leiden":        { safety: 73, hc: 85, groceries: 380, meal2: 70 },
+  "Amsterdam":     { safety: 65, hc: 82, groceries: 400, meal2: 80, transitCity: 90, transitRail: 90, cycling: 95, carReq: false },
+  "Rotterdam":     { safety: 60, hc: 80, groceries: 380, meal2: 70, transitCity: 80, transitRail: 85, cycling: 85, carReq: false },
+  "The Hague":     { safety: 62, hc: 78, groceries: 390, meal2: 75, transitCity: 75, transitRail: 75, cycling: 85, carReq: false },
+  "Utrecht":       { safety: 70, hc: 82, groceries: 380, meal2: 70, transitCity: 65, transitRail: 85, cycling: 90, carReq: false },
+  "Maastricht":    { safety: 72, hc: 80, groceries: 360, meal2: 60, transitCity: 42, transitRail: 50, cycling: 55, carReq: false },
+  "Leiden":        { safety: 73, hc: 85, groceries: 380, meal2: 70, transitCity: 50, transitRail: 65, cycling: 85, carReq: false },
 };
 
 // Airport data: nearest international airport (IATA code, name, distance in km)
@@ -2156,7 +2171,7 @@ const airportData = {
 // Merge extra data into locations
 locations.forEach(loc => {
   const ed = extraData[loc.name];
-  if (ed) { loc.safety = ed.safety; loc.hc = ed.hc; loc.groceries = ed.groceries; loc.meal2 = ed.meal2; }
+  if (ed) { loc.safety = ed.safety; loc.hc = ed.hc; loc.groceries = ed.groceries; loc.meal2 = ed.meal2; loc.transitCity = ed.transitCity; loc.transitRail = ed.transitRail; loc.cycling = ed.cycling; loc.carReq = ed.carReq; }
   if (airportData[loc.name]) loc.apt = airportData[loc.name];
 });
 
@@ -3394,6 +3409,27 @@ function getHcLabelRu(s) {
   if (s >= 40) return 'Ограниченно';
   return 'Базовый';
 }
+function getTransitColor(s) {
+  if (s >= 70) return '#27ae60';
+  if (s >= 50) return '#2ecc71';
+  if (s >= 30) return '#f1c40f';
+  if (s >= 15) return '#e67e22';
+  return '#e74c3c';
+}
+function getTransitLabel(s) {
+  if (s >= 70) return 'Excellent';
+  if (s >= 50) return 'Good';
+  if (s >= 30) return 'Moderate';
+  if (s >= 15) return 'Limited';
+  return 'Minimal';
+}
+function getTransitLabelRu(s) {
+  if (s >= 70) return 'Отлично';
+  if (s >= 50) return 'Хорошо';
+  if (s >= 30) return 'Умеренно';
+  if (s >= 15) return 'Ограниченно';
+  return 'Минимальный';
+}
 
 // Source URL generators
 const numbeoCountry = {
@@ -3454,6 +3490,16 @@ const propertyPortals = {
   Belgium: 'https://www.immoweb.be/en/',
   Netherlands: 'https://www.funda.nl/en/'
 };
+
+function transitCityUrl(lat, lng) {
+  return `https://www.google.com/maps/@${lat},${lng},14z/data=!5m1!1e2`;
+}
+function transitRailUrl(city) {
+  return `https://www.rome2rio.com/map/${encodeURIComponent(city)}`;
+}
+function cyclingUrl(lat, lng) {
+  return `https://www.cyclosm.org/#map=14/${lat}/${lng}`;
+}
 
 function getPriceColor(avgPrice) {
   if (avgPrice <= 1500) return '#27ae60';
@@ -3540,7 +3586,7 @@ locations.forEach(loc => {
         <span>☃ Снег: ${loc.climate.snowRu || loc.climate.snow}</span>
       </div>
 
-      <div class="section-label">Безопасность, медицина и стоимость жизни</div>
+      <div class="section-label">Безопасность, медицина, транспорт и стоимость жизни</div>
       <a class="drill-link" href="${numbeoUrl('crime', loc.name, loc.country)}" target="_blank" title="Данные о преступности — Numbeo">
       <div class="detail" style="margin-bottom:3px;">
         🛡 Безопасность:
@@ -3555,6 +3601,30 @@ locations.forEach(loc => {
         <span class="safety-label" style="color:${getHcColor(loc.hc || 0)}">${loc.hc || '?'}/100 — ${getHcLabelRu(loc.hc || 0)}</span>
         <span class="drill-hint">↗ Numbeo</span>
       </div></a>
+      <a class="drill-link" href="${transitCityUrl(loc.lat, loc.lng)}" target="_blank" title="Общественный транспорт — Google Maps">
+      <div class="detail" style="margin-bottom:3px;">
+        🚌 Гор. транспорт:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.transitCity || 0}%;background:${getTransitColor(loc.transitCity || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.transitCity || 0)}">${loc.transitCity || '?'}/100 — ${getTransitLabelRu(loc.transitCity || 0)}</span>
+        <span class="drill-hint">↗ Google Maps</span>
+      </div></a>
+      <a class="drill-link" href="${transitRailUrl(loc.name)}" target="_blank" title="Ж/д сообщение — Rome2Rio">
+      <div class="detail" style="margin-bottom:3px;">
+        🚆 Ж/д сообщение:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.transitRail || 0}%;background:${getTransitColor(loc.transitRail || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.transitRail || 0)}">${loc.transitRail || '?'}/100 — ${getTransitLabelRu(loc.transitRail || 0)}</span>
+        <span class="drill-hint">↗ Rome2Rio</span>
+      </div></a>
+      <a class="drill-link" href="${cyclingUrl(loc.lat, loc.lng)}" target="_blank" title="Велоинфраструктура — CyclOSM">
+      <div class="detail" style="margin-bottom:3px;">
+        🚲 Велосипед:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.cycling || 0}%;background:${getTransitColor(loc.cycling || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.cycling || 0)}">${loc.cycling || '?'}/100 — ${getTransitLabelRu(loc.cycling || 0)}</span>
+        <span class="drill-hint">↗ CyclOSM</span>
+      </div></a>
+      <div class="detail" style="margin-bottom:3px;">
+        🚗 Нужен автомобиль: <span style="font-weight:600;color:${loc.carReq ? '#e74c3c' : '#27ae60'}">${loc.carReq ? 'Да' : 'Нет'}</span>
+      </div>
       <div class="cost-row">
         <span>🛒 Продукты: ~€${loc.groceries || '?'}/мес</span>
         <span>🍽 Ужин на двоих: ~€${loc.meal2 || '?'}</span>
@@ -3604,62 +3674,152 @@ filter.onAdd = function() {
   const div = L.DomUtil.create('div', 'filter-panel');
   let html = '<h4>Фильтры</h4>';
 
-  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">СТРАНА</strong>';
+  // Country section (collapsed by default)
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="country"><strong style="font-size:11px;color:#888;">СТРАНА</strong><span class="arrow collapsed">▼</span></div>';
+  html += '<div class="filter-section-body collapsed">';
   Object.keys(countryColors).forEach(c => {
     const count = locations.filter(l => l.country === c).length;
     html += `<label><input type="checkbox" checked data-type="country" data-val="${c}">
       <span style="color:${countryColors[c]};font-weight:600;">${countryRu[c] || c}</span>
       <span style="color:#aaa;font-size:11px;">(${count})</span></label>`;
   });
-  html += '</div>';
+  html += '</div></div>';
 
-  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">ТИП</strong>';
+  // Type section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="type"><strong style="font-size:11px;color:#888;">ТИП</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
   html += `<label><input type="checkbox" checked data-type="loc" data-val="coastal">
     <span>Побережье</span></label>`;
   html += `<label><input type="checkbox" checked data-type="loc" data-val="inland">
     <span>В глубине</span></label>`;
-  html += '</div>';
+  html += '</div></div>';
 
-  html += '<div class="filter-section"><strong style="font-size:11px;color:#888;">СТАТУС ЕС</strong>';
+  // EU Status section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="eu"><strong style="font-size:11px;color:#888;">СТАТУС ЕС</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
   html += `<label><input type="checkbox" checked data-type="eu" data-val="true">
     <span style="color:#2471a3;">Члены ЕС</span></label>`;
   html += `<label><input type="checkbox" checked data-type="eu" data-val="false">
     <span style="color:#b9770e;">Не в ЕС</span></label>`;
-  html += '</div>';
+  html += '</div></div>';
+
+  // Car Required section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="car"><strong style="font-size:11px;color:#888;">НУЖЕН АВТОМОБИЛЬ</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<label><input type="checkbox" checked data-type="car" data-val="true">
+    <span style="color:#e74c3c;">Да</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="car" data-val="false">
+    <span style="color:#27ae60;">Нет</span></label>`;
+  html += '</div></div>';
+
+  // Min City Transit section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="transit-city"><strong style="font-size:11px;color:#888;">МИН. ГОР. ТРАНСПОРТ</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="transit-city-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="transit-city-val">0</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Min Rail Access section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="transit-rail"><strong style="font-size:11px;color:#888;">МИН. Ж/Д СООБЩЕНИЕ</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="transit-rail-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="transit-rail-val">0</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Min Cycling section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="cycling"><strong style="font-size:11px;color:#888;">МИН. ВЕЛОСИПЕД</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="cycling-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="cycling-val">0</span>
+  </div>`;
+  html += '</div></div>';
 
   div.innerHTML = html;
 
-  div.addEventListener('change', function() {
+  // Collapsible section handlers
+  div.querySelectorAll('.filter-section-header').forEach(hdr => {
+    hdr.addEventListener('click', function() {
+      const body = this.nextElementSibling;
+      const arrow = this.querySelector('.arrow');
+      body.classList.toggle('collapsed');
+      arrow.classList.toggle('collapsed');
+    });
+  });
+
+  // Slider display update
+  const sliderCity = div.querySelector('#transit-city-slider');
+  const sliderCityVal = div.querySelector('#transit-city-val');
+  sliderCity.addEventListener('input', function() {
+    sliderCityVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderRail = div.querySelector('#transit-rail-slider');
+  const sliderRailVal = div.querySelector('#transit-rail-val');
+  sliderRail.addEventListener('input', function() {
+    sliderRailVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderCycling = div.querySelector('#cycling-slider');
+  const sliderCyclingVal = div.querySelector('#cycling-val');
+  sliderCycling.addEventListener('input', function() {
+    sliderCyclingVal.textContent = this.value;
+    applyFilters();
+  });
+
+  function applyFilters() {
     const checks = div.querySelectorAll('input[type="checkbox"]');
     const activeCountries = new Set();
     const activeTypes = new Set();
     const activeEu = new Set();
+    const activeCar = new Set();
+    const minTransitCity = parseInt(sliderCity.value, 10);
+    const minTransitRail = parseInt(sliderRail.value, 10);
+    const minCycling = parseInt(sliderCycling.value, 10);
 
     checks.forEach(cb => {
       if (cb.checked) {
         if (cb.dataset.type === 'country') activeCountries.add(cb.dataset.val);
         if (cb.dataset.type === 'loc') activeTypes.add(cb.dataset.val);
         if (cb.dataset.type === 'eu') activeEu.add(cb.dataset.val);
+        if (cb.dataset.type === 'car') activeCar.add(cb.dataset.val);
       }
     });
 
     Object.keys(countryGroups).forEach(c => {
       if (activeCountries.has(c)) {
         if (!map.hasLayer(countryGroups[c])) map.addLayer(countryGroups[c]);
-        // Filter individual markers within the group
         countryGroups[c].eachLayer(marker => {
           if (!marker._locData) return;
           const loc = marker._locData;
           const typeMatch = loc.inland ? activeTypes.has('inland') : activeTypes.has('coastal');
           const euMatch = activeEu.has(String(loc.eu));
-          marker.setOpacity(typeMatch && euMatch ? 1 : 0);
-          if (marker._icon) marker._icon.style.pointerEvents = (typeMatch && euMatch) ? 'auto' : 'none';
+          const carMatch = activeCar.has(String(loc.carReq));
+          const transitCityMatch = (loc.transitCity || 0) >= minTransitCity;
+          const transitRailMatch = (loc.transitRail || 0) >= minTransitRail;
+          const cyclingMatch = (loc.cycling || 0) >= minCycling;
+          const visible = typeMatch && euMatch && carMatch && transitCityMatch && transitRailMatch && cyclingMatch;
+          marker.setOpacity(visible ? 1 : 0);
+          if (marker._icon) marker._icon.style.pointerEvents = visible ? 'auto' : 'none';
         });
       } else {
         if (map.hasLayer(countryGroups[c])) map.removeLayer(countryGroups[c]);
       }
     });
-  });
+  }
+
+  div.addEventListener('change', applyFilters);
 
   return div;
 };
