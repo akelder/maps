@@ -1095,6 +1095,140 @@ const locations = [
   },
 
   // ===================== PORTUGAL =====================
+  // Portugal — Lisbon Metropolitan Area & Central
+  {
+    name: "Lisboa", country: "Portugal", eu: true, inland: false,
+    lat: 38.7223, lng: -9.1393,
+    pop: 576000, hospital: "Hospital de Santa Maria", hospitalDist: 0, hospitalNote: "Largest hospital in Portugal. Also Hospital de São José, Hospital da Luz (private). World-class referral center for all specialties.",
+    priceMin: 2000, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€450k–€650k" },
+    pros: "Capital city with world-class culture, food, nightlife, Alfama/Belém UNESCO heritage, excellent metro/tram/bus, major international airport, huge expat community, mild winters, 2,800 sun hours, free transit for 65+",
+    cons: "Expensive and rising fast, steep hills (difficult for elderly), tourist overcrowding, pickpockets in center, parking nightmare, gentrification displacing locals, summer heat waves (40°C+)",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF (tax number) needed.",
+    climate: { summerHigh: "28–32°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 100, sunHours: 2800 }
+  },
+  {
+    name: "Sintra", country: "Portugal", eu: true, inland: false,
+    lat: 38.7981, lng: -9.3783,
+    pop: 401000, hospital: "Hospital Fernando Fonseca (Amadora-Sintra)", hospitalDist: 8, hospitalNote: "Shared with Amadora. Lisbon hospitals 25 km (Santa Maria, São José) for complex cases.",
+    priceMin: 1200, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€290k–€430k" },
+    pros: "UNESCO fairy-tale palaces (Pena, Quinta da Regaleira), largest municipality by pop in Lisbon area, cooler microclimate, green Sintra-Cascais natural park, diverse neighborhoods from historic to suburban, train to Lisbon (40 min)",
+    cons: "Sprawling municipality — most areas suburban, tourist congestion in historic center, fog/damp in hills, car often needed, hospital shared with Amadora, commute to Lisbon can be long",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–28°C", winterLow: "7°C", snow: "Virtually never", rainyDays: 105, sunHours: 2650 }
+  },
+  {
+    name: "Loures", country: "Portugal", eu: true, inland: true,
+    lat: 38.8305, lng: -9.1680,
+    pop: 210000, hospital: "Hospital Beatriz Ângelo", hospitalDist: 0, hospitalNote: "Modern public hospital (opened 2012). Lisbon hospitals 12 km for complex referrals.",
+    priceMin: 1000, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€230k–€350k" },
+    pros: "Affordable alternative to Lisbon, modern hospital (Beatriz Ângelo), metro access (yellow line extension), diverse multicultural community, close to airport (8 km), growing infrastructure",
+    cons: "Suburban character with limited charm, some areas feel industrial, car recommended for outer parishes, less cultural life than Lisbon center, socioeconomic disparities between areas",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–32°C", winterLow: "7°C", snow: "Virtually never", rainyDays: 100, sunHours: 2800 }
+  },
+  {
+    name: "Amadora", country: "Portugal", eu: true, inland: true,
+    lat: 38.7535, lng: -9.2337,
+    pop: 182000, hospital: "Hospital Fernando Fonseca (Amadora-Sintra)", hospitalDist: 0, hospitalNote: "Major public hospital serving Amadora and Sintra. Lisbon hospitals 10 km for specialized care.",
+    priceMin: 900, priceMax: 1600,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€200k–€320k" },
+    pros: "Most affordable in greater Lisbon, excellent metro access (blue line — 4 stations), 10 min to Lisbon center, BD/comics festival (Amadora BD), diverse multicultural community, flat terrain easy for walking",
+    cons: "Densely urban with limited green space, higher crime perception than other suburbs, fewer cultural attractions, concrete-heavy urbanism, stigma as 'dormitory city'",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–32°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 100, sunHours: 2800 }
+  },
+  {
+    name: "Almada", country: "Portugal", eu: true, inland: false,
+    lat: 38.6779, lng: -9.1582,
+    pop: 184000, hospital: "Hospital Garcia de Orta", hospitalDist: 0, hospitalNote: "Major public hospital. Lisbon hospitals across bridge/ferry for complex cases (15 min ferry).",
+    priceMin: 1000, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€250k–€400k" },
+    pros: "Cristo Rei monument, stunning 25 de Abril bridge views, Costa da Caparica beaches (30 km of sand), ferry to Lisbon (15 min from Cacilhas), Fertagus train, cheaper than Lisbon north bank, flat walkable areas in Almada Velha",
+    cons: "Dependent on bridge/ferry to reach Lisbon (congestion), south-bank stigma fading but still present, some areas lack character, beach areas crowded in summer, limited metro (only MST light rail)",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–30°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 90, sunHours: 2850 }
+  },
+  {
+    name: "Seixal", country: "Portugal", eu: true, inland: false,
+    lat: 38.6408, lng: -9.1008,
+    pop: 177000, hospital: "Hospital Garcia de Orta (Almada)", hospitalDist: 8, hospitalNote: "Garcia de Orta in Almada 8 km. Lisbon hospitals via bridge for complex cases.",
+    priceMin: 800, priceMax: 1400,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€190k–€300k" },
+    pros: "Very affordable for Lisbon area, Fertagus train to Lisbon (25 min), Tagus estuary views, bay beaches (Baía do Seixal), growing infrastructure, family-friendly residential areas",
+    cons: "Primarily residential/suburban, limited cultural life, car needed for many areas, industrial zones detract, no own hospital (relies on Almada), south-bank commuting issues",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–31°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 90, sunHours: 2850 }
+  },
+  {
+    name: "Oeiras", country: "Portugal", eu: true, inland: false,
+    lat: 38.6969, lng: -9.3103,
+    pop: 178000, hospital: "Hospital de São Francisco Xavier", hospitalDist: 5, hospitalNote: "São Francisco Xavier 5 km (Lisbon). Lisbon hospitals 15 km. Excellent private clinics (Taguspark area).",
+    priceMin: 1500, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€320k–€500k" },
+    pros: "Wealthiest municipality per capita in Portugal, Taguspark tech hub, excellent schools, beaches (Santo Amaro, Torre), Parque dos Poetas, train to Lisbon (20 min), safe, well-maintained, between Lisbon and Cascais",
+    cons: "Expensive (approaching Cascais prices), rush-hour traffic on A5/Marginal, corporate/suburban feel in parts, less historic charm than Lisbon/Cascais, summer beach crowding",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "27–29°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 90, sunHours: 2800 }
+  },
+  {
+    name: "Odivelas", country: "Portugal", eu: true, inland: true,
+    lat: 38.7933, lng: -9.1789,
+    pop: 156000, hospital: "Hospital Beatriz Ângelo (Loures)", hospitalDist: 5, hospitalNote: "Beatriz Ângelo in Loures 5 km. Lisbon hospitals 10 km for complex referrals.",
+    priceMin: 900, priceMax: 1600,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€210k–€330k" },
+    pros: "Affordable with excellent metro access (yellow line — Odivelas station), 15 min to Lisbon center, growing commercial areas, flat terrain, diverse community, IKEA/retail nearby",
+    cons: "Suburban dormitory character, limited cultural attractions, car useful for outer areas, dense urban fabric, less green space than other suburbs, perception as unremarkable",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–32°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 100, sunHours: 2800 }
+  },
+  {
+    name: "Vila Franca de Xira", country: "Portugal", eu: true, inland: true,
+    lat: 38.9553, lng: -8.9897,
+    pop: 141000, hospital: "Hospital de Vila Franca de Xira", hospitalDist: 0, hospitalNote: "Modern JCI-accredited hospital (opened 2013). Serves 250,000 people. Lisbon hospitals 30 km for complex referrals.",
+    priceMin: 700, priceMax: 1200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€170k–€260k" },
+    pros: "Very affordable, modern accredited hospital, Tagus riverfront, bullfighting tradition (Ribatejo culture), train to Lisbon (35 min), Alverca/Alhandra growing areas, semi-rural feel in parts",
+    cons: "Far from coast (30 km), industrial zones (refineries, factories), less cosmopolitan, car recommended, limited nightlife/culture, flood risk in low-lying areas near Tagus",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "29–33°C", winterLow: "6°C", snow: "Virtually never", rainyDays: 95, sunHours: 2800 }
+  },
+  {
+    name: "Setúbal", country: "Portugal", eu: true, inland: false,
+    lat: 38.5254, lng: -8.8882,
+    pop: 124000, hospital: "Hospital de São Bernardo", hospitalDist: 0, hospitalNote: "Major hospital serving Setúbal peninsula. Lisbon hospitals 40 km for complex referrals.",
+    priceMin: 800, priceMax: 1400,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€200k–€310k" },
+    pros: "Charming working port city, famous for fresh fish/choco frito, Arrábida Natural Park (stunning coast), dolphin watching in Sado estuary, affordable, authentic Portuguese character, Tróia peninsula nearby",
+    cons: "30 km from Lisbon (requires car/bus), smaller city feel, limited English spoken, some industrial port areas, hospital smaller than Lisbon, less expat infrastructure",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–31°C", winterLow: "7°C", snow: "Virtually never", rainyDays: 82, sunHours: 2900 }
+  },
+  {
+    name: "Leiria", country: "Portugal", eu: true, inland: true,
+    lat: 39.7437, lng: -8.8074,
+    pop: 136000, hospital: "Hospital de Santo André", hospitalDist: 0, hospitalNote: "Major regional hospital. Coimbra CHUC (70 km) for complex referrals.",
+    priceMin: 600, priceMax: 1100,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€140k–€220k" },
+    pros: "Affordable mid-sized city, medieval castle, halfway between Lisbon and Porto (1.5 hr each), beaches nearby (São Pedro de Moel 20 km, Nazaré 30 km), Pinhal de Leiria forest, growing economy, safe",
+    cons: "Inland (beach 20 km), limited public transit, car essential, less international/expat community, smaller cultural scene, can feel provincial, hot summers",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "27–30°C", winterLow: "6°C", snow: "Rare", rainyDays: 100, sunHours: 2600 }
+  },
+  {
+    name: "Coimbra", country: "Portugal", eu: true, inland: true,
+    lat: 40.2033, lng: -8.4103,
+    pop: 143000, hospital: "Centro Hospitalar e Universitário de Coimbra (CHUC)", hospitalDist: 0, hospitalNote: "Largest hospital complex in Portugal. All specialties. Major referral center for central Portugal.",
+    priceMin: 600, priceMax: 1100,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€210k" },
+    pros: "Historic university city (UNESCO — oldest in Portuguese-speaking world), world-class CHUC hospital, Fado de Coimbra, beautiful Mondego river, affordable, rich academic culture, Biblioteca Joanina, safe and walkable center",
+    cons: "176 km from Lisbon (2 hr drive), no nearby commercial airport (Porto 120 km, Lisbon 200 km), steep hills in old town, rainy winters (145 rain days), student-dependent economy, limited beach access, provincial pace",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–31°C", winterLow: "5°C", snow: "Rare, light in hills", rainyDays: 115, sunHours: 2530 }
+  },
+
   {
     name: "Cascais", country: "Portugal", eu: true, inland: false,
     lat: 38.6979, lng: -9.4215,
@@ -2276,6 +2410,19 @@ const extraData = {
   "Saranda":       { safety: 58, hc: 25, groceries: 160, meal2: 18, transitCity: 10, transitRail: 5, cycling: 10, carReq: true },
   "Vlorë":         { safety: 52, hc: 32, groceries: 150, meal2: 15, transitCity: 15, transitRail: 5, cycling: 12, carReq: true },
   "Tirana":        { safety: 48, hc: 42, groceries: 170, meal2: 18, transitCity: 35, transitRail: 10, cycling: 20, carReq: false },
+  // Portugal — Lisbon Metropolitan Area & Central
+  "Lisboa":        { safety: 65, hc: 92, groceries: 320, meal2: 50, transitCity: 82, transitRail: 85, cycling: 35, carReq: false },
+  "Sintra":        { safety: 72, hc: 68, groceries: 290, meal2: 42, transitCity: 40, transitRail: 50, cycling: 20, carReq: true },
+  "Loures":        { safety: 65, hc: 72, groceries: 280, meal2: 38, transitCity: 45, transitRail: 40, cycling: 15, carReq: true },
+  "Amadora":       { safety: 58, hc: 70, groceries: 270, meal2: 35, transitCity: 65, transitRail: 50, cycling: 20, carReq: false },
+  "Almada":        { safety: 68, hc: 75, groceries: 280, meal2: 40, transitCity: 55, transitRail: 55, cycling: 30, carReq: false },
+  "Seixal":        { safety: 65, hc: 60, groceries: 270, meal2: 35, transitCity: 40, transitRail: 45, cycling: 15, carReq: true },
+  "Oeiras":        { safety: 78, hc: 78, groceries: 310, meal2: 48, transitCity: 50, transitRail: 60, cycling: 35, carReq: false },
+  "Odivelas":      { safety: 62, hc: 65, groceries: 275, meal2: 35, transitCity: 55, transitRail: 40, cycling: 15, carReq: false },
+  "Vila Franca de Xira": { safety: 70, hc: 72, groceries: 260, meal2: 32, transitCity: 30, transitRail: 45, cycling: 15, carReq: true },
+  "Setúbal":       { safety: 68, hc: 70, groceries: 260, meal2: 35, transitCity: 35, transitRail: 45, cycling: 25, carReq: false },
+  "Leiria":        { safety: 78, hc: 65, groceries: 250, meal2: 30, transitCity: 20, transitRail: 35, cycling: 20, carReq: true },
+  "Coimbra":       { safety: 78, hc: 88, groceries: 260, meal2: 35, transitCity: 45, transitRail: 55, cycling: 25, carReq: false },
   // Portugal
   "Cascais":       { safety: 75, hc: 80, groceries: 300, meal2: 45, transitCity: 55, transitRail: 65, cycling: 40, carReq: false },
   "Lagos":         { safety: 78, hc: 65, groceries: 280, meal2: 38, transitCity: 22, transitRail: 30, cycling: 25, carReq: true },
@@ -2477,6 +2624,19 @@ const airportData = {
   "Saranda":       "TIA – Tirana (280 km)",
   "Vlorë":         "TIA – Tirana (150 km)",
   "Tirana":        "TIA – Tirana (17 km)",
+  // Portugal — Lisbon Metropolitan Area & Central
+  "Lisboa":        "LIS – Lisbon (7 km)",
+  "Sintra":        "LIS – Lisbon (30 km)",
+  "Loures":        "LIS – Lisbon (8 km)",
+  "Amadora":       "LIS – Lisbon (12 km)",
+  "Almada":        "LIS – Lisbon (15 km)",
+  "Seixal":        "LIS – Lisbon (18 km)",
+  "Oeiras":        "LIS – Lisbon (20 km)",
+  "Odivelas":      "LIS – Lisbon (10 km)",
+  "Vila Franca de Xira": "LIS – Lisbon (30 km)",
+  "Setúbal":       "LIS – Lisbon (45 km)",
+  "Leiria":        "LIS – Lisbon (140 km)",
+  "Coimbra":       "LIS – Lisbon (200 km) / OPO – Porto (120 km)",
   // Portugal
   "Cascais":       "LIS – Lisbon (30 km)",
   "Lagos":         "FAO – Faro (85 km)",
@@ -2662,7 +2822,9 @@ const numbeoCities = new Set([
   'Ferrara','Ravenna','Lucca','Florence','Como','Mantova','Bolzano',
   'Venice','Monza','Novara','Piacenza','Reggio Emilia','Rimini','Forlì',
   'Prato','Livorno','Arezzo','Perugia','Ancona',
-  'Lecce','Syracuse','Tirana','Cascais','Lagos','Valencia','Barcelona',
+  'Lecce','Syracuse','Tirana',
+  'Lisboa','Sintra','Amadora','Almada','Oeiras','Setúbal','Leiria','Coimbra',
+  'Cascais','Lagos','Valencia','Barcelona',
   'Bilbao','Girona','Tarragona','Vigo','Gijón','A Coruña','Santander',
   'San Sebastián','Málaga','Logroño','Pontevedra','Matera',
   'Prague','Brno','Olomouc','Karlovy Vary','České Budějovice',
@@ -2675,8 +2837,10 @@ const numbeoCities = new Set([
   'Brussels','Bruges','Ghent','Antwerp','Leuven','Liège',
   'Amsterdam','Rotterdam','The Hague','Utrecht','Maastricht','Leiden'
 ]);
+const numbeoNameOverride = { "Lisboa": "Lisbon" };
 function numbeoUrl(cat, city, country) {
-  const c = city.replace(/\s/g, '-').replace(/š/gi,'s').replace(/ë/g,'e').replace(/ž/gi,'z').replace(/č/gi,'c').replace(/ř/gi,'r').replace(/ě/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ý/g,'y').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ń/g,'n').replace(/ł/g,'l').replace(/ő/g,'o').replace(/ű/g,'u').replace(/ä/g,'a');
+  const raw = numbeoNameOverride[city] || city;
+  const c = raw.replace(/\s/g, '-').replace(/š/gi,'s').replace(/ë/g,'e').replace(/ž/gi,'z').replace(/č/gi,'c').replace(/ř/gi,'r').replace(/ě/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ý/g,'y').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ń/g,'n').replace(/ł/g,'l').replace(/ő/g,'o').replace(/ű/g,'u').replace(/ä/g,'a');
   const nc = numbeoCountry[country] || country;
   if (numbeoCities.has(city)) return `https://www.numbeo.com/${cat}/in/${encodeURIComponent(c)}`;
   return `https://www.numbeo.com/${cat}/country_result.jsp?country=${encodeURIComponent(nc)}`;
