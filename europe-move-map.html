@@ -1118,6 +1118,129 @@ const locations = [
     climate: { summerHigh: "28–30°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 60, sunHours: 3000 }
   },
 
+  // Portugal — North
+  {
+    name: "Porto", country: "Portugal", eu: true, inland: false,
+    lat: 41.1485, lng: -8.6110,
+    pop: 250000, hospital: "Centro Hospitalar Universitário de São João", hospitalDist: 0, hospitalNote: "Largest hospital in Northern Portugal (1,100 beds). World-class referral center. Also Hospital de Santo António.",
+    priceMin: 1200, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€365k–€440k" },
+    pros: "UNESCO Ribeira district, world-class food/wine (port wine), excellent metro (6 lines), walkable center, very safe, large expat community, mild climate, international airport, rich architecture and azulejos",
+    cons: "Rising prices and gentrification, steep hills in some areas, rainy winters (~147 rain days), summer tourism crowds, parking difficult in center",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–28°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 147, sunHours: 2500 }
+  },
+  {
+    name: "Vila Nova de Gaia", country: "Portugal", eu: true, inland: false,
+    lat: 41.1336, lng: -8.6174,
+    pop: 313000, hospital: "Centro Hospitalar Vila Nova de Gaia/Espinho", hospitalDist: 0, hospitalNote: "Major public hospital. São João in Porto 8 km for complex referrals.",
+    priceMin: 1000, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€280k–€360k" },
+    pros: "Port wine lodges (60+ cellars), cheaper than Porto, Atlantic beaches, metro access to Porto, Douro riverfront views, diverse neighborhoods from fishing villages to beach areas",
+    cons: "Less distinct identity than Porto (perceived as suburb), steep terrain near river, less walkable outside waterfront, industrial areas in parts",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–28°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 147, sunHours: 2500 }
+  },
+  {
+    name: "Braga", country: "Portugal", eu: true, inland: true,
+    lat: 41.5454, lng: -8.4265,
+    pop: 204000, hospital: "Hospital de Braga", hospitalDist: 0, hospitalNote: "Modern public hospital. São João Porto for complex cases (55 km).",
+    priceMin: 800, priceMax: 1500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€128k–€213k" },
+    pros: "\"Rome of Portugal\" — baroque churches, excellent quality of life (EU top 10), walkable flat historic center, university city energy, 25% cheaper than Porto, Bom Jesus sanctuary (UNESCO), excellent Minho cuisine",
+    cons: "Rainy winters (heavy rainfall), limited English outside center, no metro system, rising rental costs, hot inland summers, less international than Porto",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "27–30°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 145, sunHours: 2540 }
+  },
+  {
+    name: "Matosinhos", country: "Portugal", eu: true, inland: false,
+    lat: 41.1819, lng: -8.6838,
+    pop: 181000, hospital: "Hospital Pedro Hispano", hospitalDist: 0, hospitalNote: "Public hospital. São João Porto 8 km for referrals.",
+    priceMin: 1000, priceMax: 1700,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€290k–€370k" },
+    pros: "Portugal's best seafood (fresh daily from fishing fleet), wide sandy beach, metro to Porto (20 min), Leça da Palmeira (Álvaro Siza architecture), very livable",
+    cons: "Industrial port areas detract, less charming than Porto center, cloudy days, commuting rush hours, higher prices than inland",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "24–27°C", winterLow: "6°C", snow: "Virtually never", rainyDays: 147, sunHours: 2500 }
+  },
+  {
+    name: "Gondomar", country: "Portugal", eu: true, inland: true,
+    lat: 41.1445, lng: -8.5322,
+    pop: 169000, hospital: "Hospital de São João (Porto)", hospitalDist: 10, hospitalNote: "São João in Porto is the direct referral hospital for Gondomar (10 km).",
+    priceMin: 700, priceMax: 1200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€200k–€280k" },
+    pros: "Affordable alternative to Porto, metro access (Line F), Douro river parks, known for gold jewelry craftsmanship, green spaces, family-friendly",
+    cons: "Primarily residential/suburban, limited cultural life, dependent on Porto for most services, less walkable urban fabric, car recommended",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "26–29°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 145, sunHours: 2500 }
+  },
+  {
+    name: "Guimarães", country: "Portugal", eu: true, inland: true,
+    lat: 41.4444, lng: -8.2962,
+    pop: 157000, hospital: "Hospital da Senhora da Oliveira", hospitalDist: 0, hospitalNote: "General hospital. São João Porto for complex cases (55 km).",
+    priceMin: 700, priceMax: 1200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€115k–€180k" },
+    pros: "\"Birthplace of Portugal\" — UNESCO historic center, European Capital of Culture 2012, medieval castle + Palace of Dukes of Braganza, charming pedestrianized streets, affordable, Penha cable car",
+    cons: "Inland (no beach, 55 km to coast), limited English spoken, smaller cultural scene outside heritage sites, cold/wet winters, quiet at night",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "27–30°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 145, sunHours: 2500 }
+  },
+  {
+    name: "Maia", country: "Portugal", eu: true, inland: true,
+    lat: 41.2357, lng: -8.6199,
+    pop: 145000, hospital: "Hospital de São João (Porto)", hospitalDist: 8, hospitalNote: "São João Porto is the direct referral hospital (8 km). Local health centers available.",
+    priceMin: 800, priceMax: 1300,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€220k–€300k" },
+    pros: "Very close to Porto airport (5 km), metro access (Line C), good schools, modern infrastructure, lower rents than Porto, good road connections",
+    cons: "Suburban character, lacks historic charm, identity tied to Porto, limited cultural attractions, commercial/industrial zones, less walkable",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–28°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 147, sunHours: 2500 }
+  },
+  {
+    name: "Santa Maria da Feira", country: "Portugal", eu: true, inland: true,
+    lat: 40.9252, lng: -8.5426,
+    pop: 141000, hospital: "Hospital de São Sebastião", hospitalDist: 0, hospitalNote: "Centro Hospitalar Entre Douro e Vouga. São João Porto for complex cases (30 km).",
+    priceMin: 600, priceMax: 1000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€95k–€150k" },
+    pros: "Very affordable, medieval castle (Feira Castle), Viagem Medieval festival (largest medieval fair in Iberia), near Espinho beaches (20 km), good motorway connections",
+    cons: "Small town center, limited public transport (bus only), car strongly recommended, few cultural amenities, little English spoken",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–27°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 140, sunHours: 2500 }
+  },
+  {
+    name: "Vila Nova de Famalicão", country: "Portugal", eu: true, inland: true,
+    lat: 41.4080, lng: -8.5198,
+    pop: 137000, hospital: "Hospital de Famalicão", hospitalDist: 0, hospitalNote: "Public hospital. Braga or São João Porto (45 km) for complex cases.",
+    priceMin: 600, priceMax: 1000,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€100k–€155k" },
+    pros: "Very affordable, gateway to Minho region, walkable town center, train connections to Porto and Braga, 30 min from Porto airport, authentic Portuguese life",
+    cons: "Small town feel (city proper ~9,000), limited English, industrial economy (textiles), less cultural richness, car recommended for surrounding area",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "27–30°C", winterLow: "4°C", snow: "Rare, light", rainyDays: 145, sunHours: 2500 }
+  },
+  {
+    name: "Barcelos", country: "Portugal", eu: true, inland: true,
+    lat: 41.5325, lng: -8.6183,
+    pop: 117000, hospital: "Hospital de Barcelos", hospitalDist: 0, hospitalNote: "Local hospital with limited capacity. Hospital de Braga (20 km) for complex cases.",
+    priceMin: 500, priceMax: 900,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€85k–€140k" },
+    pros: "Symbol of Portugal (Galo de Barcelos rooster), famous weekly market (oldest in Portugal), very affordable, traditional pottery/crafts, Caminho de Santiago, Minho gastronomy",
+    cons: "Small town, limited healthcare, limited English, car essential, few cultural events beyond traditional festivals, very rainy, limited public transport",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "25–28°C", winterLow: "5°C", snow: "Very rare", rainyDays: 155, sunHours: 2400 }
+  },
+  {
+    name: "Viseu", country: "Portugal", eu: true, inland: true,
+    lat: 40.6610, lng: -7.9097,
+    pop: 104000, hospital: "Hospital de São Teotónio", hospitalDist: 0, hospitalNote: "Main hospital for Viseu district. Coimbra university hospitals (90 km) for complex cases.",
+    priceMin: 500, priceMax: 850,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€145k" },
+    pros: "Consistently rated best quality of life in Portugal, very affordable (~35% cheaper than Lisbon), Dão wine region, clean and safe, historic center, excellent fresh produce at markets",
+    cons: "No direct rail connection (nearest station 25 km), car essential, cool winters (inland), limited international community, few English speakers, far from coast and airport",
+    visa: "EU member. Automatic right to reside. Register at local câmara. Full EU healthcare. NIF required.",
+    climate: { summerHigh: "28–31°C", winterLow: "2°C", snow: "Rare, light", rainyDays: 130, sunHours: 2730 }
+  },
+
   // ===================== SPAIN =====================
   {
     name: "Valencia", country: "Spain", eu: true, inland: false,
@@ -1231,6 +1354,139 @@ const locations = [
     visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
     climate: { summerHigh: "30–32°C", winterLow: "0°C", snow: "Light, ~10 days/yr", rainyDays: 80, sunHours: 2200 }
   },
+  {
+    name: "Oviedo", country: "Spain", eu: true, inland: true,
+    lat: 43.3614, lng: -5.8494,
+    pop: 217000, hospital: "Hospital Universitario Central de Asturias (HUCA)", hospitalDist: 0, hospitalNote: "Modern university hospital (new complex 2014). Major referral center for all Asturias.",
+    priceMin: 1600, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€145k–€225k" },
+    pros: "Capital of Asturias, brand-new university hospital (HUCA), pre-Romanesque churches (UNESCO), excellent cider culture, safe and clean, affordable",
+    cons: "Rainy (150 days), not on coast (Gijón beaches 30 km), cool summers, limited international flights, less English spoken",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "23–25°C", winterLow: "3°C", snow: "Rare in city", rainyDays: 150, sunHours: 1700 }
+  },
+  {
+    name: "Vitoria-Gasteiz", country: "Spain", eu: true, inland: true,
+    lat: 42.8467, lng: -2.6726,
+    pop: 253000, hospital: "Hospital Universitario de Álava (Santiago / Txagorritxu)", hospitalDist: 0, hospitalNote: "University hospital. Basque healthcare system is Spain's best-funded.",
+    priceMin: 2000, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€175k–€280k" },
+    pros: "European Green Capital (2012), excellent urban planning and green belt, very safe, top Basque healthcare, most affordable Basque city, beautiful medieval quarter",
+    cons: "Cold winters (frost common), inland plateau, less exciting than Bilbao/San Sebastián, Basque language, limited international connections",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "26–28°C", winterLow: "-1°C", snow: "Regular, ~20 days/yr", rainyDays: 120, sunHours: 1750 }
+  },
+  {
+    name: "Barakaldo", country: "Spain", eu: true, inland: false,
+    lat: 43.2957, lng: -2.9919,
+    pop: 102000, hospital: "Hospital Universitario de Cruces", hospitalDist: 0, hospitalNote: "Hospital de Cruces is one of Spain's largest and best hospitals. Part of Basque healthcare network.",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€190k–€300k" },
+    pros: "Hospital de Cruces (one of Spain's top hospitals) on-site, cheaper than Bilbao center, Bilbao metro (15 min to center), Basque healthcare system",
+    cons: "Industrial heritage area, less charming than Bilbao center, essentially a Bilbao suburb, rainy (160 days), limited own cultural identity",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "25–27°C", winterLow: "4°C", snow: "Very rare", rainyDays: 160, sunHours: 1600 }
+  },
+  {
+    name: "Pamplona", country: "Spain", eu: true, inland: true,
+    lat: 42.8125, lng: -1.6458,
+    pop: 205000, hospital: "Complejo Hospitalario de Navarra / Clínica Universidad de Navarra", hospitalDist: 0, hospitalNote: "Public hospital complex plus prestigious CUN private hospital (ranked #1 in Spain). Excellent healthcare.",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€195k–€310k" },
+    pros: "Excellent healthcare (CUN ranked Spain's #1 hospital), very safe, compact walkable city, Camino de Santiago, strong economy, beautiful old quarter",
+    cons: "Cold winters with some snow, San Fermín (Bull Run) disrupts July, inland (no coast, Basque coast 1 hr), quiet outside festivals",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "27–29°C", winterLow: "-1°C", snow: "Moderate, ~15 days/yr", rainyDays: 100, sunHours: 1800 }
+  },
+  {
+    name: "Burgos", country: "Spain", eu: true, inland: true,
+    lat: 42.3439, lng: -3.6969,
+    pop: 176000, hospital: "Hospital Universitario de Burgos (HUBU)", hospitalDist: 0, hospitalNote: "Modern university hospital (opened 2012). Referral center for northern Castilla y León.",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€105k–€160k" },
+    pros: "One of Spain's cheapest cities, stunning Gothic cathedral (UNESCO), Camino de Santiago, modern hospital (2012), excellent grilled meats and morcilla",
+    cons: "Cold winters (one of Spain's coldest, -5°C common), hot dry summers, inland, limited international connections, can feel quiet",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "-3°C", snow: "Regular, ~25 days/yr", rainyDays: 80, sunHours: 2300 }
+  },
+  {
+    name: "Santiago de Compostela", country: "Spain", eu: true, inland: true,
+    lat: 42.8782, lng: -8.5448,
+    pop: 100000, hospital: "Hospital Clínico Universitario de Santiago (CHUS)", hospitalDist: 0, hospitalNote: "Major university hospital. Regional referral center for Galicia.",
+    priceMin: 1600, priceMax: 2500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€145k–€225k" },
+    pros: "Capital of Galicia, Camino de Santiago endpoint (UNESCO), stunning cathedral and old town, university city, excellent hospital, international airport",
+    cons: "Very rainy (185 days, Spain's rainiest city), cool summers, stone architecture can feel grey, tourist crowds around cathedral, Galician language",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "23–25°C", winterLow: "3°C", snow: "Very rare", rainyDays: 185, sunHours: 1800 }
+  },
+  {
+    name: "Ourense", country: "Spain", eu: true, inland: true,
+    lat: 42.3364, lng: -7.8639,
+    pop: 105000, hospital: "Complexo Hospitalario Universitario de Ourense (CHUO)", hospitalDist: 0, hospitalNote: "University hospital complex. Santiago de Compostela hospital 100 km for complex cases.",
+    priceMin: 1000, priceMax: 1500,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€85k–€130k" },
+    pros: "Among cheapest cities in Spain, famous thermal springs (As Burgas), AVE high-speed rail to Madrid, wine country (Ribeiro, Ribeira Sacra), Galician cuisine",
+    cons: "Inland Galicia (no coast, 100 km), very hot summers for Galicia (35°C+), declining population, limited international connections, Galician language",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "31–34°C", winterLow: "1°C", snow: "Rare", rainyDays: 100, sunHours: 2100 }
+  },
+  // Spain — Castilla y León & Aragón
+  {
+    name: "Valladolid", country: "Spain", eu: true, inland: true,
+    lat: 41.6523, lng: -4.7245,
+    pop: 298000, hospital: "Hospital Clínico Universitario de Valladolid / Hospital Universitario Río Hortega", hospitalDist: 0, hospitalNote: "Two university hospitals. Regional referral center for Castilla y León.",
+    priceMin: 1400, priceMax: 2200,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€125k–€200k" },
+    pros: "Very affordable, former Spanish capital, excellent Castilian Spanish (ideal for learning), strong university city, wine region (Ribera del Duero), AVE to Madrid (1 hr)",
+    cons: "Extreme climate (hot summers, cold winters), inland plateau (no coast), limited international flights, can feel provincial",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "31–33°C", winterLow: "-2°C", snow: "Light, ~15 days/yr", rainyDays: 70, sunHours: 2600 }
+  },
+  {
+    name: "Salamanca", country: "Spain", eu: true, inland: true,
+    lat: 40.9688, lng: -5.6631,
+    pop: 144000, hospital: "Hospital Universitario de Salamanca", hospitalDist: 0, hospitalNote: "University hospital with all specialties. Regional referral center.",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€105k–€160k" },
+    pros: "UNESCO World Heritage old town, Spain's oldest university (1218), stunning Plaza Mayor, very affordable, excellent Castilian Spanish, lively student atmosphere",
+    cons: "Hot summers (35°C+), cold winters, inland plateau (no coast), limited international connections, student population leaves in summer",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–33°C", winterLow: "-2°C", snow: "Light, ~10 days/yr", rainyDays: 65, sunHours: 2600 }
+  },
+  {
+    name: "Zamora", country: "Spain", eu: true, inland: true,
+    lat: 41.5033, lng: -5.7446,
+    pop: 59000, hospital: "Complejo Asistencial de Zamora", hospitalDist: 0, hospitalNote: "Full-service hospital. Salamanca (92 km) and Valladolid (100 km) for complex specialties.",
+    priceMin: 500, priceMax: 800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€85k–€130k" },
+    pros: "One of Spain's cheapest cities, walkable center with 24 Romanesque churches (most per capita in Spain), AVE to Madrid (1 hr), excellent local cuisine, Duero river promenade, Semana Santa (International Tourist Interest)",
+    cons: "Very hot dry summers (35°C+), cold winters, declining/aging population, limited public transit, no international flights, minimal expat community, very little English spoken",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "31–35°C", winterLow: "-2°C", snow: "Rare", rainyDays: 80, sunHours: 2540 }
+  },
+  {
+    name: "León", country: "Spain", eu: true, inland: true,
+    lat: 42.5987, lng: -5.5671,
+    pop: 123000, hospital: "Complejo Asistencial Universitario de León (CAULE)", hospitalDist: 0, hospitalNote: "Major university hospital complex with 795 beds. Regional referral center for León province.",
+    priceMin: 600, priceMax: 900,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€110k–€175k" },
+    pros: "Stunning Gothic cathedral (one of Spain's finest), Camino de Santiago heritage city, very affordable, excellent Castilian Spanish, AVE to Madrid (2 hrs), bike paths along rivers, university city atmosphere",
+    cons: "Cold winters (can reach -10°C, regular snow ~13 days/yr), hot dry summers, inland plateau (no coast), limited international flights, thin expat community",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "27–30°C", winterLow: "-5°C", snow: "Regular, ~13 days/yr", rainyDays: 95, sunHours: 2670 }
+  },
+  {
+    name: "Zaragoza", country: "Spain", eu: true, inland: true,
+    lat: 41.6488, lng: -0.8891,
+    pop: 681000, hospital: "Hospital Universitario Miguel Servet / Hospital Clínico Universitario Lozano Blesa", hospitalDist: 0, hospitalNote: "Two major university hospitals. Regional referral center for Aragón.",
+    priceMin: 1800, priceMax: 2800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€160k–€250k" },
+    pros: "5th largest city in Spain yet very affordable, Basilica del Pilar, AVE halfway between Madrid & Barcelona (1.5 hrs each), excellent tapas scene (El Tubo), Expo 2008 riverside",
+    cons: "Very hot dry summers (40°C), strong cierzo wind, can feel provincial despite size, fewer international flights, inland (no coast)",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "33–36°C", winterLow: "-1°C", snow: "Rare, light", rainyDays: 55, sunHours: 2650 }
+  },
 
   // Catalonia & NE Spain
   {
@@ -1320,6 +1576,105 @@ const locations = [
     cons: "Inland (no coast), cold foggy winters (famous for boira fog), small town, Catalan-dominant, limited international feel",
     visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
     climate: { summerHigh: "30–32°C", winterLow: "-1°C", snow: "Occasional light", rainyDays: 75, sunHours: 2300 }
+  },
+  {
+    name: "L'Hospitalet de Llobregat", country: "Spain", eu: true, inland: false,
+    lat: 41.3596, lng: 2.0997,
+    pop: 274000, hospital: "Hospital Universitari de Bellvitge", hospitalDist: 0, hospitalNote: "Major university hospital. Barcelona Hospital Clínic 10 km.",
+    priceMin: 2800, priceMax: 4200,
+    housing: { type: "3-bed apartment", size: "80 m²", cost: "€240k–€360k" },
+    pros: "20–30% cheaper than Barcelona, excellent metro connections (L1, L9), Bellvitge university hospital on-site, adjacent to BCN airport, cosmopolitan",
+    cons: "Dense urban area, less charming than Barcelona center, some neighborhoods need improvement, essentially a Barcelona suburb, limited green space",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2524 }
+  },
+  {
+    name: "Badalona", country: "Spain", eu: true, inland: false,
+    lat: 41.4502, lng: 2.2474,
+    pop: 224000, hospital: "Hospital Germans Trias i Pujol (Can Ruti)", hospitalDist: 0, hospitalNote: "Major university hospital. Barcelona hospitals also 10 km.",
+    priceMin: 2500, priceMax: 3800,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€215k–€325k" },
+    pros: "Beach city adjacent to Barcelona, 20–30% cheaper than BCN center, metro L2 direct to Barcelona, major university hospital (Can Ruti), 5 km of beaches",
+    cons: "Some areas feel run-down, less charming than Barcelona center, industrial port area, petty crime in some neighborhoods, feels like a BCN suburb",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2524 }
+  },
+  {
+    name: "Terrassa", country: "Spain", eu: true, inland: true,
+    lat: 41.5630, lng: 2.0089,
+    pop: 225000, hospital: "Hospital Universitari MútuaTerrassa / Hospital de Terrassa", hospitalDist: 0, hospitalNote: "Two hospitals in city. Barcelona hospitals 30 km.",
+    priceMin: 2200, priceMax: 3500,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€190k–€300k" },
+    pros: "30–40% cheaper than Barcelona, own hospitals, FGC train to Barcelona (40 min), Romanesque churches (UNESCO), more spacious living than BCN",
+    cons: "Not on coast (30 km to beach), industrial character, hot summers, less vibrant than Barcelona, suburban feel",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "2°C", snow: "Very rare", rainyDays: 60, sunHours: 2450 }
+  },
+  {
+    name: "Sabadell", country: "Spain", eu: true, inland: true,
+    lat: 41.5433, lng: 2.1094,
+    pop: 220000, hospital: "Hospital de Sabadell (Parc Taulí)", hospitalDist: 0, hospitalNote: "Parc Taulí is a well-regarded university hospital. Barcelona hospitals 25 km.",
+    priceMin: 2000, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€175k–€280k" },
+    pros: "35% cheaper than Barcelona, well-regarded hospital (Parc Taulí), Rodalies train to Barcelona (35 min), own cultural life, more relaxed pace",
+    cons: "Inland (no beach), industrial character, less cosmopolitan than BCN, suburban feel, hot summers",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "2°C", snow: "Very rare", rainyDays: 60, sunHours: 2450 }
+  },
+  {
+    name: "Santa Coloma de Gramenet", country: "Spain", eu: true, inland: false,
+    lat: 41.4516, lng: 2.2085,
+    pop: 120000, hospital: "Hospital de l'Esperit Sant", hospitalDist: 0, hospitalNote: "General hospital. Barcelona hospitals 5 km. Hospital Germans Trias (Badalona) 5 km.",
+    priceMin: 2200, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "75 m²", cost: "€180k–€260k" },
+    pros: "Most affordable municipality adjacent to Barcelona, metro L1 to Barcelona center (15 min), urban renewal improving neighborhoods, multicultural",
+    cons: "Dense and crowded, historically working-class reputation, limited green space, some neighborhoods need improvement, essentially a BCN suburb",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "29–31°C", winterLow: "5°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2524 }
+  },
+  {
+    name: "Mataró", country: "Spain", eu: true, inland: false,
+    lat: 41.5404, lng: 2.4445,
+    pop: 130000, hospital: "Hospital de Mataró", hospitalDist: 0, hospitalNote: "General hospital. Barcelona hospitals 30 km for complex cases.",
+    priceMin: 2200, priceMax: 3200,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€190k–€275k" },
+    pros: "Coastal city NE of Barcelona, 35 min by Rodalies train to BCN, Maresme coast beaches, 25–30% cheaper than Barcelona, own hospital, pleasant seafront",
+    cons: "Feels like a Barcelona commuter town, limited cultural scene, beach quality mixed, less cosmopolitan, highway noise in some areas",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "28–30°C", winterLow: "4°C", snow: "Extremely rare", rainyDays: 60, sunHours: 2500 }
+  },
+  {
+    name: "Lleida", country: "Spain", eu: true, inland: true,
+    lat: 41.6176, lng: 0.6200,
+    pop: 140000, hospital: "Hospital Universitari Arnau de Vilanova", hospitalDist: 0, hospitalNote: "University hospital. Barcelona hospitals 150 km for complex cases.",
+    priceMin: 1200, priceMax: 1800,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€100k–€160k" },
+    pros: "Very affordable, AVE high-speed rail to Barcelona (1 hr) and Madrid (2.5 hrs), Seu Vella cathedral, quiet Catalan city, gateway to Pyrenees ski resorts",
+    cons: "Extreme inland climate (very hot summers up to 40°C, foggy cold winters), less touristic, limited nightlife, flat agricultural surroundings, Catalan language",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "33–35°C", winterLow: "-2°C", snow: "Rare, light", rainyDays: 50, sunHours: 2650 }
+  },
+  {
+    name: "Reus", country: "Spain", eu: true, inland: true,
+    lat: 41.1548, lng: 1.1087,
+    pop: 107000, hospital: "Hospital Universitari Sant Joan de Reus", hospitalDist: 0, hospitalNote: "University hospital. Tarragona Hospital Joan XXIII 15 km.",
+    priceMin: 1600, priceMax: 2400,
+    housing: { type: "3-bed apartment", size: "90 m²", cost: "€140k–€210k" },
+    pros: "Cheaper than nearby Tarragona, Reus Airport (Ryanair hub), birthplace of Gaudí, Modernista architecture, wine country (Priorat nearby), 10 km to beaches",
+    cons: "Overshadowed by Tarragona, inland (coast 10 km), petrochemical industry nearby, less charming, hot summers",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–32°C", winterLow: "3°C", snow: "Extremely rare", rainyDays: 55, sunHours: 2550 }
+  },
+  {
+    name: "Manresa", country: "Spain", eu: true, inland: true,
+    lat: 41.7251, lng: 1.8267,
+    pop: 80000, hospital: "Hospital Sant Joan de Déu (Fundació Althaia)", hospitalDist: 0, hospitalNote: "Reference hospital for Central Catalonia with 402 beds and full specialties. Barcelona hospitals 65 km.",
+    priceMin: 800, priceMax: 1100,
+    housing: { type: "3-bed apartment", size: "85 m²", cost: "€130k–€195k" },
+    pros: "Affordable alternative to Barcelona, FGC/Rodalies trains to Barcelona (75–90 min), near Montserrat monastery, reference hospital for Central Catalonia, medieval history, Passeig de Pere III promenade",
+    cons: "Catalan language dominant, inland with no coast (65 km to Barcelona beaches), limited nightlife, can feel provincial, hot summers, hilly terrain in parts",
+    visa: "EU member. Automatic right to reside. Register at ayuntamiento. NIE required. Full EU healthcare.",
+    climate: { summerHigh: "30–33°C", winterLow: "1°C", snow: "Very rare", rainyDays: 72, sunHours: 2500 }
   },
 
   // ===================== CZECHIA =====================
@@ -1924,6 +2279,18 @@ const extraData = {
   // Portugal
   "Cascais":       { safety: 75, hc: 80, groceries: 300, meal2: 45, transitCity: 55, transitRail: 65, cycling: 40, carReq: false },
   "Lagos":         { safety: 78, hc: 65, groceries: 280, meal2: 38, transitCity: 22, transitRail: 30, cycling: 25, carReq: true },
+  // Portugal — North
+  "Porto":         { safety: 72, hc: 85, groceries: 300, meal2: 50, transitCity: 75, transitRail: 70, cycling: 25, carReq: false },
+  "Vila Nova de Gaia": { safety: 70, hc: 78, groceries: 290, meal2: 45, transitCity: 60, transitRail: 55, cycling: 20, carReq: false },
+  "Braga":         { safety: 78, hc: 75, groceries: 270, meal2: 40, transitCity: 35, transitRail: 65, cycling: 35, carReq: false },
+  "Matosinhos":    { safety: 72, hc: 76, groceries: 290, meal2: 45, transitCity: 60, transitRail: 50, cycling: 35, carReq: false },
+  "Gondomar":      { safety: 73, hc: 62, groceries: 270, meal2: 38, transitCity: 40, transitRail: 30, cycling: 15, carReq: true },
+  "Guimarães":     { safety: 78, hc: 65, groceries: 250, meal2: 35, transitCity: 30, transitRail: 55, cycling: 30, carReq: false },
+  "Maia":          { safety: 72, hc: 72, groceries: 280, meal2: 40, transitCity: 50, transitRail: 35, cycling: 20, carReq: true },
+  "Santa Maria da Feira": { safety: 76, hc: 60, groceries: 250, meal2: 30, transitCity: 20, transitRail: 25, cycling: 15, carReq: true },
+  "Vila Nova de Famalicão": { safety: 76, hc: 62, groceries: 250, meal2: 30, transitCity: 22, transitRail: 50, cycling: 20, carReq: true },
+  "Barcelos":      { safety: 80, hc: 55, groceries: 240, meal2: 28, transitCity: 15, transitRail: 40, cycling: 15, carReq: true },
+  "Viseu":         { safety: 82, hc: 65, groceries: 240, meal2: 30, transitCity: 20, transitRail: 10, cycling: 20, carReq: true },
   // Spain — South/East
   "Valencia":      { safety: 62, hc: 82, groceries: 260, meal2: 38, transitCity: 75, transitRail: 70, cycling: 60, carReq: false },
   "Málaga":        { safety: 60, hc: 78, groceries: 270, meal2: 40, transitCity: 50, transitRail: 65, cycling: 30, carReq: false },
@@ -1936,6 +2303,19 @@ const extraData = {
   "Vigo":          { safety: 70, hc: 80, groceries: 240, meal2: 32, transitCity: 38, transitRail: 40, cycling: 15, carReq: false },
   "Pontevedra":    { safety: 78, hc: 68, groceries: 230, meal2: 30, transitCity: 25, transitRail: 30, cycling: 50, carReq: false },
   "Logroño":       { safety: 80, hc: 72, groceries: 230, meal2: 30, transitCity: 30, transitRail: 30, cycling: 40, carReq: false },
+  "Oviedo":        { safety: 78, hc: 82, groceries: 245, meal2: 35, transitCity: 38, transitRail: 30, cycling: 20, carReq: false },
+  "Vitoria-Gasteiz": { safety: 78, hc: 85, groceries: 280, meal2: 45, transitCity: 50, transitRail: 40, cycling: 70, carReq: false },
+  "Barakaldo":     { safety: 68, hc: 88, groceries: 285, meal2: 48, transitCity: 72, transitRail: 55, cycling: 25, carReq: false },
+  "Pamplona":      { safety: 80, hc: 88, groceries: 270, meal2: 42, transitCity: 45, transitRail: 35, cycling: 45, carReq: false },
+  "Burgos":        { safety: 80, hc: 75, groceries: 220, meal2: 28, transitCity: 30, transitRail: 45, cycling: 30, carReq: false },
+  "Santiago de Compostela": { safety: 80, hc: 82, groceries: 240, meal2: 35, transitCity: 35, transitRail: 35, cycling: 20, carReq: false },
+  "Ourense":       { safety: 75, hc: 70, groceries: 210, meal2: 25, transitCity: 25, transitRail: 50, cycling: 15, carReq: false },
+  // Spain — Castilla y León & Aragón
+  "Valladolid":    { safety: 75, hc: 75, groceries: 220, meal2: 30, transitCity: 45, transitRail: 60, cycling: 40, carReq: false },
+  "Salamanca":     { safety: 78, hc: 75, groceries: 220, meal2: 28, transitCity: 35, transitRail: 35, cycling: 35, carReq: false },
+  "Zamora":        { safety: 78, hc: 68, groceries: 200, meal2: 28, transitCity: 15, transitRail: 55, cycling: 20, carReq: true },
+  "León":          { safety: 73, hc: 78, groceries: 210, meal2: 35, transitCity: 30, transitRail: 55, cycling: 40, carReq: false },
+  "Zaragoza":      { safety: 68, hc: 78, groceries: 240, meal2: 35, transitCity: 60, transitRail: 75, cycling: 45, carReq: false },
   // Spain — Catalonia
   "Barcelona":     { safety: 48, hc: 92, groceries: 310, meal2: 50, transitCity: 90, transitRail: 85, cycling: 55, carReq: false },
   "Girona":        { safety: 72, hc: 75, groceries: 270, meal2: 40, transitCity: 30, transitRail: 55, cycling: 45, carReq: false },
@@ -1945,6 +2325,15 @@ const extraData = {
   "Figueres":      { safety: 60, hc: 62, groceries: 240, meal2: 28, transitCity: 22, transitRail: 40, cycling: 30, carReq: true },
   "Roses":         { safety: 72, hc: 55, groceries: 260, meal2: 35, transitCity: 15, transitRail: 10, cycling: 25, carReq: true },
   "Vic":           { safety: 74, hc: 70, groceries: 240, meal2: 30, transitCity: 30, transitRail: 35, cycling: 40, carReq: false },
+  "L'Hospitalet de Llobregat": { safety: 50, hc: 85, groceries: 290, meal2: 45, transitCity: 85, transitRail: 80, cycling: 50, carReq: false },
+  "Badalona":      { safety: 55, hc: 82, groceries: 275, meal2: 42, transitCity: 80, transitRail: 65, cycling: 40, carReq: false },
+  "Terrassa":      { safety: 68, hc: 78, groceries: 260, meal2: 38, transitCity: 55, transitRail: 50, cycling: 35, carReq: false },
+  "Sabadell":      { safety: 68, hc: 78, groceries: 260, meal2: 38, transitCity: 55, transitRail: 50, cycling: 35, carReq: false },
+  "Santa Coloma de Gramenet": { safety: 48, hc: 78, groceries: 270, meal2: 40, transitCity: 80, transitRail: 65, cycling: 30, carReq: false },
+  "Mataró":        { safety: 62, hc: 70, groceries: 260, meal2: 38, transitCity: 35, transitRail: 50, cycling: 30, carReq: false },
+  "Lleida":        { safety: 65, hc: 70, groceries: 220, meal2: 28, transitCity: 25, transitRail: 60, cycling: 35, carReq: false },
+  "Reus":          { safety: 65, hc: 72, groceries: 245, meal2: 32, transitCity: 28, transitRail: 45, cycling: 30, carReq: false },
+  "Manresa":       { safety: 55, hc: 75, groceries: 250, meal2: 30, transitCity: 40, transitRail: 50, cycling: 30, carReq: false },
   // Czechia
   "Prague":        { safety: 65, hc: 85, groceries: 250, meal2: 30, transitCity: 85, transitRail: 80, cycling: 40, carReq: false },
   "Brno":          { safety: 72, hc: 82, groceries: 230, meal2: 25, transitCity: 65, transitRail: 70, cycling: 40, carReq: false },
@@ -2091,6 +2480,18 @@ const airportData = {
   // Portugal
   "Cascais":       "LIS – Lisbon (30 km)",
   "Lagos":         "FAO – Faro (85 km)",
+  // Portugal — North
+  "Porto":         "OPO – Porto (11 km)",
+  "Vila Nova de Gaia": "OPO – Porto (18 km)",
+  "Braga":         "OPO – Porto (55 km)",
+  "Matosinhos":    "OPO – Porto (5 km)",
+  "Gondomar":      "OPO – Porto (20 km)",
+  "Guimarães":     "OPO – Porto (60 km)",
+  "Maia":          "OPO – Porto (5 km)",
+  "Santa Maria da Feira": "OPO – Porto (40 km)",
+  "Vila Nova de Famalicão": "OPO – Porto (40 km)",
+  "Barcelos":      "OPO – Porto (55 km)",
+  "Viseu":         "OPO – Porto (140 km)",
   // Spain — South/East
   "Valencia":      "VLC – Valencia (10 km)",
   "Málaga":        "AGP – Málaga (8 km)",
@@ -2103,6 +2504,19 @@ const airportData = {
   "Vigo":          "VGO – Vigo (12 km)",
   "Pontevedra":    "VGO – Vigo (30 km)",
   "Logroño":       "RJL – Logroño (15 km)",
+  "Oviedo":        "OVD – Asturias (45 km)",
+  "Vitoria-Gasteiz": "VIT – Vitoria (8 km)",
+  "Barakaldo":     "BIO – Bilbao (15 km)",
+  "Pamplona":      "PNA – Pamplona (6 km)",
+  "Burgos":        "BUR – Burgos (5 km)",
+  "Santiago de Compostela": "SCQ – Santiago (10 km)",
+  "Ourense":       "VGO – Vigo (100 km)",
+  // Spain — Castilla y León & Aragón
+  "Valladolid":    "VLL – Valladolid (12 km)",
+  "Salamanca":     "SLM – Salamanca (15 km)",
+  "Zamora":        "VLL – Valladolid (111 km)",
+  "León":          "LEN – León (6 km)",
+  "Zaragoza":      "ZAZ – Zaragoza (12 km)",
   // Spain — Catalonia
   "Barcelona":     "BCN – Barcelona (15 km)",
   "Girona":        "GRO – Girona (12 km)",
@@ -2112,6 +2526,15 @@ const airportData = {
   "Figueres":      "GRO – Girona (40 km)",
   "Roses":         "GRO – Girona (55 km)",
   "Vic":           "BCN – Barcelona (70 km)",
+  "L'Hospitalet de Llobregat": "BCN – Barcelona (8 km)",
+  "Badalona":      "BCN – Barcelona (18 km)",
+  "Terrassa":      "BCN – Barcelona (35 km)",
+  "Sabadell":      "BCN – Barcelona (30 km)",
+  "Santa Coloma de Gramenet": "BCN – Barcelona (15 km)",
+  "Mataró":        "BCN – Barcelona (35 km)",
+  "Lleida":        "ILD – Lleida-Alguaire (15 km)",
+  "Reus":          "REU – Reus (3 km)",
+  "Manresa":       "BCN – Barcelona (65 km)",
   // Czechia
   "Prague":        "PRG – Prague (15 km)",
   "Brno":          "BRQ – Brno (8 km)",
