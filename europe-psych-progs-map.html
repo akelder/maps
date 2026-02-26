@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Top English-Taught Psychology BSc Programs in Europe (2025–2026)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #map { width: 100%; height: 100vh; }
+
+  .legend {
+    background: white; padding: 12px 16px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    line-height: 1.7; font-size: 12px; max-width: 210px;
+  }
+  .legend h4 { margin-bottom: 6px; font-size: 13px; color: #333; }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .legend-circle {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+  }
+
+  .price-marker {
+    display: flex; flex-direction: column; align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .price-marker .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+  .price-marker .label {
+    margin-top: 1px; background: rgba(255,255,255,0.92);
+    padding: 1px 5px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); color: #222;
+  }
+
+  .leaflet-popup-content { min-width: 310px; max-width: 380px; }
+  .popup-content h3 { margin: 0 0 4px 0; font-size: 16px; }
+  .popup-content .tags { margin-bottom: 6px; }
+  .popup-content .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: 600; margin-right: 3px; margin-bottom: 2px;
+  }
+  .popup-content .tag.country { color: white; }
+  .popup-content .tag.country.netherlands { background: #0288d1; }
+  .popup-content .tag.country.united-kingdom { background: #c0392b; }
+  .popup-content .tag.country.ireland { background: #27ae60; }
+  .popup-content .tag.country.hungary { background: #43a047; }
+  .popup-content .tag.country.czechia { background: #5c6bc0; }
+  .popup-content .tag.country.poland { background: #d81b60; }
+  .popup-content .tag.country.germany { background: #333333; }
+  .popup-content .tag.country.italy { background: #8e44ad; }
+  .popup-content .tag.country.austria { background: #e74c3c; }
+  .popup-content .tag.country.greece { background: #2c3e50; }
+  .popup-content .tag.country.cyprus { background: #00897b; }
+  .popup-content .tag.country.bulgaria { background: #546e7a; }
+  .popup-content .tag.country.malta { background: #c62828; }
+  .popup-content .tag.rank { background: #f0f0f0; color: #333; border: 1px solid #ccc; cursor: pointer; transition: background 0.15s; }
+  .popup-content .tag.rank:hover { background: #e0e0e0; }
+  .popup-content .tag.accred { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+
+  .popup-content .program-info { font-size: 12px; color: #444; margin-bottom: 4px; }
+  .popup-content .section-label {
+    font-size: 9px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-top: 7px; margin-bottom: 2px;
+  }
+  .popup-content .detail { font-size: 11.5px; color: #555; line-height: 1.5; }
+  .popup-content .pros { color: #1e8449; }
+  .popup-content .cons { color: #b03a2e; }
+  .popup-content .tuition-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px;
+    font-size: 13px; color: #333; margin-top: 2px; font-weight: 600;
+  }
+  .popup-content .admissions-info {
+    font-size: 10.5px; color: #666; margin-top: 2px;
+    padding: 4px 8px; background: #f8f8f8; border-radius: 4px; line-height: 1.4;
+  }
+  .popup-content .links-section { margin-top: 6px; }
+  .popup-content .links-section a {
+    display: inline-block; margin-right: 12px; font-size: 11px;
+    color: #2980b9; text-decoration: none; font-weight: 600;
+  }
+  .popup-content .links-section a:hover { text-decoration: underline; }
+
+  .filter-panel {
+    background: white; padding: 10px 14px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25); font-size: 12px;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .filter-panel h4 { margin-bottom: 6px; font-size: 13px; }
+  .filter-panel .filter-section { margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .filter-panel .filter-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .filter-panel label {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; padding: 2px 0;
+  }
+  .filter-panel input[type="checkbox"] { cursor: pointer; }
+
+  .filter-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none; padding: 3px 0;
+  }
+  .filter-section-header:hover { opacity: 0.7; }
+  .filter-section-header .arrow { transition: transform 0.2s; font-size: 10px; color: #999; }
+  .filter-section-header .arrow.collapsed { transform: rotate(-90deg); }
+  .filter-section-body { max-height: 500px; overflow: hidden; transition: max-height 0.25s ease; }
+  .filter-section-body.collapsed { max-height: 0; }
+  .filter-panel input[type="range"] {
+    width: 100%; cursor: pointer; margin: 4px 0;
+    accent-color: #3498db;
+  }
+  .filter-panel .slider-val { font-weight: 600; color: #3498db; }
+
+  .panel-toggle {
+    display: none; position: fixed; z-index: 1100;
+    background: white; border: none; border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer;
+    font-size: 16px; width: 34px; height: 34px;
+    align-items: center; justify-content: center;
+    color: #555;
+  }
+  .panel-toggle:active { background: #eee; }
+  #toggle-filter { top: 10px; right: 10px; }
+  #toggle-legend { bottom: 10px; right: 10px; }
+
+  @media (max-width: 768px) {
+    .panel-toggle { display: flex; }
+    .legend {
+      padding: 8px 10px; font-size: 10px; line-height: 1.5;
+      max-width: 170px;
+    }
+    .legend h4 { font-size: 11px; margin-bottom: 4px; }
+    .legend-circle { width: 10px; height: 10px; }
+    .legend-item { gap: 5px; }
+    .legend.collapsed { display: none; }
+    .filter-panel {
+      padding: 8px 10px; font-size: 11px;
+      max-height: 60vh;
+    }
+    .filter-panel h4 { font-size: 12px; }
+    .filter-panel label { padding: 1px 0; gap: 4px; }
+    .filter-panel.collapsed { display: none; }
+    .leaflet-popup-content { min-width: 260px; max-width: 330px; }
+    .popup-content h3 { font-size: 14px; }
+    .popup-content .tuition-grid { font-size: 12px; }
+    .popup-content .detail { font-size: 10.5px; }
+    .popup-content .admissions-info { font-size: 9.5px; }
+    .price-marker .label { font-size: 8px; }
+    .price-marker .dot { width: 14px; height: 14px; }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const programs = [
+  // ===================== NETHERLANDS (9) =====================
+  // All Dutch universities: EU/EEA statutory tuition €2,601/yr (2025-2026)
+  {
+    name: "University of Amsterdam", program: "BSc Psychology",
+    country: "Netherlands", city: "Amsterdam",
+    lat: 52.3676, lng: 4.9041, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 15795, ranking: "QS #10",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 (no sub <6.0) or TOEFL 90; Numerus fixus ~330 places; Deadline 15 January; Selection via motivation + grades",
+    programUrl: "https://www.uva.nl/en/programmes/bachelors/psychology/psychology.html",
+    admissionsUrl: "https://www.uva.nl/en/programmes/bachelors/psychology/application-and-admission/application-and-admission.html",
+    pros: "QS #1 in Netherlands for psychology, large international cohort, vibrant student city, strong research (Brain & Cognition, Clinical, Social)",
+    cons: "Numerus fixus makes admission competitive, high cost of living in Amsterdam, student housing crisis, large classes"
+  },
+  {
+    name: "University of Groningen", program: "BSc Psychology",
+    country: "Netherlands", city: "Groningen",
+    lat: 53.2194, lng: 6.5665, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 14400, ranking: "QS #41",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics A or B required; IELTS 6.5 (no sub <6.0) or TOEFL 90; Numerus fixus ~550 places; Deadline 15 January",
+    programUrl: "https://www.rug.nl/bachelors/psychology/",
+    admissionsUrl: "https://www.rug.nl/bachelors/psychology/admission-and-application",
+    pros: "Top-rated psychology faculty, affordable student city, strong clinical and experimental research, good student-staff ratio",
+    cons: "Numerus fixus limits places, cold/rainy climate, remote northern location"
+  },
+  {
+    name: "Vrije Universiteit Amsterdam", program: "BSc Psychology",
+    country: "Netherlands", city: "Amsterdam",
+    lat: 52.3340, lng: 4.8658, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 14400, ranking: "QS #37",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; Numerus fixus ~480 places; Deadline 15 January",
+    programUrl: "https://vu.nl/en/education/bachelor/psychology",
+    admissionsUrl: "https://vu.nl/en/education/bachelor/psychology/admissions",
+    pros: "Strong neuroscience and clinical specializations, modern campus, Amsterdam location, affiliated with VU Medical Center",
+    cons: "Campus outside city center (Zuidas), Amsterdam housing shortage, large program"
+  },
+  {
+    name: "Erasmus University Rotterdam", program: "International Bachelor Psychology",
+    country: "Netherlands", city: "Rotterdam",
+    lat: 51.9173, lng: 4.5254, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 11800, ranking: "QS #44",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; Numerus fixus ~200 places; Deadline 15 January",
+    programUrl: "https://www.eur.nl/en/bachelor/international-bachelor-psychology",
+    admissionsUrl: "https://www.eur.nl/en/bachelor/international-bachelor-psychology/admission",
+    pros: "Fully international program, small cohort (~200), research-oriented, modern campus, Rotterdam more affordable than Amsterdam",
+    cons: "Smaller program limits elective choices, Rotterdam less charming than Amsterdam, competitive selection"
+  },
+  {
+    name: "Leiden University", program: "BSc Psychology",
+    country: "Netherlands", city: "Leiden",
+    lat: 52.1601, lng: 4.4970, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 15900, ranking: "QS #65",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; Numerus fixus ~450 places; Deadline 15 January",
+    programUrl: "https://www.universiteitleiden.nl/en/education/study-programmes/bachelor/psychology",
+    admissionsUrl: "https://www.universiteitleiden.nl/en/education/study-programmes/bachelor/psychology/admission-and-application",
+    pros: "Oldest university in Netherlands (1575), strong clinical psychology tradition, beautiful historic city, excellent child & adolescent specialization",
+    cons: "Numerus fixus, smaller city with less nightlife, limited English social scene outside university"
+  },
+
+  {
+    name: "Maastricht University", program: "BSc Psychology",
+    country: "Netherlands", city: "Maastricht",
+    lat: 50.8514, lng: 5.6910, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 14400, ranking: "QS #51–100",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Maths and Biology recommended; IELTS 6.5 or TOEFL 90; No numerus fixus; Problem-Based Learning format",
+    programUrl: "https://www.maastrichtuniversity.nl/education/bachelor/programmes/psychology",
+    admissionsUrl: "https://www.maastrichtuniversity.nl/education/bachelor/programmes/psychology/admission-requirements",
+    pros: "Problem-Based Learning (small groups of 12-15), most international student body in NL (~50%), affordable city, near Belgian/German border",
+    cons: "PBL style not for everyone, isolated from main Dutch cities, smaller city"
+  },
+  {
+    name: "Radboud University", program: "BSc Psychology",
+    country: "Netherlands", city: "Nijmegen",
+    lat: 51.8126, lng: 5.8696, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 14400, ranking: "QS #51–100",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; Numerus fixus ~500 places; Deadline 15 January",
+    programUrl: "https://www.ru.nl/en/education/bachelors/psychology",
+    admissionsUrl: "https://www.ru.nl/en/education/bachelors/psychology/admission-and-application",
+    pros: "Home of Donders Institute (world-renowned neuroscience), strong cognitive neuroscience, green campus, affordable student city",
+    cons: "Nijmegen is smaller/quieter, less international than Amsterdam, limited nightlife"
+  },
+  {
+    name: "Tilburg University", program: "BSc Psychology",
+    country: "Netherlands", city: "Tilburg",
+    lat: 51.5643, lng: 5.0439, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 10200, ranking: "QS #51",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; No numerus fixus; Deadline 1 May",
+    programUrl: "https://www.tilburguniversity.edu/education/bachelors-programs/psychology",
+    admissionsUrl: "https://www.tilburguniversity.edu/education/bachelors-programs/psychology/application",
+    pros: "No numerus fixus (easier admission), strong social psychology and methodology, affordable city, lowest international tuition among Dutch unis",
+    cons: "Less prestigious than top-5 Dutch psychology, Tilburg is a smaller city, fewer social opportunities"
+  },
+  {
+    name: "University of Twente", program: "BSc Psychology",
+    country: "Netherlands", city: "Enschede",
+    lat: 52.2398, lng: 6.8500, duration: "3 years",
+    tuitionEU: 2601, tuitionIntl: 13750, ranking: "QS #201–250",
+    accreditation: "",
+    admissions: "VWO diploma or equivalent; Mathematics required; IELTS 6.5 or TOEFL 90; No numerus fixus; Unique tech-psychology focus",
+    programUrl: "https://www.utwente.nl/en/education/bachelor/programmes/psychology/",
+    admissionsUrl: "https://www.utwente.nl/en/education/bachelor/programmes/psychology/enrolment/",
+    pros: "Unique technology-psychology integration (Human Factors, Cyberpsychology), campus university with on-campus housing, affordable city, no numerus fixus",
+    cons: "Remote eastern location near German border, smaller psychology department, less traditional clinical focus"
+  },
+
+  // ===================== UNITED KINGDOM (13) =====================
+  // Post-Brexit: EU citizens pay international fees
+  {
+    name: "University of Oxford", program: "BA Experimental Psychology",
+    country: "United Kingdom", city: "Oxford",
+    lat: 51.7520, lng: -1.2577, duration: "3 years",
+    tuitionEU: 39010, tuitionIntl: 39010, ranking: "QS #2",
+    accreditation: "BPS accredited",
+    admissions: "A*AA at A-Level (Maths + science recommended); IB 39 with 766 at HL; TSA required; Interview required; IELTS 7.0 (no sub <6.5); ~15% acceptance; Deadline 15 October (UCAS)",
+    programUrl: "https://www.ox.ac.uk/admissions/undergraduate/courses/course-listing/psychology-experimental",
+    admissionsUrl: "https://www.ox.ac.uk/admissions/undergraduate/courses/course-listing/psychology-experimental",
+    pros: "QS #1 in Europe for psychology, tutorial system (1-on-1 teaching), exceptional research, prestigious degree, college community",
+    cons: "Extremely competitive (~15% acceptance), very high fees (€39k/yr), intense academic pressure, Oxford is expensive"
+  },
+  {
+    name: "University of Cambridge", program: "BA Psychological & Behavioural Sciences",
+    country: "United Kingdom", city: "Cambridge",
+    lat: 52.2053, lng: 0.1218, duration: "3 years",
+    tuitionEU: 38010, tuitionIntl: 38010, ranking: "QS #4",
+    accreditation: "BPS accredited",
+    admissions: "A*A*A at A-Level (science + maths preferred); IB 40-42 with 776 at HL; Interview required; IELTS 7.5 (no sub <7.0); ~10% acceptance; Deadline 15 October (UCAS)",
+    programUrl: "https://www.undergraduate.study.cam.ac.uk/courses/psychological-behavioural-sciences-ba-hons",
+    admissionsUrl: "https://www.undergraduate.study.cam.ac.uk/courses/psychological-and-behavioural-sciences",
+    pros: "QS #2 in Europe, interdisciplinary (psych + neuro + linguistics), supervisions system, beautiful historic city",
+    cons: "Extremely selective (~10%), highest fees on list (€38k/yr), intense workload, limited clinical focus at BSc"
+  },
+  {
+    name: "University College London (UCL)", program: "BSc Psychology",
+    country: "United Kingdom", city: "London",
+    lat: 51.5246, lng: -0.1340, duration: "3 years",
+    tuitionEU: 32100, tuitionIntl: 32100, ranking: "QS #6",
+    accreditation: "BPS accredited",
+    admissions: "AAA at A-Level (Maths + one science preferred); IB 38 with 666 at HL; IELTS 7.0 (no sub <6.5); UCAS deadline 31 January",
+    programUrl: "https://www.ucl.ac.uk/prospective-students/undergraduate/degrees/psychology-bsc",
+    admissionsUrl: "https://www.ucl.ac.uk/prospective-students/undergraduate/degrees/psychology-bsc",
+    pros: "QS #3 in Europe, central London, outstanding neuroscience research, NHS clinical placements, diverse campus",
+    cons: "Very high fees (€32k/yr), London extremely expensive to live in, large class sizes"
+  },
+  {
+    name: "King's College London", program: "BSc Psychology",
+    country: "United Kingdom", city: "London",
+    lat: 51.5115, lng: -0.1160, duration: "3 years",
+    tuitionEU: 29580, tuitionIntl: 29580, ranking: "QS #18",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level (Maths or science preferred); IB 35 with 665 at HL; IELTS 7.0 (no sub <6.5); UCAS deadline 31 January",
+    programUrl: "https://www.kcl.ac.uk/study/undergraduate/courses/psychology-bsc",
+    admissionsUrl: "https://www.kcl.ac.uk/study/undergraduate/courses/psychology-bsc",
+    pros: "IoPPN — world-leading mental health research, central London, strong clinical connections, excellent for clinical psychology path",
+    cons: "High fees (€30k/yr), London living costs, less of a campus experience"
+  },
+  {
+    name: "University of Edinburgh", program: "BSc Psychology",
+    country: "United Kingdom", city: "Edinburgh",
+    lat: 55.9533, lng: -3.1883, duration: "4 years",
+    tuitionEU: 28950, tuitionIntl: 28950, ranking: "QS #30",
+    accreditation: "BPS accredited",
+    admissions: "AAA at A-Level or AAAB at Scottish Higher; IB 36 with 665 at HL; IELTS 6.5 (no sub <5.5); UCAS deadline 31 January",
+    programUrl: "https://study.ed.ac.uk/programmes/undergraduate/370-psychology",
+    admissionsUrl: "https://study.ed.ac.uk/programmes/undergraduate/370-psychology",
+    pros: "Russell Group, beautiful historic city, strong developmental and cognitive research, 4-year Scottish degree gives more depth",
+    cons: "4-year program (€116k total fees), Edinburgh increasingly expensive, cold/wet climate"
+  },
+  {
+    name: "University of Manchester", program: "BSc Psychology",
+    country: "United Kingdom", city: "Manchester",
+    lat: 53.4668, lng: -2.2339, duration: "3 years",
+    tuitionEU: 28500, tuitionIntl: 28500, ranking: "QS #51–100",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level; IB 35 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.manchester.ac.uk/study/undergraduate/courses/2026/00653/bsc-psychology/",
+    admissionsUrl: "https://www.manchester.ac.uk/study/undergraduate/courses/2026/00653/bsc-psychology/",
+    pros: "Russell Group, strong research output, vibrant city with lower cost of living than London, good employability",
+    cons: "High international fees, rainy climate, large class sizes"
+  },
+  {
+    name: "University of Birmingham", program: "BSc Psychology",
+    country: "United Kingdom", city: "Birmingham",
+    lat: 52.4508, lng: -1.9305, duration: "3 years",
+    tuitionEU: 26640, tuitionIntl: 26640, ranking: "QS #51–100",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level; IB 32 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.birmingham.ac.uk/undergraduate/courses/psychology/psychology.aspx",
+    admissionsUrl: "https://www.birmingham.ac.uk/undergraduate/courses/psychology/psychology.aspx",
+    pros: "Russell Group, strong campus experience, Centre for Human Brain Health, affordable city, good clinical psychology postgrad route",
+    cons: "High fees, Birmingham city less attractive than others, campus outside center"
+  },
+  {
+    name: "University of Exeter", program: "BSc Psychology",
+    country: "United Kingdom", city: "Exeter",
+    lat: 50.7355, lng: -3.5348, duration: "3 years",
+    tuitionEU: 27200, tuitionIntl: 27200, ranking: "QS #101–150",
+    accreditation: "BPS accredited",
+    admissions: "AAA at A-Level; IB 36 with 666 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.exeter.ac.uk/undergraduate/courses/psychology/psychology-bsc/",
+    admissionsUrl: "https://www.exeter.ac.uk/undergraduate/courses/psychology/psychology-bsc/",
+    pros: "Rising rapidly in UK rankings, beautiful Devon location near coast, strong mood disorders research, excellent student satisfaction",
+    cons: "Remote southwest location, smaller city, high fees, limited transport connections"
+  },
+  {
+    name: "University of Bath", program: "BSc Psychology",
+    country: "United Kingdom", city: "Bath",
+    lat: 51.3811, lng: -2.3590, duration: "3 years",
+    tuitionEU: 26400, tuitionIntl: 26400, ranking: "QS #151–200",
+    accreditation: "BPS accredited",
+    admissions: "AAA at A-Level; IB 36; IELTS 7.0 (no sub <6.5); UCAS deadline 31 January; Optional placement year (4-year route)",
+    programUrl: "https://www.bath.ac.uk/courses/undergraduate-2026/psychology/bsc-psychology/",
+    admissionsUrl: "https://www.bath.ac.uk/courses/undergraduate-2026/psychology/bsc-psychology/",
+    pros: "Top-5 UK for psychology in league tables, UNESCO city, excellent placement year option, high student satisfaction",
+    cons: "High fees, Bath expensive to live in, campus on hill outside city"
+  },
+  {
+    name: "University of Bristol", program: "BSc Psychology",
+    country: "United Kingdom", city: "Bristol",
+    lat: 51.4545, lng: -2.5879, duration: "3 years",
+    tuitionEU: 27200, tuitionIntl: 27200, ranking: "QS #51–100",
+    accreditation: "BPS accredited",
+    admissions: "AAA at A-Level; IB 36 with 666 at HL; IELTS 6.5 (no sub <6.5); UCAS deadline 31 January",
+    programUrl: "https://www.bristol.ac.uk/study/undergraduate/2025/psychology/bsc-psychology/",
+    admissionsUrl: "https://www.bristol.ac.uk/study/undergraduate/2025/psychology/bsc-psychology/",
+    pros: "Russell Group, vibrant creative city, excellent neuroscience and perception research, good industry links",
+    cons: "High fees, hilly city, competitive for postgrad clinical places, housing demand"
+  },
+  {
+    name: "University of Glasgow", program: "BSc Psychology",
+    country: "United Kingdom", city: "Glasgow",
+    lat: 55.8642, lng: -4.2518, duration: "4 years",
+    tuitionEU: 26400, tuitionIntl: 26400, ranking: "QS #51–100",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level or AABB at Scottish Higher; IB 36 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.gla.ac.uk/undergraduate/degrees/psychology/",
+    admissionsUrl: "https://www.gla.ac.uk/undergraduate/degrees/psychology/",
+    pros: "Ancient university (1451), affordable city, strong cognitive neuroscience, 4-year Scottish degree (broader first year), friendly atmosphere",
+    cons: "4-year program (€106k total), wet/cold climate, Glasgow less glamorous than Edinburgh"
+  },
+  {
+    name: "University of York", program: "BSc Psychology",
+    country: "United Kingdom", city: "York",
+    lat: 53.9469, lng: -1.0295, duration: "3 years",
+    tuitionEU: 26640, tuitionIntl: 26640, ranking: "QS #97",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level; IB 35 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.york.ac.uk/study/undergraduate/courses/bsc-psychology/",
+    admissionsUrl: "https://www.york.ac.uk/study/undergraduate/courses/bsc-psychology/",
+    pros: "Russell Group, top-10 UK for psychology, beautiful historic city, strong cognitive & developmental research, campus with lake",
+    cons: "High fees, small city with limited nightlife, cold northern climate"
+  },
+  {
+    name: "University of Nottingham", program: "BSc Psychology",
+    country: "United Kingdom", city: "Nottingham",
+    lat: 52.9388, lng: -1.1966, duration: "3 years",
+    tuitionEU: 26500, tuitionIntl: 26500, ranking: "QS #51–100",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level; IB 34 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://www.nottingham.ac.uk/studywithus/ugstudy/courses/UG/Psychology-BSc-Hons.html",
+    admissionsUrl: "https://www.nottingham.ac.uk/studywithus/ugstudy/courses/UG/Psychology-BSc-Hons.html",
+    pros: "Russell Group, strong research across all areas, beautiful parkland campus, affordable Midlands city, well-regarded department",
+    cons: "High international fees, Nottingham less exciting than London/Manchester, large first-year cohort"
+  },
+
+  // ===================== IRELAND (3) =====================
+  // EU citizens: student contribution ~€3,000/yr (free tuition for EU, just the contribution)
+  {
+    name: "Trinity College Dublin", program: "BA Psychology",
+    country: "Ireland", city: "Dublin",
+    lat: 53.3438, lng: -6.2546, duration: "4 years",
+    tuitionEU: 3000, tuitionIntl: 23870, ranking: "QS #51–100",
+    accreditation: "PSI accredited",
+    admissions: "CAO points ~540-580; Leaving Cert with min H4 in English, Irish, Maths; International: equivalent qualifications; IELTS 6.5; Deadline 1 February (CAO)",
+    programUrl: "https://www.tcd.ie/courses/undergraduate/courses/psychology/",
+    admissionsUrl: "https://www.tcd.ie/courses/undergraduate/courses/psychology/",
+    pros: "Ireland's #1 university, PSI accredited (required for practice in Ireland), beautiful historic campus, strong research tradition",
+    cons: "4-year program, Dublin extremely expensive for housing, competitive CAO points"
+  },
+  {
+    name: "University College Dublin", program: "BSc Psychology",
+    country: "Ireland", city: "Dublin",
+    lat: 53.3064, lng: -6.2234, duration: "3 years",
+    tuitionEU: 3000, tuitionIntl: 21700, ranking: "QS #151–200",
+    accreditation: "PSI accredited",
+    admissions: "CAO points ~500-540; Leaving Cert with min H4 in English, Irish, Maths; IELTS 6.5; Deadline 1 February (CAO)",
+    programUrl: "https://www.ucd.ie/psychology/study/undergraduateprogrammes/",
+    admissionsUrl: "https://www.ucd.ie/psychology/study/undergraduateprogrammes/",
+    pros: "Ireland's largest university, PSI accredited, modern campus, strong applied and clinical psychology, flexible first year",
+    cons: "Dublin housing crisis, campus in suburbs (Belfield), large class sizes"
+  },
+  {
+    name: "University College Cork", program: "BA Applied Psychology",
+    country: "Ireland", city: "Cork",
+    lat: 51.8937, lng: -8.4916, duration: "4 years",
+    tuitionEU: 3000, tuitionIntl: 19600, ranking: "Not ranked",
+    accreditation: "PSI accredited",
+    admissions: "CAO points ~480-520; Leaving Cert with min H4 in English, Irish, Maths; IELTS 6.5; Deadline 1 February (CAO)",
+    programUrl: "https://www.ucc.ie/en/ck120/",
+    admissionsUrl: "https://www.ucc.ie/en/ck120/",
+    pros: "PSI accredited, 'Applied' focus includes work placement, Cork more affordable than Dublin, friendly student city",
+    cons: "4-year program, Cork smaller/less connected than Dublin, fewer international students"
+  },
+
+  // ===================== CENTRAL & EASTERN EUROPE (4) =====================
+  {
+    name: "ELTE Budapest", program: "BA Psychology",
+    country: "Hungary", city: "Budapest",
+    lat: 47.4736, lng: 19.0622, duration: "3 years",
+    tuitionEU: 5600, tuitionIntl: 5600, ranking: "QS #201–250",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (IELTS 5.5-6.0 or equivalent); Entrance exam or interview may apply; Rolling admissions; Deadline typically 30 June",
+    programUrl: "https://www.elte.hu/en/psychology-ba",
+    admissionsUrl: "https://www.elte.hu/en/psychology-ba",
+    pros: "Hungary's top university for psychology, very affordable tuition and living, beautiful city, strong clinical and cognitive traditions",
+    cons: "Less internationally recognized, Hungarian bureaucracy, language barrier outside university"
+  },
+  {
+    name: "Charles University Prague", program: "BA Psychology",
+    country: "Czechia", city: "Prague",
+    lat: 50.0755, lng: 14.4378, duration: "3 years",
+    tuitionEU: 5200, tuitionIntl: 5200, ranking: "QS #301+",
+    accreditation: "",
+    admissions: "High school diploma; Entrance exam (written + oral); English proficiency (IELTS 6.0 or equivalent); Deadline typically 28 February",
+    programUrl: "https://psychology.ff.cuni.cz/",
+    admissionsUrl: "https://psychology.ff.cuni.cz/about-the-program/",
+    pros: "Oldest university in Central Europe (1348), affordable tuition and living, Prague is a beautiful student city, growing reputation",
+    cons: "Entrance exam required, some limited English resources, Czech bureaucracy"
+  },
+  {
+    name: "SWPS University Warsaw", program: "BA Psychology",
+    country: "Poland", city: "Warsaw",
+    lat: 52.2297, lng: 21.0122, duration: "3 years",
+    tuitionEU: 4200, tuitionIntl: 4200, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (IELTS 5.5 or equivalent); No entrance exam; Rolling admissions; Deadline typically 15 September",
+    programUrl: "https://english.swps.pl/psychology-ba-warsaw",
+    admissionsUrl: "https://english.swps.pl/psychology-ba-warsaw",
+    pros: "Poland's leading psychology-focused university, very affordable tuition and living, no entrance exam, multiple specializations, easy admission",
+    cons: "Private university (less recognized than public), less research-intensive at BA level"
+  },
+  {
+    name: "University of Leeds", program: "BSc Psychology",
+    country: "United Kingdom", city: "Leeds",
+    lat: 53.8067, lng: -1.5550, duration: "3 years",
+    tuitionEU: 27250, tuitionIntl: 27250, ranking: "QS #101–150",
+    accreditation: "BPS accredited",
+    admissions: "AAB at A-Level; IB 35 with 665 at HL; IELTS 6.5 (no sub <6.0); UCAS deadline 31 January",
+    programUrl: "https://courses.leeds.ac.uk/3670/psychology-bsc",
+    admissionsUrl: "https://courses.leeds.ac.uk/3670/psychology-bsc",
+    pros: "Russell Group, strong perception and action research, vibrant student city, more affordable than London, good placement opportunities",
+    cons: "High international fees, northern climate, large first-year classes"
+  },
+
+  // ===================== EU MAINLAND — ADDITIONAL 10 =====================
+
+  {
+    name: "Constructor University", program: "BSc Integrated Social and Cognitive Psychology",
+    country: "Germany", city: "Bremen",
+    lat: 53.1672, lng: 8.6521, duration: "3 years",
+    tuitionEU: 20000, tuitionIntl: 20000, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; IELTS 6.0 or TOEFL 85; SAT/ACT optional; Letters of recommendation + CV; Rolling admissions: Early Action Feb 1, final Jun 1 (visa) / Jul 13 (no visa); ~47% acceptance rate; Merit scholarships available",
+    programUrl: "https://constructor.university/programs/undergraduate-education/integrated-social-cognitive-psychology",
+    admissionsUrl: "https://constructor.university/admission-aid/application-information-undergraduate",
+    pros: "One of very few English BSc Psychology programs in Germany, true residential campus (~100 nationalities), mandatory summer internship, generous merit scholarships available",
+    cons: "Very expensive (€20k/yr + ~€4k accommodation), private with less established reputation vs public German unis, Bremen is not a major city, small cohort"
+  },
+  {
+    name: "Universita Cattolica del Sacro Cuore", program: "BSc Psychology",
+    country: "Italy", city: "Milan",
+    lat: 45.4620, lng: 9.1715, duration: "3 years",
+    tuitionEU: 6580, tuitionIntl: 8800, ranking: "QS #101–150",
+    accreditation: "",
+    admissions: "High school diploma; English B2: IELTS 6.0, TOEFL 79, or Cambridge B2 First; Online admission test (logical reasoning + data interpretation); High school average >= 7.5/10 for first session; Application fee €160",
+    programUrl: "https://international.unicatt.it/ucscinternational-undergraduate-programs-psychology",
+    admissionsUrl: "https://international.unicatt.it/ucscinternational-psychology-admission-and-tuition",
+    pros: "One of very few English BSc Psychology programs in Italy, 100+ years of psychology research, Milan is Italy's most international city, affordable EU tuition (€6,580/yr)",
+    cons: "Catholic university (religious ethos may influence certain topics), relatively new English track so cohort still growing, Milan is Italy's most expensive city for living"
+  },
+  {
+    name: "Webster Vienna Private University", program: "BA Psychology",
+    country: "Austria", city: "Vienna",
+    lat: 48.2082, lng: 16.3738, duration: "4 years",
+    tuitionEU: 23830, tuitionIntl: 23830, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; GPA 2.5/4.0 or equivalent; IELTS 6.0 or equivalent; €1,000 deposit on admission; Intake August/September or January/February; Max ~35 students/year",
+    programUrl: "https://www.webster.ac.at/academics/psychology.php",
+    admissionsUrl: "https://www.webster.ac.at/admissions/index.php",
+    pros: "Dual Austrian + US-accredited degree, very small classes (max 35 intake), Vienna — one of Europe's highest quality-of-life cities, two intakes per year",
+    cons: "Very expensive (€23,830/yr x 4 years = ~€95k total), 4-year program, small/lesser-known private university, not equivalent to Austrian public uni degree for clinical licensing"
+  },
+  {
+    name: "University of Debrecen", program: "BA Psychology",
+    country: "Hungary", city: "Debrecen",
+    lat: 47.5316, lng: 21.6273, duration: "3 years",
+    tuitionEU: 5200, tuitionIntl: 5200, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (IELTS 5.5-6.0 or equivalent); Entrance interview may apply; Application via Hungarian Stipendium Hungaricum or direct; Deadline typically 30 June",
+    programUrl: "https://www.edu.unideb.hu/p/ba-in-psychology-4212",
+    admissionsUrl: "https://www.edu.unideb.hu/p/admission-requirements-3804",
+    pros: "Major Hungarian research university, very affordable tuition (€5,200/yr) and living costs, Hungarian government scholarships available, growing international community",
+    cons: "Debrecen is smaller/less exciting than Budapest, less international recognition, language barrier outside university, limited English-language social scene"
+  },
+  {
+    name: "Sigmund Freud University", program: "BSc Psychology",
+    country: "Germany", city: "Berlin",
+    lat: 52.5067, lng: 13.3325, duration: "3 years",
+    tuitionEU: 11760, tuitionIntl: 11760, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma (Abitur or equivalent); English proficiency B2+; Application with CV and motivation letter; Intake: October (winter semester); Rolling admissions",
+    programUrl: "https://psychologie.sfu-berlin.de/en/academics/bachelor-programme-psychology/",
+    admissionsUrl: "https://psychologie.sfu-berlin.de/en/academics/bachelor-programme-psychology/",
+    pros: "University specialized in psychology and psychotherapy, Berlin is a vibrant affordable capital, small class sizes, strong clinical orientation, English-taught in Germany",
+    cons: "Private university (€11,760/yr), less internationally recognized, relatively small institution, German clinical licensing path may require additional steps"
+  },
+  {
+    name: "Deree - The American College of Greece", program: "BSc Psychology",
+    country: "Greece", city: "Athens",
+    lat: 38.0052, lng: 23.7750, duration: "4 years",
+    tuitionEU: 8800, tuitionIntl: 8800, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (IELTS 6.0 or TOEFL 79 or Deree English placement); Application with transcripts + recommendation; Rolling admissions; September and January intakes",
+    programUrl: "https://www.acg.edu/undergraduate/psychology/",
+    admissionsUrl: "https://www.acg.edu/admissions/",
+    pros: "Oldest American-accredited college in Europe (1875), English-medium in Greece, Athens living costs lower than Western Europe, BPS-mapped curriculum, warm Mediterranean climate",
+    cons: "4-year US-style program (€35k total), private institution less known in Europe, smaller than public Greek universities, degree recognition may vary in some EU countries"
+  },
+  {
+    name: "University of Nicosia", program: "BSc Psychology",
+    country: "Cyprus", city: "Nicosia",
+    lat: 35.1681, lng: 33.3597, duration: "4 years",
+    tuitionEU: 9240, tuitionIntl: 9240, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (IELTS 6.0 or TOEFL 79); Application with transcripts; Rolling admissions; September and February intakes; Merit-based scholarships available",
+    programUrl: "https://www.unic.ac.cy/psychology-bsc-4-years/",
+    admissionsUrl: "https://www.unic.ac.cy/admissions/",
+    pros: "Largest university in Cyprus, English-medium, EU member state, warm climate (340 sunny days/yr), affordable living, option to transfer to UK partner universities",
+    cons: "4-year program (€37k total), Cyprus is geographically isolated, smaller academic reputation, limited research facilities compared to larger European universities"
+  },
+
+  {
+    name: "New Bulgarian University", program: "BA Psychology",
+    country: "Bulgaria", city: "Sofia",
+    lat: 42.6572, lng: 23.2866, duration: "4 years",
+    tuitionEU: 3300, tuitionIntl: 3300, ranking: "Not ranked",
+    accreditation: "",
+    admissions: "High school diploma; English proficiency (B2 level); Application with transcripts and motivation letter; Entrance exam/interview; Deadline typically September",
+    programUrl: "https://ecatalog.nbu.bg/default.asp?V_Year=2025&PageShow=programpresent&P_Menu=generalinfo&Fac_ID=3&P_ID=2339&l=1",
+    admissionsUrl: "https://www.nbu.bg/en/prospective-students/admission-to-undergraduate-programs/bachelor-s-programs",
+    pros: "Very affordable tuition (€3,300/yr) and extremely low living costs (~€350-450/mo), modern campus, EU member, Sofia is a growing capital city, easy admission",
+    cons: "Less internationally recognized, Bulgaria's higher education system still developing, limited English social environment, smaller research output"
+  },
+  {
+    name: "University of Malta", program: "BSc (Hons) Psychology",
+    country: "Malta", city: "Msida",
+    lat: 35.9023, lng: 14.4849, duration: "3 years",
+    tuitionEU: 400, tuitionIntl: 5400, ranking: "Not ranked",
+    accreditation: "BPS accredited",
+    admissions: "MATSEC or equivalent (A-Level passes in 2 subjects + O-Level in 4 including English + Maths); IELTS 6.0 for non-native speakers; Application via university portal; Deadline typically mid-July",
+    programUrl: "https://www.um.edu.mt/courses/overview/UBSCHPSYFT-2025-6-O",
+    admissionsUrl: "https://www.um.edu.mt/admissions/",
+    pros: "Incredibly cheap for EU citizens (€400/yr registration fee only), English-medium (Malta's official language), BPS accredited, Mediterranean climate, EU member, small class sizes",
+    cons: "Small island (limited job market), university is smaller with less research output, Malta can feel isolated, limited postgraduate options on-island"
+  }
+];
+
+const countryColors = {
+  "Netherlands": "#0288d1",
+  "United Kingdom": "#c0392b",
+  "Ireland": "#27ae60",
+  "Hungary": "#43a047",
+  "Czechia": "#5c6bc0",
+  "Poland": "#d81b60",
+  "Germany": "#333333",
+  "Italy": "#8e44ad",
+  "Austria": "#e74c3c",
+  "Greece": "#2c3e50",
+  "Cyprus": "#00897b",
+  "Bulgaria": "#546e7a",
+  "Malta": "#c62828"
+};
+
+function getTuitionColor(tuition) {
+  if (tuition <= 3000) return '#27ae60';
+  if (tuition <= 6000) return '#2ecc71';
+  if (tuition <= 15000) return '#f39c12';
+  if (tuition <= 30000) return '#e74c3c';
+  return '#8e44ad';
+}
+
+function formatTuition(n) {
+  return '\u20AC' + n.toLocaleString();
+}
+
+const map = L.map('map', { zoomControl: true }).setView([51.5, 2.0], 5);
+
+L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://opentopomap.org">OpenTopoMap</a>',
+  maxZoom: 17
+}).addTo(map);
+
+const countryGroups = {};
+Object.keys(countryColors).forEach(c => { countryGroups[c] = L.layerGroup().addTo(map); });
+
+programs.forEach(prog => {
+  const color = getTuitionColor(prog.tuitionEU);
+  const cls = prog.country.toLowerCase().replace(/\s+/g, '-');
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="price-marker">
+        <div class="dot" style="background:${color};"></div>
+        <div class="label">${prog.name} ${formatTuition(prog.tuitionEU)}/yr</div>
+      </div>`,
+    iconSize: [0, 0], iconAnchor: [9, 9], popupAnchor: [0, -12]
+  });
+
+  const accredTag = prog.accreditation
+    ? `<span class="tag accred">${prog.accreditation}</span>`
+    : '';
+
+  const popup = `<div class="popup-content">
+      <h3>${prog.name}</h3>
+      <div class="tags">
+        <span class="tag country ${cls}">${prog.country}</span>
+        <a href="https://www.topuniversities.com/university-subject-rankings/psychology" target="_blank" title="QS Psychology Rankings" style="text-decoration:none;"><span class="tag rank">${prog.ranking} ↗</span></a>
+        ${accredTag}
+      </div>
+      <div class="program-info">
+        \u{1F4DA} ${prog.program} \u00B7 ${prog.duration} \u00B7 ${prog.city}
+      </div>
+
+      <div class="section-label">Tuition (Annual)</div>
+      <div class="tuition-grid">
+        <span>\u{1F1EA}\u{1F1FA} EU/EEA: <strong>${formatTuition(prog.tuitionEU)}</strong></span>
+        <span>\u{1F30D} International: <strong>${formatTuition(prog.tuitionIntl)}</strong></span>
+      </div>
+
+      <div class="section-label">Admissions Requirements</div>
+      <div class="admissions-info">${prog.admissions}</div>
+
+      <div class="section-label">Pros</div>
+      <div class="detail pros">+ ${prog.pros}</div>
+      <div class="section-label">Cons</div>
+      <div class="detail cons">\u2212 ${prog.cons}</div>
+
+      <div class="links-section">
+        <a href="${prog.programUrl}" target="_blank">\u{1F517} Program Website \u2197</a>
+        <a href="${prog.admissionsUrl}" target="_blank">\u{1F4CB} Admissions & Apply \u2197</a>
+      </div>
+    </div>`;
+
+  const marker = L.marker([prog.lat, prog.lng], { icon })
+    .bindPopup(popup, { maxWidth: 380 });
+
+  marker.addTo(countryGroups[prog.country]);
+  marker._progData = prog;
+});
+
+// Legend
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <h4>EU Citizen Tuition (annual)</h4>
+    <div class="legend-item"><div class="legend-circle" style="background:#27ae60"></div> \u2264 \u20AC3,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#2ecc71"></div> \u20AC3,001 \u2013 \u20AC6,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#f39c12"></div> \u20AC6,001 \u2013 \u20AC15,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#e74c3c"></div> \u20AC15,001 \u2013 \u20AC30,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#8e44ad"></div> > \u20AC30,000</div>
+    <hr style="margin:6px 0;border:none;border-top:1px solid #ddd;">
+    <div style="font-size:10px;color:#888;">Click marker for details.<br>${programs.length} programs \u00B7 2025\u20132026 data.<br><em>UK: EU citizens pay international fees post-Brexit.</em></div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// Filter panel
+const filter = L.control({ position: 'topright' });
+filter.onAdd = function() {
+  const div = L.DomUtil.create('div', 'filter-panel');
+  let html = '<h4>Filters</h4>';
+
+  // Country section (collapsed by default)
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="country"><strong style="font-size:11px;color:#888;">COUNTRY</strong><span class="arrow collapsed">\u25BC</span></div>';
+  html += '<div class="filter-section-body collapsed">';
+  Object.keys(countryColors).forEach(c => {
+    const count = programs.filter(p => p.country === c).length;
+    html += `<label><input type="checkbox" checked data-type="country" data-val="${c}">
+      <span style="color:${countryColors[c]};font-weight:600;">${c}</span>
+      <span style="color:#aaa;font-size:11px;">(${count})</span></label>`;
+  });
+  html += '</div></div>';
+
+  // Max EU Tuition slider
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="tuition"><strong style="font-size:11px;color:#888;">MAX EU TUITION</strong><span class="arrow">\u25BC</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="tuition-slider" min="2000" max="45000" value="45000" step="1000">
+    <span class="slider-val" id="tuition-val">\u20AC45,000</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Duration section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="duration"><strong style="font-size:11px;color:#888;">DURATION</strong><span class="arrow">\u25BC</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<label><input type="checkbox" checked data-type="dur" data-val="3">
+    <span>3 years</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="dur" data-val="4">
+    <span>4 years</span></label>`;
+  html += '</div></div>';
+
+  // Accreditation section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="accred"><strong style="font-size:11px;color:#888;">ACCREDITATION</strong><span class="arrow">\u25BC</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<label><input type="checkbox" checked data-type="accred" data-val="BPS">
+    <span>BPS accredited (UK)</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="accred" data-val="PSI">
+    <span>PSI accredited (Ireland)</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="accred" data-val="none">
+    <span>No specific accreditation</span></label>`;
+  html += '</div></div>';
+
+  div.innerHTML = html;
+
+  // Collapsible section handlers
+  div.querySelectorAll('.filter-section-header').forEach(hdr => {
+    hdr.addEventListener('click', function() {
+      const body = this.nextElementSibling;
+      const arrow = this.querySelector('.arrow');
+      body.classList.toggle('collapsed');
+      arrow.classList.toggle('collapsed');
+    });
+  });
+
+  // Slider display update
+  const sliderTuition = div.querySelector('#tuition-slider');
+  const sliderTuitionVal = div.querySelector('#tuition-val');
+  sliderTuition.addEventListener('input', function() {
+    sliderTuitionVal.textContent = '\u20AC' + parseInt(this.value).toLocaleString();
+    applyFilters();
+  });
+
+  function applyFilters() {
+    const checks = div.querySelectorAll('input[type="checkbox"]');
+    const activeCountries = new Set();
+    const activeDurations = new Set();
+    const activeAccred = new Set();
+    const maxTuition = parseInt(sliderTuition.value, 10);
+
+    checks.forEach(cb => {
+      if (cb.checked) {
+        if (cb.dataset.type === 'country') activeCountries.add(cb.dataset.val);
+        if (cb.dataset.type === 'dur') activeDurations.add(cb.dataset.val);
+        if (cb.dataset.type === 'accred') activeAccred.add(cb.dataset.val);
+      }
+    });
+
+    Object.keys(countryGroups).forEach(c => {
+      if (activeCountries.has(c)) {
+        if (!map.hasLayer(countryGroups[c])) map.addLayer(countryGroups[c]);
+        countryGroups[c].eachLayer(marker => {
+          if (!marker._progData) return;
+          const prog = marker._progData;
+          const durYears = parseInt(prog.duration);
+          const durMatch = activeDurations.has(String(durYears));
+          const tuitionMatch = prog.tuitionEU <= maxTuition;
+          const accredMatch = prog.accreditation
+            ? (prog.accreditation.includes('BPS') && activeAccred.has('BPS')) ||
+              (prog.accreditation.includes('PSI') && activeAccred.has('PSI'))
+            : activeAccred.has('none');
+          const visible = durMatch && tuitionMatch && accredMatch;
+          marker.setOpacity(visible ? 1 : 0);
+          if (marker._icon) marker._icon.style.pointerEvents = visible ? 'auto' : 'none';
+        });
+      } else {
+        if (map.hasLayer(countryGroups[c])) map.removeLayer(countryGroups[c]);
+      }
+    });
+  }
+
+  div.addEventListener('change', applyFilters);
+
+  return div;
+};
+filter.addTo(map);
+
+// Mobile panel toggles
+(function() {
+  const filterPanel = document.querySelector('.filter-panel');
+  const legendPanel = document.querySelector('.legend');
+
+  const filterBtn = document.createElement('button');
+  filterBtn.id = 'toggle-filter';
+  filterBtn.className = 'panel-toggle';
+  filterBtn.textContent = '\u2630';
+  filterBtn.title = 'Toggle filters';
+  document.body.appendChild(filterBtn);
+
+  const legendBtn = document.createElement('button');
+  legendBtn.id = 'toggle-legend';
+  legendBtn.className = 'panel-toggle';
+  legendBtn.textContent = '\u25FB';
+  legendBtn.title = 'Toggle legend';
+  document.body.appendChild(legendBtn);
+
+  if (window.innerWidth <= 768) {
+    if (filterPanel) filterPanel.classList.add('collapsed');
+    if (legendPanel) legendPanel.classList.add('collapsed');
+  }
+
+  filterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    filterPanel.classList.toggle('collapsed');
+    this.textContent = filterPanel.classList.contains('collapsed') ? '\u2630' : '\u2715';
+  });
+
+  legendBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    legendPanel.classList.toggle('collapsed');
+    this.textContent = legendPanel.classList.contains('collapsed') ? '\u25FB' : '\u2715';
+  });
+})();
+</script>
+</body>
+</html>
