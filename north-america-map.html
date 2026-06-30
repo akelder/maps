@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>North American Property Prices & Livability (2025–2026)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  #map { width: 100%; height: 100vh; }
+
+  .legend {
+    background: white; padding: 12px 16px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    line-height: 1.7; font-size: 12px; max-width: 210px;
+  }
+  .legend h4 { margin-bottom: 6px; font-size: 13px; color: #333; }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .legend-circle {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+  }
+  .legend-square {
+    width: 13px; height: 13px; border-radius: 2px;
+    border: 2px solid rgba(0,0,0,0.3); flex-shrink: 0;
+    background: #999;
+  }
+
+  .price-marker {
+    display: flex; flex-direction: column; align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .price-marker .dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+  .price-marker .dot.inland { border-radius: 3px; }
+  .price-marker .label {
+    margin-top: 1px; background: rgba(255,255,255,0.92);
+    padding: 1px 5px; border-radius: 3px;
+    font-size: 9.5px; font-weight: 700; white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2); color: #222;
+  }
+
+  .leaflet-popup-content { min-width: 310px; max-width: 370px; }
+  .popup-content h3 { margin: 0 0 4px 0; font-size: 16px; }
+  .popup-content .tags { margin-bottom: 6px; }
+  .popup-content .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 10px; font-weight: 600; margin-right: 3px; margin-bottom: 2px;
+  }
+  .popup-content .tag.country { color: white; }
+  .popup-content .tag.country.montenegro { background: #e74c3c; }
+  .popup-content .tag.country.croatia { background: #2980b9; }
+  .popup-content .tag.country.slovenia { background: #16a085; }
+  .popup-content .tag.country.greece { background: #2c3e50; }
+  .popup-content .tag.country.italy { background: #8e44ad; }
+  .popup-content .tag.country.albania { background: #d35400; }
+  .popup-content .tag.country.portugal { background: #c0392b; }
+  .popup-content .tag.country.spain { background: #e67e22; }
+  .popup-content .tag.country.czechia { background: #5c6bc0; }
+  .popup-content .tag.country.poland { background: #d81b60; }
+  .popup-content .tag.country.slovakia { background: #7cb342; }
+  .popup-content .tag.country.hungary { background: #43a047; }
+  .popup-content .tag.country.serbia { background: #8d6e63; }
+  .popup-content .tag.country.bulgaria { background: #546e7a; }
+  .popup-content .tag.country.estonia { background: #00acc1; }
+  .popup-content .tag.country.belgium { background: #ffb300; }
+  .popup-content .tag.country.netherlands { background: #0288d1; }
+  .popup-content .tag.eu { background: #eef5ff; color: #2471a3; border: 1px solid #aed6f1; }
+  .popup-content .tag.non-eu { background: #fef5e7; color: #b9770e; border: 1px solid #f9e79f; }
+  .popup-content .tag.coastal { background: #e8f8f5; color: #148f77; border: 1px solid #a3e4d7; }
+  .popup-content .tag.inland { background: #f4ecf7; color: #7d3c98; border: 1px solid #d2b4de; }
+
+  .popup-content .pop-hosp {
+    font-size: 11px; color: #555; margin-bottom: 4px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px;
+  }
+  .tag.country.usa { background:#3367d6; }
+  .tag.country.canada { background:#d32f2f; }
+\1
+    font-size: 16px; font-weight: 700; color: #222; margin: 4px 0;
+  }
+  .popup-content .section-label {
+    font-size: 9px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-top: 7px; margin-bottom: 2px;
+  }
+  .popup-content .detail { font-size: 11.5px; color: #555; line-height: 1.5; }
+  .popup-content .pros { color: #1e8449; }
+  .popup-content .cons { color: #b03a2e; }
+  .popup-content .climate-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px 10px;
+    font-size: 11px; color: #555; margin-top: 2px;
+  }
+  .popup-content .housing-cost {
+    font-size: 13px; font-weight: 600; color: #333; margin-top: 2px;
+  }
+  .popup-content .visa-info {
+    font-size: 10.5px; color: #666; margin-top: 2px;
+    padding: 4px 8px; background: #f8f8f8; border-radius: 4px; line-height: 1.4;
+  }
+
+  .popup-content .cost-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px;
+    font-size: 11px; color: #555; margin-top: 2px;
+  }
+  .popup-content .safety-bar-bg {
+    display: inline-block; width: 80px; height: 8px; background: #eee;
+    border-radius: 4px; vertical-align: middle; margin-left: 4px; position: relative;
+    overflow: hidden;
+  }
+  .popup-content .safety-bar-fill {
+    height: 100%; border-radius: 4px; position: absolute; left: 0; top: 0;
+  }
+  .popup-content .safety-label {
+    font-size: 10px; font-weight: 600; margin-left: 4px;
+  }
+  .popup-content a.drill-link {
+    color: inherit; text-decoration: none; display: block;
+    border-radius: 4px; padding: 2px 4px; margin: -2px -4px;
+    transition: background 0.15s;
+  }
+  .popup-content a.drill-link:hover {
+    background: rgba(52,152,219,0.08);
+  }
+  .popup-content a.drill-link .drill-hint {
+    font-size: 9px; color: #3498db; opacity: 0; transition: opacity 0.15s;
+    margin-left: 4px;
+  }
+  .popup-content a.drill-link:hover .drill-hint { opacity: 1; }
+  .popup-content .price-range a.drill-link {
+    display: inline; padding: 0; margin: 0;
+    border-bottom: 1.5px dashed rgba(52,152,219,0.3);
+  }
+  .popup-content .price-range a.drill-link:hover {
+    background: none; border-bottom-color: #3498db;
+  }
+
+  .filter-panel {
+    background: white; padding: 10px 14px; border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25); font-size: 12px;
+    max-height: 80vh; overflow-y: auto;
+  }
+  .filter-panel h4 { margin-bottom: 6px; font-size: 13px; }
+  .filter-panel .filter-section { margin-bottom: 4px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .filter-panel .filter-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .filter-panel label {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer; padding: 2px 0;
+  }
+  .filter-panel input[type="checkbox"] { cursor: pointer; }
+
+  .filter-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none; padding: 3px 0;
+  }
+  .filter-section-header:hover { opacity: 0.7; }
+  .filter-section-header .arrow { transition: transform 0.2s; font-size: 10px; color: #999; }
+  .filter-section-header .arrow.collapsed { transform: rotate(-90deg); }
+  .filter-section-body { max-height: 500px; overflow: hidden; transition: max-height 0.25s ease; }
+  .filter-section-body.collapsed { max-height: 0; }
+  .filter-panel input[type="range"] {
+    width: 100%; cursor: pointer; margin: 4px 0;
+    accent-color: #3498db;
+  }
+  .filter-panel .slider-val { font-weight: 600; color: #3498db; }
+
+  /* Collapse toggle buttons */
+  .panel-toggle {
+    display: none; position: fixed; z-index: 1100;
+    background: white; border: none; border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: pointer;
+    font-size: 16px; width: 34px; height: 34px;
+    align-items: center; justify-content: center;
+    color: #555;
+  }
+  .panel-toggle:active { background: #eee; }
+  #toggle-filter { top: 10px; right: 10px; }
+  #toggle-legend { bottom: 10px; right: 10px; }
+
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    .panel-toggle { display: flex; }
+
+    .legend {
+      padding: 8px 10px; font-size: 10px; line-height: 1.5;
+      max-width: 170px;
+    }
+    .legend h4 { font-size: 11px; margin-bottom: 4px; }
+    .legend-circle, .legend-square { width: 10px; height: 10px; }
+    .legend-item { gap: 5px; }
+    .legend.collapsed { display: none; }
+
+    .filter-panel {
+      padding: 8px 10px; font-size: 11px;
+      max-height: 60vh;
+    }
+    .filter-panel h4 { font-size: 12px; }
+    .filter-panel label { padding: 1px 0; gap: 4px; }
+    .filter-panel.collapsed { display: none; }
+
+    .leaflet-popup-content { min-width: 260px; max-width: 310px; }
+    .popup-content h3 { font-size: 14px; }
+    .popup-content .price-range { font-size: 14px; }
+    .popup-content .pop-hosp { font-size: 10px; grid-template-columns: 1fr; }
+    .popup-content .climate-grid { font-size: 10px; }
+    .popup-content .cost-row { font-size: 10px; }
+    .popup-content .detail { font-size: 10.5px; }
+    .popup-content .safety-bar-bg { width: 60px; }
+    .popup-content .safety-label { font-size: 9px; }
+    .popup-content .housing-cost { font-size: 12px; }
+    .popup-content .visa-info { font-size: 9.5px; }
+
+    .price-marker .label { font-size: 8px; }
+    .price-marker .dot { width: 14px; height: 14px; }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const locations = [
+  // ===================== UNITED STATES — CALIFORNIA =====================
+  {
+    name: "San Francisco", country: "USA", inland: false,
+    lat: 37.7749, lng: -122.4194,
+    pop: 815000, hospital: "UCSF Medical Center", hospitalDist: 0,
+    priceMin: 11000, priceMax: 16000,
+    housing: { type: "2-bed condo", size: "90 m²", cost: "$1.0M–$1.4M" },
+    pros: "World-class hospitals (UCSF), excellent transit (BART/Muni), very walkable, strong cycling network, mild year-round, huge job market, vibrant food scene",
+    cons: "Extremely expensive, homelessness/property crime, chilly foggy summers, earthquake risk, steep hills",
+    stateIncomeTax: "California: 1%–13.3% progressive (top rate highest in US). No tax on Social Security; pensions fully taxed.",
+    taxTop: 13.3,
+    climate: { summerHigh: "20–23°C", winterLow: "8°C", snow: "Virtually never", rainyDays: 67, sunHours: 2600, humidity: 75 }
+  },
+  {
+    name: "San Diego", country: "USA", inland: false,
+    lat: 32.7157, lng: -117.1611,
+    pop: 1390000, hospital: "UC San Diego Health", hospitalDist: 0,
+    priceMin: 7000, priceMax: 10000,
+    housing: { type: "2-bed condo", size: "95 m²", cost: "$700k–$950k" },
+    pros: "Best-weather major US city, excellent healthcare, beaches, relaxed pace, growing bike infrastructure, large international airport",
+    cons: "Expensive, car-dependent outside core, limited rail, wildfire risk inland, water scarcity",
+    stateIncomeTax: "California: 1%–13.3% progressive. No tax on Social Security; pensions fully taxed.",
+    taxTop: 13.3,
+    climate: { summerHigh: "24–26°C", winterLow: "9°C", snow: "Never", rainyDays: 40, sunHours: 3050, humidity: 70 }
+  },
+  {
+    name: "Livermore", country: "USA", inland: true,
+    lat: 37.6819, lng: -121.7680,
+    pop: 87000, hospital: "Stanford Health Care–ValleyCare", hospitalDist: 0, hospitalNote: "UCSF & Stanford (Bay Area) within ~60 km",
+    priceMin: 6500, priceMax: 8500,
+    housing: { type: "3-bed house", size: "160 m²", cost: "$1.0M–$1.3M" },
+    pros: "Warm dry East Bay climate, wine country, quieter/safer than the city, ACE rail + BART access, good cycling on country roads, near Bay Area medicine",
+    cons: "Car needed for most trips, hot summers, suburban feel, still pricey, long commute to SF",
+    stateIncomeTax: "California: 1%–13.3% progressive. No tax on Social Security; pensions fully taxed.",
+    taxTop: 13.3,
+    climate: { summerHigh: "31–33°C", winterLow: "4°C", snow: "Virtually never", rainyDays: 60, sunHours: 2900, humidity: 62 }
+  },
+  {
+    name: "Davis", country: "USA", inland: true,
+    lat: 38.5449, lng: -121.7405,
+    pop: 67000, hospital: "Sutter Davis Hospital", hospitalDist: 0, hospitalNote: "UC Davis Medical Center, Sacramento (20 km)",
+    priceMin: 5500, priceMax: 7000,
+    housing: { type: "3-bed house", size: "150 m²", cost: "$750k–$950k" },
+    pros: "Most bike-friendly city in the US (flat, dense bike-path network), university town, UC Davis Medical nearby, safe, warm dry climate, Amtrak to Bay Area",
+    cons: "Very hot summers, small-town amenities, expensive for its size, car still useful for regional trips",
+    stateIncomeTax: "California: 1%–13.3% progressive. No tax on Social Security; pensions fully taxed.",
+    taxTop: 13.3,
+    climate: { summerHigh: "33–35°C", winterLow: "3°C", snow: "Never", rainyDays: 60, sunHours: 2900, humidity: 62 }
+  },
+  // ===================== UNITED STATES — COLORADO =====================
+  {
+    name: "Denver", country: "USA", inland: true,
+    lat: 39.7392, lng: -104.9903,
+    pop: 715000, hospital: "Saint Joseph Hospital", hospitalDist: 0, hospitalNote: "UCHealth University of Colorado Hospital, Aurora (13 km)",
+    priceMin: 4000, priceMax: 5500,
+    housing: { type: "2-bed condo", size: "100 m²", cost: "$450k–$600k" },
+    pros: "Very dry sunny climate (good for arthritis), light rail + growing bike network, low flat state tax, outdoor lifestyle, strong economy, international airport",
+    cons: "Cold snowy winters, high altitude (1,600 m) takes adjustment, traffic growth, wildfire smoke in summer",
+    stateIncomeTax: "Colorado: flat 4.4%. Retirement income deduction up to $24k (age 65+).",
+    taxTop: 4.4,
+    climate: { summerHigh: "30–32°C", winterLow: "-8°C", snow: "Yes, heavy (~150 cm/yr)", rainyDays: 90, sunHours: 3100, humidity: 52 }
+  },
+  {
+    name: "Boulder", country: "USA", inland: true,
+    lat: 40.0150, lng: -105.2705,
+    pop: 105000, hospital: "Boulder Community Health", hospitalDist: 0,
+    priceMin: 5500, priceMax: 7500,
+    housing: { type: "2-bed condo", size: "95 m²", cost: "$600k–$850k" },
+    pros: "One of the best US cycling cities, very dry sunny air, safe, highly educated, university town, superb outdoor access, healthy lifestyle culture",
+    cons: "Expensive, cold winters, high altitude, limited rail to Denver, can feel insular",
+    stateIncomeTax: "Colorado: flat 4.4%. Retirement income deduction up to $24k (age 65+).",
+    taxTop: 4.4,
+    climate: { summerHigh: "29–31°C", winterLow: "-7°C", snow: "Yes, heavy (~220 cm/yr)", rainyDays: 90, sunHours: 3100, humidity: 50 }
+  },
+  {
+    name: "Fort Collins", country: "USA", inland: true,
+    lat: 40.5853, lng: -105.0844,
+    pop: 170000, hospital: "UCHealth Poudre Valley Hospital", hospitalDist: 0,
+    priceMin: 4000, priceMax: 5500,
+    housing: { type: "3-bed house", size: "150 m²", cost: "$550k–$700k" },
+    pros: "Excellent bike infrastructure, very dry sunny climate, safe, affordable for Colorado, university town, craft-beer scene, near Rockies",
+    cons: "Cold winters, car helpful for regional trips, limited transit/rail, smaller airport (Denver 100 km)",
+    stateIncomeTax: "Colorado: flat 4.4%. Retirement income deduction up to $24k (age 65+).",
+    taxTop: 4.4,
+    climate: { summerHigh: "30–32°C", winterLow: "-9°C", snow: "Yes (~150 cm/yr)", rainyDays: 90, sunHours: 3050, humidity: 50 }
+  },
+  // ===================== UNITED STATES — PACIFIC NW =====================
+  {
+    name: "Portland", country: "USA", inland: true,
+    lat: 45.5152, lng: -122.6784,
+    pop: 650000, hospital: "OHSU Hospital", hospitalDist: 0,
+    priceMin: 4000, priceMax: 5500,
+    housing: { type: "2-bed condo", size: "95 m²", cost: "$420k–$580k" },
+    pros: "Top-tier US cycling city, excellent transit (MAX light rail), no sales tax, walkable, green, great food, mild climate",
+    cons: "Very rainy/damp grey winters (worst case for arthritis), homelessness, high income tax, overcast much of the year",
+    stateIncomeTax: "Oregon: 4.75%–9.9% progressive (no sales tax). Social Security exempt; pensions taxed.",
+    taxTop: 9.9,
+    climate: { summerHigh: "27–29°C", winterLow: "2°C", snow: "Rare (~5 cm/yr)", rainyDays: 155, sunHours: 2340, humidity: 77 }
+  },
+  {
+    name: "Eugene", country: "USA", inland: true,
+    lat: 44.0521, lng: -123.0868,
+    pop: 178000, hospital: "Sacred Heart Medical Center (PeaceHealth)", hospitalDist: 0,
+    priceMin: 3500, priceMax: 4800,
+    housing: { type: "3-bed house", size: "150 m²", cost: "$450k–$600k" },
+    pros: "Strong bike network, university town, no sales tax, cheaper than Portland, green and outdoorsy, mild",
+    cons: "Very rainy damp winters, limited transit/rail, high income tax, smaller job market, allergy-heavy spring",
+    stateIncomeTax: "Oregon: 4.75%–9.9% progressive (no sales tax). Social Security exempt; pensions taxed.",
+    taxTop: 9.9,
+    climate: { summerHigh: "28–30°C", winterLow: "1°C", snow: "Rare", rainyDays: 135, sunHours: 2200, humidity: 78 }
+  },
+  {
+    name: "Seattle", country: "USA", inland: false,
+    lat: 47.6062, lng: -122.3321,
+    pop: 750000, hospital: "UW Medical Center", hospitalDist: 0,
+    priceMin: 6000, priceMax: 8500,
+    housing: { type: "2-bed condo", size: "90 m²", cost: "$650k–$850k" },
+    pros: "No state income tax, top hospitals (UW), light rail + ferries, growing bike network, strong economy, mild temps, waterfront",
+    cons: "Very grey rainy winters (damp — hard on arthritis), expensive, hilly, traffic, high cost of living",
+    stateIncomeTax: "Washington: no state income tax (no tax on wages, pensions, or Social Security).",
+    taxTop: 0,
+    climate: { summerHigh: "23–25°C", winterLow: "3°C", snow: "Rare (~10 cm/yr)", rainyDays: 150, sunHours: 2170, humidity: 78 }
+  },
+  // ===================== UNITED STATES — MIDWEST =====================
+  {
+    name: "Minneapolis", country: "USA", inland: true,
+    lat: 44.9778, lng: -93.2650,
+    pop: 425000, hospital: "University of Minnesota Medical Center", hospitalDist: 0,
+    priceMin: 3000, priceMax: 4200,
+    housing: { type: "2-bed condo", size: "100 m²", cost: "$320k–$450k" },
+    pros: "Renowned cycling city (even in winter), excellent hospitals, affordable, light rail, lakes & parks, strong arts scene",
+    cons: "Brutally cold snowy winters (very hard on arthritis), short summers, high income tax, car useful in winter",
+    stateIncomeTax: "Minnesota: 5.35%–9.85% progressive. Social Security partially taxed.",
+    taxTop: 9.85,
+    climate: { summerHigh: "28–30°C", winterLow: "-13°C", snow: "Yes, heavy (~115 cm/yr)", rainyDays: 115, sunHours: 2700, humidity: 70 }
+  },
+  {
+    name: "Madison", country: "USA", inland: true,
+    lat: 43.0731, lng: -89.4012,
+    pop: 270000, hospital: "UW Health University Hospital", hospitalDist: 0,
+    priceMin: 3200, priceMax: 4500,
+    housing: { type: "3-bed house", size: "150 m²", cost: "$400k–$550k" },
+    pros: "Excellent bike infrastructure, top hospital (UW Health), safe, university town, lakes, affordable, sunny summers",
+    cons: "Cold snowy winters (hard on arthritis), limited rail, smaller airport, car useful regionally",
+    stateIncomeTax: "Wisconsin: 3.5%–7.65% progressive. Social Security exempt; pension credit available.",
+    taxTop: 7.65,
+    climate: { summerHigh: "27–29°C", winterLow: "-11°C", snow: "Yes (~110 cm/yr)", rainyDays: 120, sunHours: 2480, humidity: 72 }
+  },
+  // ===================== UNITED STATES — SOUTHWEST =====================
+  {
+    name: "Tucson", country: "USA", inland: true,
+    lat: 32.2226, lng: -110.9747,
+    pop: 545000, hospital: "Banner–University Medical Center Tucson", hospitalDist: 0,
+    priceMin: 2800, priceMax: 4000,
+    housing: { type: "3-bed house", size: "150 m²", cost: "$380k–$520k" },
+    pros: "Hot, extremely dry desert air (best US climate for arthritis), very sunny, affordable, growing bike network, university hospital, no humidity",
+    cons: "Brutal summer heat (38°C+), car-dependent sprawl, limited rail, water scarcity, lower safety scores",
+    stateIncomeTax: "Arizona: flat 2.5% (lowest flat rate in US). Social Security exempt.",
+    taxTop: 2.5,
+    climate: { summerHigh: "37–39°C", winterLow: "5°C", snow: "Virtually never", rainyDays: 50, sunHours: 3500, humidity: 38 }
+  },
+  // ===================== UNITED STATES — EAST =====================
+  {
+    name: "Washington DC", country: "USA", inland: true,
+    lat: 38.9072, lng: -77.0369,
+    pop: 690000, hospital: "MedStar Georgetown University Hospital", hospitalDist: 0,
+    priceMin: 6000, priceMax: 8500,
+    housing: { type: "2-bed condo", size: "90 m²", cost: "$600k–$800k" },
+    pros: "Excellent Metro + bike-share (Capital Bikeshare), world-class hospitals, walkable, museums (mostly free), international airport hub",
+    cons: "Expensive, hot humid summers, cold-ish winters, high income tax, traffic, crime varies by area",
+    stateIncomeTax: "District of Columbia: 4%–10.75% progressive. Social Security exempt.",
+    taxTop: 10.75,
+    climate: { summerHigh: "31–33°C", winterLow: "-2°C", snow: "Yes (~35 cm/yr)", rainyDays: 115, sunHours: 2530, humidity: 70 }
+  },
+  {
+    name: "Cambridge", country: "USA", inland: false,
+    lat: 42.3736, lng: -71.1097,
+    pop: 118000, hospital: "Mount Auburn Hospital", hospitalDist: 0, hospitalNote: "Mass General & Boston teaching hospitals (4 km)",
+    priceMin: 8000, priceMax: 11000,
+    housing: { type: "2-bed condo", size: "85 m²", cost: "$800k–$1.1M" },
+    pros: "World's best hospitals (Boston metro), excellent transit (T) + strong bike network, walkable, intellectual hub (Harvard/MIT), coastal",
+    cons: "Very expensive, cold snowy winters (hard on arthritis), dense/competitive, old housing stock",
+    stateIncomeTax: "Massachusetts: flat 5% + 4% surtax on income over $1M. Social Security exempt.",
+    taxTop: 9,
+    climate: { summerHigh: "27–29°C", winterLow: "-6°C", snow: "Yes, heavy (~120 cm/yr)", rainyDays: 125, sunHours: 2630, humidity: 68 }
+  },
+  // ===================== CANADA =====================
+  {
+    name: "Halifax", country: "Canada", inland: false,
+    lat: 44.6488, lng: -63.5752,
+    pop: 440000, hospital: "QEII Health Sciences Centre", hospitalDist: 0,
+    priceMin: 2800, priceMax: 4000,
+    housing: { type: "2-bed condo", size: "95 m²", cost: "C$480k–C$650k" },
+    pros: "Affordable Atlantic city, universal public healthcare, walkable compact core, growing bike lanes, maritime charm, safe, ocean access",
+    cons: "Damp foggy maritime climate (humid — hard on arthritis), long cold snowy winters, limited rail, healthcare wait times, far from major hubs",
+    stateIncomeTax: "Nova Scotia (provincial): 8.79%–21% on top of federal 15%–33%. Note: combined rates exceed US states.",
+    taxTop: 21,
+    climate: { summerHigh: "23–25°C", winterLow: "-8°C", snow: "Yes, heavy (~150 cm/yr)", rainyDays: 170, sunHours: 1900, humidity: 80 }
+  }
+];
+
+// safety: Numbeo-style 0-100 (higher=safer), healthcare: 0-100, groceries: $/mo 1 person, meal2: meal for 2 mid-range $
+const extraData = {
+  // USA
+  "San Francisco": { safety: 55, hc: 92, groceries: 600, meal2: 90, transitCity: 80, transitRail: 70, cycling: 70, carReq: false },
+  "San Diego":     { safety: 60, hc: 88, groceries: 520, meal2: 80, transitCity: 45, transitRail: 35, cycling: 50, carReq: true },
+  "Livermore":     { safety: 70, hc: 80, groceries: 500, meal2: 75, transitCity: 30, transitRail: 55, cycling: 55, carReq: true },
+  "Davis":         { safety: 75, hc: 82, groceries: 500, meal2: 70, transitCity: 45, transitRail: 55, cycling: 95, carReq: false },
+  "Denver":        { safety: 58, hc: 85, groceries: 480, meal2: 70, transitCity: 55, transitRail: 45, cycling: 70, carReq: false },
+  "Boulder":       { safety: 72, hc: 82, groceries: 500, meal2: 70, transitCity: 50, transitRail: 30, cycling: 90, carReq: false },
+  "Fort Collins":  { safety: 75, hc: 80, groceries: 470, meal2: 65, transitCity: 40, transitRail: 20, cycling: 85, carReq: false },
+  "Portland":      { safety: 55, hc: 83, groceries: 480, meal2: 70, transitCity: 75, transitRail: 60, cycling: 88, carReq: false },
+  "Eugene":        { safety: 58, hc: 78, groceries: 450, meal2: 60, transitCity: 55, transitRail: 30, cycling: 82, carReq: false },
+  "Seattle":       { safety: 56, hc: 88, groceries: 520, meal2: 80, transitCity: 70, transitRail: 55, cycling: 72, carReq: false },
+  "Minneapolis":   { safety: 55, hc: 90, groceries: 450, meal2: 65, transitCity: 60, transitRail: 50, cycling: 88, carReq: false },
+  "Madison":       { safety: 65, hc: 88, groceries: 440, meal2: 62, transitCity: 60, transitRail: 25, cycling: 85, carReq: false },
+  "Tucson":        { safety: 52, hc: 80, groceries: 430, meal2: 55, transitCity: 40, transitRail: 15, cycling: 80, carReq: true },
+  "Washington DC": { safety: 55, hc: 90, groceries: 540, meal2: 85, transitCity: 80, transitRail: 75, cycling: 75, carReq: false },
+  "Cambridge":     { safety: 65, hc: 95, groceries: 560, meal2: 85, transitCity: 75, transitRail: 70, cycling: 80, carReq: false },
+  // Canada
+  "Halifax":       { safety: 70, hc: 75, groceries: 420, meal2: 65, transitCity: 50, transitRail: 10, cycling: 65, carReq: false }
+};
+
+// Airport data: nearest international airport (IATA code, name, distance in km)
+const airportData = {};
+
+// Merge extra data into locations
+locations.forEach(loc => {
+  const ed = extraData[loc.name];
+  if (ed) { loc.safety = ed.safety; loc.hc = ed.hc; loc.groceries = ed.groceries; loc.meal2 = ed.meal2; loc.transitCity = ed.transitCity; loc.transitRail = ed.transitRail; loc.cycling = ed.cycling; loc.carReq = ed.carReq; }
+  if (airportData[loc.name]) loc.apt = airportData[loc.name];
+});
+
+// Rating helpers
+function getSafetyColor(s) {
+  if (s >= 75) return '#27ae60';
+  if (s >= 65) return '#f1c40f';
+  if (s >= 55) return '#e67e22';
+  return '#e74c3c';
+}
+function getSafetyLabel(s) {
+  if (s >= 80) return 'Very Safe';
+  if (s >= 70) return 'Safe';
+  if (s >= 60) return 'Moderate';
+  if (s >= 50) return 'Caution';
+  return 'Higher Risk';
+}
+function getHcColor(s) {
+  if (s >= 80) return '#27ae60';
+  if (s >= 65) return '#2ecc71';
+  if (s >= 50) return '#f1c40f';
+  if (s >= 35) return '#e67e22';
+  return '#e74c3c';
+}
+function getHcLabel(s) {
+  if (s >= 85) return 'Excellent';
+  if (s >= 70) return 'Good';
+  if (s >= 55) return 'Adequate';
+  if (s >= 40) return 'Limited';
+  return 'Basic';
+}
+function getTransitColor(s) {
+  if (s >= 70) return '#27ae60';
+  if (s >= 50) return '#2ecc71';
+  if (s >= 30) return '#f1c40f';
+  if (s >= 15) return '#e67e22';
+  return '#e74c3c';
+}
+function getTransitLabel(s) {
+  if (s >= 70) return 'Excellent';
+  if (s >= 50) return 'Good';
+  if (s >= 30) return 'Moderate';
+  if (s >= 15) return 'Limited';
+  return 'Minimal';
+}
+
+// Source URL generators
+const numbeoCountry = {
+  USA:'United States', Canada:'Canada'
+};
+// Cities large enough to have Numbeo pages
+const numbeoCities = new Set([
+  'San Francisco','San Diego','Denver','Boulder','Portland','Eugene',
+  'Seattle','Minneapolis','Madison','Tucson','Cambridge','Halifax'
+]);
+const numbeoNameOverride = {};
+function numbeoUrl(cat, city, country) {
+  const raw = numbeoNameOverride[city] || city;
+  const c = raw.replace(/\s/g, '-').replace(/š/gi,'s').replace(/ë/g,'e').replace(/ž/gi,'z').replace(/č/gi,'c').replace(/ř/gi,'r').replace(/ě/g,'e').replace(/á/g,'a').replace(/í/g,'i').replace(/ý/g,'y').replace(/ó/g,'o').replace(/ú/g,'u').replace(/ń/g,'n').replace(/ł/g,'l').replace(/ő/g,'o').replace(/ű/g,'u').replace(/ä/g,'a');
+  const nc = numbeoCountry[country] || country;
+  if (numbeoCities.has(city)) return `https://www.numbeo.com/${cat}/in/${encodeURIComponent(c)}`;
+  return `https://www.numbeo.com/${cat}/country_result.jsp?country=${encodeURIComponent(nc)}`;
+}
+const propertyPortals = {
+  USA: 'https://www.zillow.com/',
+  Canada: 'https://www.realtor.ca/'
+};
+
+function transitCityUrl(lat, lng) {
+  return `https://www.google.com/maps/@${lat},${lng},14z/data=!5m1!1e2`;
+}
+function transitRailUrl(city) {
+  return `https://www.rome2rio.com/map/${encodeURIComponent(city)}`;
+}
+function cyclingUrl(lat, lng) {
+  return `https://www.cyclosm.org/#map=14/${lat}/${lng}`;
+}
+
+function getPriceColor(avgPrice) {
+  if (avgPrice <= 3000) return '#27ae60';
+  if (avgPrice <= 4500) return '#6fba2c';
+  if (avgPrice <= 6500) return '#f1c40f';
+  if (avgPrice <= 9000) return '#e67e22';
+  if (avgPrice <= 12000) return '#e74c3c';
+  return '#8e44ad';
+}
+
+function formatPrice(n) { return '$' + n.toLocaleString(); }
+function formatPop(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'k';
+  return n.toString();
+}
+
+const map = L.map('map', { zoomControl: true }).setView([41, -96], 4);
+
+L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | <a href="https://opentopomap.org">OpenTopoMap</a>',
+  maxZoom: 17
+}).addTo(map);
+
+// Layer groups for filtering
+const countryGroups = {};
+const typeGroups = { Coastal: L.layerGroup().addTo(map), Inland: L.layerGroup().addTo(map) };
+const countryColors = {
+  USA: '#3367d6', Canada: '#d32f2f'
+};
+Object.keys(countryColors).forEach(c => { countryGroups[c] = L.layerGroup().addTo(map); });
+
+locations.forEach(loc => {
+  const avg = (loc.priceMin + loc.priceMax) / 2;
+  const color = getPriceColor(avg);
+  const cls = loc.country.toLowerCase();
+  const dotClass = loc.inland ? 'dot inland' : 'dot';
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="price-marker">
+        <div class="${dotClass}" style="background:${color};"></div>
+        <div class="label">${loc.name} ${formatPrice(loc.priceMin)}–${formatPrice(loc.priceMax)}</div>
+      </div>`,
+    iconSize: [0, 0], iconAnchor: [9, 9], popupAnchor: [0, -12]
+  });
+
+  const locTag = loc.inland ? '<span class="tag inland">Inland</span>' : '<span class="tag coastal">Coastal</span>';
+  const hospStr = loc.hospitalDist === 0
+    ? `${loc.hospital} (in town)`
+    : `${loc.hospital} (${loc.hospitalDist} km)`;
+
+  const popup = `<div class="popup-content">
+      <h3>${loc.name}</h3>
+      <div class="tags">
+        <span class="tag country ${cls}">${loc.country}</span>${locTag}
+      </div>
+      <div class="pop-hosp">
+        <span>👥 Pop: ${formatPop(loc.pop)}</span>
+        <span>🏥 ${hospStr}</span>
+        ${loc.apt ? `<span>✈ ${loc.apt}</span>` : ''}
+      </div>
+      ${loc.hospitalNote ? `<div style="font-size:10px;color:#888;margin-bottom:4px;">ℹ️ ${loc.hospitalNote}</div>` : ''}
+      <div class="price-range"><a class="drill-link" href="${propertyPortals[loc.country] || '#'}" target="_blank" title="Browse property listings for ${loc.country}">${formatPrice(loc.priceMin)} – ${formatPrice(loc.priceMax)} /m² ↗</a></div>
+
+      <div class="section-label">Pros</div>
+      <div class="detail pros">+ ${loc.pros}</div>
+      <div class="section-label">Cons</div>
+      <div class="detail cons">− ${loc.cons}</div>
+
+      <div class="section-label">Climate</div>
+      <div class="climate-grid">
+        <span>☀ Summer: ${loc.climate.summerHigh}</span>
+        <span>❄ Winter: ${loc.climate.winterLow}</span>
+        <span>☂ Rain: ${loc.climate.rainyDays} days/yr</span>
+        <span>☀ Sun: ${loc.climate.sunHours.toLocaleString()} hrs/yr</span>
+        <span>💧 Humidity: ${loc.climate.humidity}% avg</span>
+        <span>☃ Snow: ${loc.climate.snow}</span>
+      </div>
+
+      <div class="section-label">Safety, Healthcare, Transit & Cost of Living</div>
+      <a class="drill-link" href="${numbeoUrl('crime', loc.name, loc.country)}" target="_blank" title="View crime data on Numbeo">
+      <div class="detail" style="margin-bottom:3px;">
+        🛡 Safety:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.safety || 0}%;background:${getSafetyColor(loc.safety || 0)};"></span></span>
+        <span class="safety-label" style="color:${getSafetyColor(loc.safety || 0)}">${loc.safety || '?'}/100 — ${getSafetyLabel(loc.safety || 0)}</span>
+        <span class="drill-hint">↗ Numbeo</span>
+      </div></a>
+      <a class="drill-link" href="${numbeoUrl('health-care', loc.name, loc.country)}" target="_blank" title="View healthcare data on Numbeo">
+      <div class="detail" style="margin-bottom:3px;">
+        🏥 Healthcare:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.hc || 0}%;background:${getHcColor(loc.hc || 0)};"></span></span>
+        <span class="safety-label" style="color:${getHcColor(loc.hc || 0)}">${loc.hc || '?'}/100 — ${getHcLabel(loc.hc || 0)}</span>
+        <span class="drill-hint">↗ Numbeo</span>
+      </div></a>
+      <a class="drill-link" href="${transitCityUrl(loc.lat, loc.lng)}" target="_blank" title="View transit overlay on Google Maps">
+      <div class="detail" style="margin-bottom:3px;">
+        🚌 City Transit:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.transitCity || 0}%;background:${getTransitColor(loc.transitCity || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.transitCity || 0)}">${loc.transitCity || '?'}/100 — ${getTransitLabel(loc.transitCity || 0)}</span>
+        <span class="drill-hint">↗ Google Maps</span>
+      </div></a>
+      <a class="drill-link" href="${transitRailUrl(loc.name)}" target="_blank" title="View rail connections on Rome2Rio">
+      <div class="detail" style="margin-bottom:3px;">
+        🚆 Rail Access:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.transitRail || 0}%;background:${getTransitColor(loc.transitRail || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.transitRail || 0)}">${loc.transitRail || '?'}/100 — ${getTransitLabel(loc.transitRail || 0)}</span>
+        <span class="drill-hint">↗ Rome2Rio</span>
+      </div></a>
+      <a class="drill-link" href="${cyclingUrl(loc.lat, loc.lng)}" target="_blank" title="View cycling infrastructure on CyclOSM">
+      <div class="detail" style="margin-bottom:3px;">
+        🚲 Cycling:
+        <span class="safety-bar-bg"><span class="safety-bar-fill" style="width:${loc.cycling || 0}%;background:${getTransitColor(loc.cycling || 0)};"></span></span>
+        <span class="safety-label" style="color:${getTransitColor(loc.cycling || 0)}">${loc.cycling || '?'}/100 — ${getTransitLabel(loc.cycling || 0)}</span>
+        <span class="drill-hint">↗ CyclOSM</span>
+      </div></a>
+      <div class="detail" style="margin-bottom:3px;">
+        🚗 Car required: <span style="font-weight:600;color:${loc.carReq ? '#e74c3c' : '#27ae60'}">${loc.carReq ? 'Yes' : 'No'}</span>
+      </div>
+      <div class="cost-row">
+        <span>🛒 Groceries: ~$${loc.groceries || '?'}/mo</span>
+        <span>🍽 Meal for 2: ~$${loc.meal2 || '?'}</span>
+      </div>
+
+      <div class="section-label">${loc.housing.type} (${loc.housing.size})</div>
+      <div class="housing-cost">${loc.housing.cost}</div>
+
+      <div class="section-label">Income Tax (state / provincial)</div>
+      <div class="visa-info">🏛 ${loc.stateIncomeTax}</div>
+    </div>`;
+
+  const marker = L.marker([loc.lat, loc.lng], { icon })
+    .bindPopup(popup, { maxWidth: 370 });
+
+  // Add to both country and type groups
+  marker.addTo(countryGroups[loc.country]);
+  // Store reference for type filtering
+  marker._locData = loc;
+});
+
+// Legend
+const legend = L.control({ position: 'bottomright' });
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <h4>Price per m² (avg)</h4>
+    <div class="legend-item"><div class="legend-circle" style="background:#27ae60"></div> ≤ $3,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#6fba2c"></div> $3,000 – $4,500</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#f1c40f"></div> $4,500 – $6,500</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#e67e22"></div> $6,500 – $9,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#e74c3c"></div> $9,000 – $12,000</div>
+    <div class="legend-item"><div class="legend-circle" style="background:#8e44ad"></div> > $12,000</div>
+    <hr style="margin:6px 0;border:none;border-top:1px solid #ddd;">
+    <div class="legend-item"><div class="legend-circle" style="background:#999"></div> Coastal</div>
+    <div class="legend-item"><div class="legend-square"></div> Inland</div>
+    <hr style="margin:6px 0;border:none;border-top:1px solid #ddd;">
+    <div style="font-size:10px;color:#888;">Click marker for full details.<br>${locations.length} locations · 2025–2026 data.</div>
+  `;
+  return div;
+};
+legend.addTo(map);
+
+// Filter panel
+const filter = L.control({ position: 'topright' });
+filter.onAdd = function() {
+  const div = L.DomUtil.create('div', 'filter-panel');
+  let html = '<h4>Filters</h4>';
+
+  // Country section (collapsed by default)
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="country"><strong style="font-size:11px;color:#888;">COUNTRY</strong><span class="arrow collapsed">▼</span></div>';
+  html += '<div class="filter-section-body collapsed">';
+  Object.keys(countryColors).forEach(c => {
+    const count = locations.filter(l => l.country === c).length;
+    html += `<label><input type="checkbox" checked data-type="country" data-val="${c}">
+      <span style="color:${countryColors[c]};font-weight:600;">${c}</span>
+      <span style="color:#aaa;font-size:11px;">(${count})</span></label>`;
+  });
+  html += '</div></div>';
+
+  // Type section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="type"><strong style="font-size:11px;color:#888;">TYPE</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<label><input type="checkbox" checked data-type="loc" data-val="coastal">
+    <span>Coastal</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="loc" data-val="inland">
+    <span>Inland</span></label>`;
+  html += '</div></div>';
+
+  // Max State Income Tax section (lower = less tax; 0 = no-income-tax states only)
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="tax"><strong style="font-size:11px;color:#888;">MAX STATE INCOME TAX</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="tax-slider" min="0" max="22" value="22" step="0.5">
+    <span class="slider-val" id="tax-val">22</span><span style="font-size:10px;color:#999;">% top</span>
+  </div>
+  <div style="font-size:10px;color:#999;padding:0 0 2px;">0 = no state income tax (e.g. WA). Canada shows provincial only.</div>`;
+  html += '</div></div>';
+
+  // Car Required section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="car"><strong style="font-size:11px;color:#888;">CAR REQUIRED</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<label><input type="checkbox" checked data-type="car" data-val="true">
+    <span style="color:#e74c3c;">Yes</span></label>`;
+  html += `<label><input type="checkbox" checked data-type="car" data-val="false">
+    <span style="color:#27ae60;">No</span></label>`;
+  html += '</div></div>';
+
+  // Min City Transit section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="transit-city"><strong style="font-size:11px;color:#888;">MIN CITY TRANSIT</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="transit-city-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="transit-city-val">0</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Min Rail Access section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="transit-rail"><strong style="font-size:11px;color:#888;">MIN RAIL ACCESS</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="transit-rail-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="transit-rail-val">0</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Min Cycling section
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="cycling"><strong style="font-size:11px;color:#888;">MIN CYCLING</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="cycling-slider" min="0" max="100" value="0" step="5">
+    <span class="slider-val" id="cycling-val">0</span>
+  </div>`;
+  html += '</div></div>';
+
+  // Max Humidity section (lower = drier; gentler for rheumatoid arthritis)
+  html += '<div class="filter-section">';
+  html += '<div class="filter-section-header" data-section="humidity"><strong style="font-size:11px;color:#888;">MAX HUMIDITY</strong><span class="arrow">▼</span></div>';
+  html += '<div class="filter-section-body">';
+  html += `<div style="display:flex;align-items:center;gap:8px;padding:2px 0;">
+    <input type="range" id="humidity-slider" min="60" max="85" value="85" step="1">
+    <span class="slider-val" id="humidity-val">85</span><span style="font-size:10px;color:#999;">%</span>
+  </div>
+  <div style="font-size:10px;color:#999;padding:0 0 2px;">Lower = drier (gentler for arthritis)</div>`;
+  html += '</div></div>';
+
+  div.innerHTML = html;
+
+  // Collapsible section handlers
+  div.querySelectorAll('.filter-section-header').forEach(hdr => {
+    hdr.addEventListener('click', function() {
+      const body = this.nextElementSibling;
+      const arrow = this.querySelector('.arrow');
+      body.classList.toggle('collapsed');
+      arrow.classList.toggle('collapsed');
+    });
+  });
+
+  // Slider display update
+  const sliderCity = div.querySelector('#transit-city-slider');
+  const sliderCityVal = div.querySelector('#transit-city-val');
+  sliderCity.addEventListener('input', function() {
+    sliderCityVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderRail = div.querySelector('#transit-rail-slider');
+  const sliderRailVal = div.querySelector('#transit-rail-val');
+  sliderRail.addEventListener('input', function() {
+    sliderRailVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderCycling = div.querySelector('#cycling-slider');
+  const sliderCyclingVal = div.querySelector('#cycling-val');
+  sliderCycling.addEventListener('input', function() {
+    sliderCyclingVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderHumidity = div.querySelector('#humidity-slider');
+  const sliderHumidityVal = div.querySelector('#humidity-val');
+  sliderHumidity.addEventListener('input', function() {
+    sliderHumidityVal.textContent = this.value;
+    applyFilters();
+  });
+  const sliderTax = div.querySelector('#tax-slider');
+  const sliderTaxVal = div.querySelector('#tax-val');
+  sliderTax.addEventListener('input', function() {
+    sliderTaxVal.textContent = this.value;
+    applyFilters();
+  });
+
+  function applyFilters() {
+    const checks = div.querySelectorAll('input[type="checkbox"]');
+    const activeCountries = new Set();
+    const activeTypes = new Set();
+    const activeCar = new Set();
+    const minTransitCity = parseInt(sliderCity.value, 10);
+    const minTransitRail = parseInt(sliderRail.value, 10);
+    const minCycling = parseInt(sliderCycling.value, 10);
+    const maxHumidity = parseInt(sliderHumidity.value, 10);
+    const maxTax = parseFloat(sliderTax.value);
+
+    checks.forEach(cb => {
+      if (cb.checked) {
+        if (cb.dataset.type === 'country') activeCountries.add(cb.dataset.val);
+        if (cb.dataset.type === 'loc') activeTypes.add(cb.dataset.val);
+        if (cb.dataset.type === 'car') activeCar.add(cb.dataset.val);
+      }
+    });
+
+    Object.keys(countryGroups).forEach(c => {
+      if (activeCountries.has(c)) {
+        if (!map.hasLayer(countryGroups[c])) map.addLayer(countryGroups[c]);
+        countryGroups[c].eachLayer(marker => {
+          if (!marker._locData) return;
+          const loc = marker._locData;
+          const typeMatch = loc.inland ? activeTypes.has('inland') : activeTypes.has('coastal');
+          const carMatch = activeCar.has(String(loc.carReq));
+          const transitCityMatch = (loc.transitCity || 0) >= minTransitCity;
+          const transitRailMatch = (loc.transitRail || 0) >= minTransitRail;
+          const cyclingMatch = (loc.cycling || 0) >= minCycling;
+          const humidityMatch = (loc.climate.humidity || 0) <= maxHumidity;
+          const taxMatch = (loc.taxTop || 0) <= maxTax;
+          const visible = typeMatch && carMatch && transitCityMatch && transitRailMatch && cyclingMatch && humidityMatch && taxMatch;
+          marker.setOpacity(visible ? 1 : 0);
+          if (marker._icon) marker._icon.style.pointerEvents = visible ? 'auto' : 'none';
+        });
+      } else {
+        if (map.hasLayer(countryGroups[c])) map.removeLayer(countryGroups[c]);
+      }
+    });
+  }
+
+  div.addEventListener('change', applyFilters);
+
+  return div;
+};
+filter.addTo(map);
+
+// Mobile panel toggles
+(function() {
+  const filterPanel = document.querySelector('.filter-panel');
+  const legendPanel = document.querySelector('.legend');
+
+  const filterBtn = document.createElement('button');
+  filterBtn.id = 'toggle-filter';
+  filterBtn.className = 'panel-toggle';
+  filterBtn.textContent = '☰';
+  filterBtn.title = 'Toggle filters';
+  document.body.appendChild(filterBtn);
+
+  const legendBtn = document.createElement('button');
+  legendBtn.id = 'toggle-legend';
+  legendBtn.className = 'panel-toggle';
+  legendBtn.textContent = '◻';
+  legendBtn.title = 'Toggle legend';
+  document.body.appendChild(legendBtn);
+
+  if (window.innerWidth <= 768) {
+    if (filterPanel) filterPanel.classList.add('collapsed');
+    if (legendPanel) legendPanel.classList.add('collapsed');
+  }
+
+  filterBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    filterPanel.classList.toggle('collapsed');
+    this.textContent = filterPanel.classList.contains('collapsed') ? '☰' : '✕';
+  });
+
+  legendBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    legendPanel.classList.toggle('collapsed');
+    this.textContent = legendPanel.classList.contains('collapsed') ? '◻' : '✕';
+  });
+})();
+</script>
+</body>
+</html>
