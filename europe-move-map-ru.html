@@ -4596,6 +4596,17 @@ legend.onAdd = function() {
 };
 legend.addTo(map);
 
+// Cross-link to the companion North America map
+const mapNav = L.control({ position: 'bottomleft' });
+mapNav.onAdd = function() {
+  const div = L.DomUtil.create('div');
+  div.style.cssText = 'background:#fff;padding:6px 10px;border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,0.3);font:600 13px sans-serif;';
+  div.innerHTML = '<a href="north-america-map.html" style="color:#2980b9;text-decoration:none;white-space:nowrap;">🌎 Карта Северной Америки →</a>';
+  L.DomEvent.disableClickPropagation(div);
+  return div;
+};
+mapNav.addTo(map);
+
 // Filter panel
 const filter = L.control({ position: 'topright' });
 filter.onAdd = function() {
